@@ -1,0 +1,8 @@
+markdown: rdiscount
+permalink: /:categories/:title/
+url: http://dannyli.net
+author: Danny Li
+pygments: true
+safe: true
+paginate: 16
+

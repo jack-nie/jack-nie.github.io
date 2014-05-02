@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh" lang="zh-cn">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="author" content="Danny Li" />
+    <title>Categories | Danny Li</title>
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link href="/feed/" rel="alternate" title="Danny Li" type="application/atom+xml" />
+    <!--<link rel="stylesheet" media="all" href="/media/css/han.css">-->
+    
+    <link rel="stylesheet" href="/media/css/style.css">
+    <link rel="stylesheet" href="/media/css/highlight.css">
+    <!--<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>-->
+    <!--<script type="text/javascript" src="/media/js/han.js"></script>-->
+    <script type="text/javascript" src="/media/js/jquery-1.7.1.min.js"></script>
+  </head>
+  <script type="text/javascript">
+    function setTimeSpan(){
+    	var date = new Date();
+    	timeSpan.innerText=date.format('yyyy-MM-dd hh:mm:ss');
+    }
+    
+    Date.prototype.format = function(format)
+		{
+    var o =
+    	{
+    	    "M+" : this.getMonth()+1, //month
+    	    "d+" : this.getDate(),    //day
+    	    "h+" : this.getHours(),   //hour
+    	    "m+" : this.getMinutes(), //minute
+    	    "s+" : this.getSeconds(), //second
+    	    "q+" : Math.floor((this.getMonth()+3)/3),  //quarter
+    	    "S" : this.getMilliseconds() //millisecond
+    	}
+    	if(/(y+)/.test(format))
+    	format=format.replace(RegExp.$1,(this.getFullYear()+"").substr(4 - RegExp.$1.length));
+    	for(var k in o)
+    	if(new RegExp("("+ k +")").test(format))
+    	format = format.replace(RegExp.$1,RegExp.$1.length==1 ? o[k] : ("00"+ o[k]).substr((""+ o[k]).length));
+    	return format;
+		}
+  </script>
+  <body onLoad="setInterval(setTimeSpan,1000);">
+    <div id="container">
+      <div id="main" role="main">
+        <header>
+        <h1>Categories</h1>
+        </header>
+        <nav>
+        <span><a title="home page" class="" href="/">Home</a></span>
+        <span><a title="about" class="" href="/about/">About</a></span>
+        <span><a title="categories" class="" href="/categories/">Categories</a></span>
+        <span><a title="tags" class="" href="/tags/">Tags</a></span>
+        <span><a title="tags" class="" href="/archive/">Archive</a></span>
+        </nav>
+        <article class="content">
+        <section class="post">
+<div id='tag_cloud'>
+
+<a href="#notes" title="notes" rel="20">notes (20)</a>
+
+</div>
+
+
+
+
+<ul class="listing">
+
+  <li class="listing-seperator" id="notes">notes</li>
+
+  <li class="listing-item">
+  <time datetime="2013-07-27">2013-07-27</time>
+  <a href="/notes/jekyll-sitemap-without-plugin/" title="不使用插件为 Jekyll 添加 Sitemap">不使用插件为 Jekyll 添加 Sitemap</a>
+  </li>
+
+  <li class="listing-item">
+  <time datetime="2013-07-27">2013-07-27</time>
+  <a href="/notes/escape-liquid-tags/" title="Escape Liquid 模板标签的方法">Escape Liquid 模板标签的方法</a>
+  </li>
+
+  <li class="listing-item">
+  <time datetime="2013-07-26">2013-07-26</time>
+  <a href="/notes/pygments-config/" title="Jekyll 代码高亮利器 Pygments 配置">Jekyll 代码高亮利器 Pygments 配置</a>
+  </li>
+
+  <li class="listing-item">
+  <time datetime="2013-07-26">2013-07-26</time>
+  <a href="/notes/fix-problems-of-jekyll-on-windows/" title="Windows 安装 Jekyll 若干问题的解决">Windows 安装 Jekyll 若干问题的解决</a>
+  </li>
+
+  <li class="listing-item">
+  <time datetime="2013-07-25">2013-07-25</time>
+  <a href="/notes/blogging-with-github-pages/" title="使用 GitHub Pages 建立博客">使用 GitHub Pages 建立博客</a>
+  </li>
+
+  <li class="listing-item">
+  <time datetime="2013-07-25">2013-07-25</time>
+  <a href="/notes/osx-jekyll/" title="OS X 下安装配置 Jekyll">OS X 下安装配置 Jekyll</a>
+  </li>
+
+  <li class="listing-item">
+  <time datetime="2012-05-05">2012-05-05</time>
+  <a href="/notes/rules-for-capitalization-in-titles/" title="英语文章标题的首字母大写规则">英语文章标题的首字母大写规则</a>
+  </li>
+
+  <li class="listing-item">
+  <time datetime="2012-04-15">2012-04-15</time>
+  <a href="/notes/connect-ntu-vpn-automatically-in-windows/" title="Windows 下自动连接 NTU VPN（不用每次输入用户名密码）">Windows 下自动连接 NTU VPN（不用每次输入用户名密码）</a>
+  </li>
+
+  <li class="listing-item">
+  <time datetime="2011-11-01">2011-11-01</time>
+  <a href="/notes/using-endnote-latex-bibtex/" title="使用 EndNote 和 LaTeX/BibTeX 建立论文的参考文献">使用 EndNote 和 LaTeX/BibTeX 建立论文的参考文献</a>
+  </li>
+
+  <li class="listing-item">
+  <time datetime="2011-10-23">2011-10-23</time>
+  <a href="/notes/my-google-chrome-extensions/" title="我所用的 Google Chrome 扩展插件">我所用的 Google Chrome 扩展插件</a>
+  </li>
+
+  <li class="listing-item">
+  <time datetime="2011-09-12">2011-09-12</time>
+  <a href="/notes/change-modified-created-date-in-macosx/" title="Mac OS X 下修改文件属性：创建时间、修改时间">Mac OS X 下修改文件属性：创建时间、修改时间</a>
+  </li>
+
+  <li class="listing-item">
+  <time datetime="2011-03-24">2011-03-24</time>
+  <a href="/notes/mac-os-x-folder-localization/" title="Mac OS X 文件夹本地化方法（汉化）">Mac OS X 文件夹本地化方法（汉化）</a>
+  </li>
+
+  <li class="listing-item">
+  <time datetime="2011-03-23">2011-03-23</time>
+  <a href="/notes/my-firefox-addons/" title="我所用的 Firefox 插件">我所用的 Firefox 插件</a>
+  </li>
+
+  <li class="listing-item">
+  <time datetime="2011-03-06">2011-03-06</time>
+  <a href="/notes/writing-the-introduction/" title="论文的简介 (Introduction) 部分">论文的简介 (Introduction) 部分</a>
+  </li>
+
+  <li class="listing-item">
+  <time datetime="2010-10-10">2010-10-10</time>
+  <a href="/notes/setting-up-ftp-in-ntu/" title="在 NTU 内网架设 FTP">在 NTU 内网架设 FTP</a>
+  </li>
+
+  <li class="listing-item">
+  <time datetime="2010-07-15">2010-07-15</time>
+  <a href="/notes/flickr-api-php-example/" title="Flickr API + PHP 简单示例">Flickr API + PHP 简单示例</a>
+  </li>
+
+  <li class="listing-item">
+  <time datetime="2010-07-14">2010-07-14</time>
+  <a href="/notes/ieee-document-life-cycle/" title="IEEE 论文生命周期">IEEE 论文生命周期</a>
+  </li>
+
+  <li class="listing-item">
+  <time datetime="2010-07-13">2010-07-13</time>
+  <a href="/notes/latex-template-for-ieee-paper/" title="IEEE 论文 LaTeX 模板 – LaTeX2e 类文件">IEEE 论文 LaTeX 模板 – LaTeX2e 类文件</a>
+  </li>
+
+  <li class="listing-item">
+  <time datetime="2010-05-03">2010-05-03</time>
+  <a href="/notes/windows-xp-apache-php4-mysql4/" title="Windows XP 下搭建 Apache + PHP 4 + MySQL 4 环境">Windows XP 下搭建 Apache + PHP 4 + MySQL 4 环境</a>
+  </li>
+
+  <li class="listing-item">
+  <time datetime="2009-11-21">2009-11-21</time>
+  <a href="/notes/macosx-php-apache-mysql-installation/" title="Mac OS X 中架构 PHP + Apache + MySQL 环境">Mac OS X 中架构 PHP + Apache + MySQL 环境</a>
+  </li>
+
+
+</ul>
+
+
+
+
+<script src="/media/js/jquery.tagcloud.js" type="text/javascript" charset="utf-8"></script>
+
+
+<p></p>
+
+<script language="javascript">
+$.fn.tagcloud.defaults = {
+    size: {start: 1, end: 1, unit: 'em'},
+      color: {start: '#a9d0f5', end: '#ff3333'}
+};
+
+$(function () {
+    $('#tag_cloud a').tagcloud();
+});
+</script>
+
+
+</section>
+
+
+
+        </article>
+      </div>
+
+    <footer>
+        <p><small>Powered by <a href="https://github.com/mojombo/jekyll">Jekyll</a> & <a href="http://pages.github.com">GitHub</a> | Copyright 2013 - 2013 by <a href="/about/">Danny</a></small></p>
+    </footer>
+
+    </div>
+    
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-11490513-1']);
+      _gaq.push(['_setDomainName', 'dannyli.net']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+    
+  </body>
+</html>

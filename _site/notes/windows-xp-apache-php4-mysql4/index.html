@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh" lang="zh-cn">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="author" content="Danny Li" />
+    <title>Windows XP 下搭建 Apache + PHP 4 + MySQL 4 环境 | Danny Li</title>
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link href="/feed/" rel="alternate" title="Danny Li" type="application/atom+xml" />
+    <!--<link rel="stylesheet" media="all" href="/media/css/han.css">-->
+    
+    <link rel="stylesheet" href="/media/css/style.css">
+    <link rel="stylesheet" href="/media/css/highlight.css">
+    <!--<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>-->
+    <!--<script type="text/javascript" src="/media/js/han.js"></script>-->
+    <script type="text/javascript" src="/media/js/jquery-1.7.1.min.js"></script>
+  </head>
+  <script type="text/javascript">
+    function setTimeSpan(){
+    	var date = new Date();
+    	timeSpan.innerText=date.format('yyyy-MM-dd hh:mm:ss');
+    }
+    
+    Date.prototype.format = function(format)
+		{
+    var o =
+    	{
+    	    "M+" : this.getMonth()+1, //month
+    	    "d+" : this.getDate(),    //day
+    	    "h+" : this.getHours(),   //hour
+    	    "m+" : this.getMinutes(), //minute
+    	    "s+" : this.getSeconds(), //second
+    	    "q+" : Math.floor((this.getMonth()+3)/3),  //quarter
+    	    "S" : this.getMilliseconds() //millisecond
+    	}
+    	if(/(y+)/.test(format))
+    	format=format.replace(RegExp.$1,(this.getFullYear()+"").substr(4 - RegExp.$1.length));
+    	for(var k in o)
+    	if(new RegExp("("+ k +")").test(format))
+    	format = format.replace(RegExp.$1,RegExp.$1.length==1 ? o[k] : ("00"+ o[k]).substr((""+ o[k]).length));
+    	return format;
+		}
+  </script>
+  <body onLoad="setInterval(setTimeSpan,1000);">
+    <div id="container">
+      <div id="main" role="main">
+        <header>
+        <h1>Windows XP 下搭建 Apache + PHP 4 + MySQL 4 环境</h1>
+        </header>
+        <nav>
+        <span><a title="home page" class="" href="/">Home</a></span>
+        <span><a title="about" class="" href="/about/">About</a></span>
+        <span><a title="categories" class="" href="/categories/">Categories</a></span>
+        <span><a title="tags" class="" href="/tags/">Tags</a></span>
+        <span><a title="tags" class="" href="/archive/">Archive</a></span>
+        </nav>
+        <article class="content">
+        <section>
+2010-05-03
+
+<span class="categories">
+ in 
+  <a href="/categories/#notes" title="notes">notes</a>&nbsp;
+  
+</span>, 
+
+
+<span class="tags">
+  tags:
+  
+  <a href="/tags/#Windows" title="Windows">Windows</a>&nbsp;
+  
+  <a href="/tags/#PHP" title="PHP">PHP</a>&nbsp;
+  
+  <a href="/tags/#Apache" title="Apache">Apache</a>&nbsp;
+  
+  <a href="/tags/#MySQL" title="MySQL">MySQL</a>&nbsp;
+  
+</span>
+
+</section>
+
+<section class="post">
+<p>这个年头估计没人写这种旧版本的 Web 服务器搭建教程了。这里只是做个存档，由于我几年前的数据还没转换成新的版本，所以得搭建老的平台进行数据转换。</p>
+
+<p>在开始之前，首先下载到以下组件的相应版本：</p>
+
+<ul>
+<li>Apache HTTP Server2.063</li>
+<li>PHP 4.4.9</li>
+<li>MySQL 4.026</li>
+<li>phpMyAdmin 2.0 以上</li>
+</ul>
+
+
+<h2>Step 1: 安装 Apache HTTP Server</h2>
+
+<hr />
+
+<ol>
+<li>双击 Apache 的安装文件 apache_2.0.63-win32-x86-openssl-0.9.7m.msi；</li>
+<li>点 Next 按钮；</li>
+<li>选择同意 Agreement，点 Next 按钮；</li>
+<li>再点 Next 按钮；</li>
+<li>在 Server Information 对话框，要填写域名和服务器名等信息。如果是本地安装，一般在 Network Domain 和 Server Name 都填 localhost。下面的 Email 随便填把也没什么用。点 Next；</li>
+<li>Setup Type，选 Custom，Next；</li>
+<li>安装地址，为了管理方便，统一把程序都安装到 <code>C:\Webserver</code> 目录下。这里填 <code>C:\Webserver</code>，之后 Apache 会被安装到 <code>C:\Webserver\Apache2</code> 目录下；</li>
+<li>点 Next，再点 Install 开始安装。</li>
+<li>验证 Apache 是否安装成功：打开浏览器在地址栏里输入 <code>localhost</code>，如果看到提示安装成功的页面就对了。</li>
+</ol>
+
+
+<h2>Step 2: 配置 Apache</h2>
+
+<hr />
+
+<ol>
+<li>打开 <code>C:\Webserver\Apache2\conf\httpd.conf</code> 文件，这个是 Apache 的主要配置文件。</li>
+<li><p>搜索字符串</p>
+
+<pre><code>C:/Webserver/Apache2/htdocs
+</code></pre>
+
+<p>这个定义根目录的位置，文件一共有两个地方，把它们都改为</p>
+
+<pre><code>C:/Webserver/wwwroot
+</code></pre></li>
+<li><p>在 <code>C:\Webserver</code> 下手动新建一个 wwwroot 文件夹。</p></li>
+</ol>
+
+
+<h2>Step 3: 安装与配置 PHP</h2>
+
+<hr />
+
+<p>安装了这个 Apache 才能对 .php 网页进行解析。</p>
+
+<ol>
+<li>解压 PHP 安装包到 <code>C:\Webserver</code>下，把 php 文件夹的名字改成 php4。这样所有的 PHP 程序文件都位于 <code>C:\Webserver\php4</code> 下。</li>
+<li>复制 <code>php.ini-dist</code> 文件到 <code>C:\Windows</code> 下，将其重命名为 <code>php.ini</code></li>
+<li><p>打开 php.ini，搜索</p>
+
+<pre><code>;extension=php_mbstring.dll
+</code></pre>
+
+<p>可以看到有很多的 extension 前面被分号注释掉了，要启用哪一项就把前面的分号去掉。这里启用 <strong>gd2</strong> 库（图形）和 <strong>mbstring</strong>。</p>
+
+<p>继续搜索</p>
+
+<pre><code>extension_dir = "./"
+</code></pre>
+
+<p>将其改为</p>
+
+<pre><code>extension_dir = "C:/Webserver/php4/extensions"
+</code></pre>
+
+<p>保存文件退出。</p></li>
+<li><p>复制文件 <code>php4ts.dll</code> 到 <code>C:\Windows\system32</code> 文件夹下</p></li>
+<li><p>打开 <code>C:\Webserver\Apache2\conf\httpd.conf</code> 文件，搜索</p>
+
+<pre><code>#LoadModule ssl_module modules/mod_ssl.so
+</code></pre>
+
+<p>在下面一行添加</p>
+
+<pre><code>LoadModule php4_module C:/Webserver/php4/sapi/php4apache2.dll
+</code></pre>
+
+<p>继续搜索</p>
+
+<pre><code>AddType application/x-gzip .gz .tgz
+</code></pre>
+
+<p>下面添加</p>
+
+<pre><code>Addtype application/x-httpd-php .php
+</code></pre>
+
+<p>继续搜索</p>
+
+<pre><code>DirectoryIndex index.html index.html.var
+</code></pre>
+
+<p>修改为</p>
+
+<pre><code>DirectoryIndex index.html index.html.var index.php
+</code></pre>
+
+<p>保存文件并退出。</p></li>
+<li><p>重新启动 Apache 服务，打开一个命令窗口，依次输入</p>
+
+<pre><code>net stop apache2
+net start apache2
+</code></pre>
+
+<p>然后右键单击右下角的 Apache 的图标，选择 Open Apache Moniter，如果左下角显示了 PHP 的版本号，说明安装成功了。</p></li>
+<li><p>为了进一部验证，到 C:\Webserver\wwwroot 下建立一个空白文档 index.php，编辑它写入一下 PHP 代码：</p>
+
+<pre><code>&lt;?php phpinfo(); ?&gt;
+</code></pre>
+
+<p>在浏览器里输入 localhost，如果出现 PHP 的配置页面，则证明 PHP 安装成功了。</p></li>
+</ol>
+
+
+<h2>Step 4: 安装MySQL数据库</h2>
+
+<hr />
+
+<ol>
+<li>运行 MySQL 的安装文件，过程比较简单，中间一部选择安装路径到 <code>C:\Webserver\mysql</code></li>
+<li>安装完成后，去 <code>C:\Webserver\mysql\bin</code> 文件夹下，启动 <strong>winmysqladmin.exe</strong>。这是会弹出一个窗口，提示输入用户名密码。这个时候其实输入什么都可以继续，比如用户名 root，密码为空。</li>
+<li>如果正常的话，右下角任务栏会多出一个红绿灯的图标，并且绿灯亮。</li>
+</ol>
+
+
+</section>
+<section class="meta">
+
+<span class="author">
+  <a href="http://dannyli.net">Danny Li</a>
+</span>
+<span class="time">
+  /
+  <time datetime="2010-05-03">2010-05-03</time>
+</span>
+<br/>
+<br/>
+<span>
+	<a  href="http://dannyli.net/notes/macosx-php-apache-mysql-installation/" class="pageNav"  >Previous</a>
+	&nbsp;&nbsp;&nbsp;
+	<a  href="http://dannyli.net/notes/latex-template-for-ieee-paper/" class="pageNav"  >Next</a>
+</span>
+</section>
+<!-- Duoshuo Comment BEGIN -->
+	<div class="ds-thread"></div>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"dannyli"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = 'http://static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		|| document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- Duoshuo Comment END -->
+<!--
+<script type="text/javascript">
+$(function(){
+  $(document).keydown(function(e) {
+    var url = false;
+        if (e.which == 37 || e.which == 74) {  // Left arrow and J
+            
+        url = 'http://dannyli.net/notes/macosx-php-apache-mysql-installation/';
+        
+        }
+        else if (e.which == 39 || e.which == 75) {  // Right arrow and K
+            
+        url = 'http://dannyli.net/notes/latex-template-for-ieee-paper/';
+        
+        }
+        if (url) {
+            window.location = url;
+        }
+  });
+})
+</script>
+-->
+
+
+        </article>
+      </div>
+
+    <footer>
+        <p><small>Powered by <a href="https://github.com/mojombo/jekyll">Jekyll</a> & <a href="http://pages.github.com">GitHub</a> | Copyright 2013 - 2013 by <a href="/about/">Danny</a></small></p>
+    </footer>
+
+    </div>
+    
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-11490513-1']);
+      _gaq.push(['_setDomainName', 'dannyli.net']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+    
+  </body>
+</html>

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh" lang="zh-cn">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="author" content="Danny Li" />
+    <title>使用 GitHub Pages 建立博客 | Danny Li</title>
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link href="/feed/" rel="alternate" title="Danny Li" type="application/atom+xml" />
+    <!--<link rel="stylesheet" media="all" href="/media/css/han.css">-->
+    
+    <link rel="stylesheet" href="/media/css/style.css">
+    <link rel="stylesheet" href="/media/css/highlight.css">
+    <!--<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>-->
+    <!--<script type="text/javascript" src="/media/js/han.js"></script>-->
+    <script type="text/javascript" src="/media/js/jquery-1.7.1.min.js"></script>
+  </head>
+  <script type="text/javascript">
+    function setTimeSpan(){
+    	var date = new Date();
+    	timeSpan.innerText=date.format('yyyy-MM-dd hh:mm:ss');
+    }
+    
+    Date.prototype.format = function(format)
+		{
+    var o =
+    	{
+    	    "M+" : this.getMonth()+1, //month
+    	    "d+" : this.getDate(),    //day
+    	    "h+" : this.getHours(),   //hour
+    	    "m+" : this.getMinutes(), //minute
+    	    "s+" : this.getSeconds(), //second
+    	    "q+" : Math.floor((this.getMonth()+3)/3),  //quarter
+    	    "S" : this.getMilliseconds() //millisecond
+    	}
+    	if(/(y+)/.test(format))
+    	format=format.replace(RegExp.$1,(this.getFullYear()+"").substr(4 - RegExp.$1.length));
+    	for(var k in o)
+    	if(new RegExp("("+ k +")").test(format))
+    	format = format.replace(RegExp.$1,RegExp.$1.length==1 ? o[k] : ("00"+ o[k]).substr((""+ o[k]).length));
+    	return format;
+		}
+  </script>
+  <body onLoad="setInterval(setTimeSpan,1000);">
+    <div id="container">
+      <div id="main" role="main">
+        <header>
+        <h1>使用 GitHub Pages 建立博客</h1>
+        </header>
+        <nav>
+        <span><a title="home page" class="" href="/">Home</a></span>
+        <span><a title="about" class="" href="/about/">About</a></span>
+        <span><a title="categories" class="" href="/categories/">Categories</a></span>
+        <span><a title="tags" class="" href="/tags/">Tags</a></span>
+        <span><a title="tags" class="" href="/archive/">Archive</a></span>
+        </nav>
+        <article class="content">
+        <section>
+2013-07-25
+
+<span class="categories">
+ in 
+  <a href="/categories/#notes" title="notes">notes</a>&nbsp;
+  
+</span>, 
+
+
+<span class="tags">
+  tags:
+  
+  <a href="/tags/#Jekyll" title="Jekyll">Jekyll</a>&nbsp;
+  
+  <a href="/tags/#GitHub" title="GitHub">GitHub</a>&nbsp;
+  
+</span>
+
+</section>
+
+<section class="post">
+<h2>GitHub Pages</h2>
+
+<hr />
+
+<p>可以利用 <a href="http://pages.github.com/" title="GitHub Pages">GitHub Pages</a> 创建个人博客。对于小白，首先要知道什么是 Git 和 GitHub。当然，不知道也无所谓。但是利用 GitHub Pages 写博客（大多数程序员用其当笔记本），必须满足以下条件：</p>
+
+<ul>
+<li>喜欢折腾；</li>
+<li>喜欢简洁和格式化；</li>
+<li>学会使用 <a href="http://daringfireball.net/projects/markdown/" title="Markdown">Markdown</a> 或其他一种标记语言</li>
+</ul>
+
+
+<p>这里并不想详细写出建立 GitHub Pages 的每一步，因为关于它的建立、设置、使用网上的资料已经很详细。</p>
+
+<h2>创建 GitHub 账户</h2>
+
+<hr />
+
+<p>当然你要有一个 <a href="https://github.com/">GitHub</a> 账户。注册成功后参照下面的页面下载或配置本地 Git 环境。</p>
+
+<ul>
+<li><a href="https://help.github.com/articles/set-up-git">https://help.github.com/articles/set-up-git</a></li>
+</ul>
+
+
+<p>Windows 用户建议使用 GitHub 的 native app。非常直观好用，不用（相对）繁琐的命令行操作。</p>
+
+<h2>创建 GitHub Page</h2>
+
+<hr />
+
+<p>每一个 GitHub 分配了一个形如 username.github.io 的个人网址。比如我的是 dannyli.github.io。但是这个网址默认是没有启用的。按照下面页面指示的方法利用官网的 Automatic Page Generator 创建 GitHub Page。</p>
+
+<ul>
+<li><a href="https://help.github.com/articles/creating-pages-with-the-automatic-generator">https://help.github.com/articles/creating-pages-with-the-automatic-generator</a></li>
+</ul>
+
+
+<h2>使用本地 GitHub app</h2>
+
+<hr />
+
+<p>使用 GitHub app。将建立的空 repo "username.github.io" clone 到本地。如果是 OS X/Linux 环境，可以按照 Jekyll 官网给的方法很轻松的创建本地 Jekyll 环境，在本地编译调试产生一个默认的网站。Windows 下似乎也有方法创建本地环境，但是似乎比较繁琐。</p>
+
+<p>一个好办法是在 GitHub 搜索并 fork 别人的模板，例如 GitHub 创始人给出的一些网站：</p>
+
+<ul>
+<li><a href="https://github.com/mojombo/jekyll/wiki/sites">https://github.com/mojombo/jekyll/wiki/sites
+</a></li>
+</ul>
+
+
+<p>把 fork 的 repo 下载下来，复制粘贴到之前 clone 到本地的文件夹内，然后进行相应的修改。这种“剽窃”在开源社区是合理的，但是注意保留作者的信息（如果作者有申明）。</p>
+
+<h2>利用 Markdown 写博客</h2>
+
+<hr />
+
+<p>Markdown 其实不是一种新语言，只是 HTML 的一种转换器。语法可参照官方的 <a href="http://daringfireball.net/projects/markdown/syntax">Syntax</a>。编辑器这里推荐：</p>
+
+<ul>
+<li><a href="http://mouapp.com/">Mou</a> (OS X)</li>
+<li><a href="http://markdownpad.com/">MarkdownPad</a> (Windows)</li>
+</ul>
+
+
+<p>编辑好的文件保存为 .md 格式文件，按照要求个文件名格式保存在 _post 目录下。</p>
+
+<p>然后使用本地环境编译，然后 push 或者 sync 所有文件到 GitHub。 .md 文件都得转换成 html 格式文件才能用浏览器查看。所以，如果像 Windows 系统没有安装 Ruby 和 Jekyll 环境的是不行的。但是可以在没有 Jekyll 环境的 Windows 电脑上利用 Markdown 文件写文章，把 .md 文件 sync 到 GitHub，然后等有时间的时候再在 OS X 的电脑中编译并 sync。</p>
+
+</section>
+<section class="meta">
+
+<span class="author">
+  <a href="http://dannyli.net">Danny Li</a>
+</span>
+<span class="time">
+  /
+  <time datetime="2013-07-25">2013-07-25</time>
+</span>
+<br/>
+<br/>
+<span>
+	<a  href="http://dannyli.net/notes/osx-jekyll/" class="pageNav"  >Previous</a>
+	&nbsp;&nbsp;&nbsp;
+	<a  href="http://dannyli.net/notes/fix-problems-of-jekyll-on-windows/" class="pageNav"  >Next</a>
+</span>
+</section>
+<!-- Duoshuo Comment BEGIN -->
+	<div class="ds-thread"></div>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"dannyli"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = 'http://static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		|| document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- Duoshuo Comment END -->
+<!--
+<script type="text/javascript">
+$(function(){
+  $(document).keydown(function(e) {
+    var url = false;
+        if (e.which == 37 || e.which == 74) {  // Left arrow and J
+            
+        url = 'http://dannyli.net/notes/osx-jekyll/';
+        
+        }
+        else if (e.which == 39 || e.which == 75) {  // Right arrow and K
+            
+        url = 'http://dannyli.net/notes/fix-problems-of-jekyll-on-windows/';
+        
+        }
+        if (url) {
+            window.location = url;
+        }
+  });
+})
+</script>
+-->
+
+
+        </article>
+      </div>
+
+    <footer>
+        <p><small>Powered by <a href="https://github.com/mojombo/jekyll">Jekyll</a> & <a href="http://pages.github.com">GitHub</a> | Copyright 2013 - 2013 by <a href="/about/">Danny</a></small></p>
+    </footer>
+
+    </div>
+    
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-11490513-1']);
+      _gaq.push(['_setDomainName', 'dannyli.net']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+    
+  </body>
+</html>

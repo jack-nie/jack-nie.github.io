@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh" lang="zh-cn">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="author" content="Danny Li" />
+    <title>使用 EndNote 和 LaTeX/BibTeX 建立论文的参考文献 | Danny Li</title>
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link href="/feed/" rel="alternate" title="Danny Li" type="application/atom+xml" />
+    <!--<link rel="stylesheet" media="all" href="/media/css/han.css">-->
+    
+    <link rel="stylesheet" href="/media/css/style.css">
+    <link rel="stylesheet" href="/media/css/highlight.css">
+    <!--<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>-->
+    <!--<script type="text/javascript" src="/media/js/han.js"></script>-->
+    <script type="text/javascript" src="/media/js/jquery-1.7.1.min.js"></script>
+  </head>
+  <script type="text/javascript">
+    function setTimeSpan(){
+    	var date = new Date();
+    	timeSpan.innerText=date.format('yyyy-MM-dd hh:mm:ss');
+    }
+    
+    Date.prototype.format = function(format)
+		{
+    var o =
+    	{
+    	    "M+" : this.getMonth()+1, //month
+    	    "d+" : this.getDate(),    //day
+    	    "h+" : this.getHours(),   //hour
+    	    "m+" : this.getMinutes(), //minute
+    	    "s+" : this.getSeconds(), //second
+    	    "q+" : Math.floor((this.getMonth()+3)/3),  //quarter
+    	    "S" : this.getMilliseconds() //millisecond
+    	}
+    	if(/(y+)/.test(format))
+    	format=format.replace(RegExp.$1,(this.getFullYear()+"").substr(4 - RegExp.$1.length));
+    	for(var k in o)
+    	if(new RegExp("("+ k +")").test(format))
+    	format = format.replace(RegExp.$1,RegExp.$1.length==1 ? o[k] : ("00"+ o[k]).substr((""+ o[k]).length));
+    	return format;
+		}
+  </script>
+  <body onLoad="setInterval(setTimeSpan,1000);">
+    <div id="container">
+      <div id="main" role="main">
+        <header>
+        <h1>使用 EndNote 和 LaTeX/BibTeX 建立论文的参考文献</h1>
+        </header>
+        <nav>
+        <span><a title="home page" class="" href="/">Home</a></span>
+        <span><a title="about" class="" href="/about/">About</a></span>
+        <span><a title="categories" class="" href="/categories/">Categories</a></span>
+        <span><a title="tags" class="" href="/tags/">Tags</a></span>
+        <span><a title="tags" class="" href="/archive/">Archive</a></span>
+        </nav>
+        <article class="content">
+        <section>
+2011-11-01
+
+<span class="categories">
+ in 
+  <a href="/categories/#notes" title="notes">notes</a>&nbsp;
+  
+</span>, 
+
+
+<span class="tags">
+  tags:
+  
+  <a href="/tags/#EndNote" title="EndNote">EndNote</a>&nbsp;
+  
+  <a href="/tags/#LaTeX" title="LaTeX">LaTeX</a>&nbsp;
+  
+</span>
+
+</section>
+
+<section class="post">
+<p><a href="http://www.endnote.com/">EndNote</a> 是整理论文参考文献 (citation) 的绝佳工具。如果能把 EndNote 与 LaTeX 结合使用是再好不过了。这里介绍一种将 EndNote 内的书目导出为 LaTeX 可用的 BibTeX 格式的方法。</p>
+
+<p>这里使用的软件版本为 EndNote <del>X4</del> X6。NTU 的学生可以在<a href="http://www3.ntu.edu.sg/lib/ISD/EndNote/License.htm">这里</a>下载免费使用。假设 EndNote 里已经添加了所需的参考文献信息。很多数据库都自带导入 citation 到 EndNote 的功能，这里就不详细介绍。</p>
+
+<h2>EndNote 的配置</h2>
+
+<hr />
+
+<ul>
+<li>下载<a href="http://dannyli.net/downloads/IEEETrans_BibTeX_Export.ens">这个文件</a>，然后把它放到 EndNote 安装文件夹下的 styles 子文件夹中。我这里使用的是 IEEETrans 兼容的格式，如果需要其他格式，得修改 style template；</li>
+<li>打开 EndNote，从菜单栏里选取 <strong>Edit -> Output Styles -> Open Style Manager</strong></li>
+<li>找到并勾选第一步中的 BibTeX_Export，关闭该窗口</li>
+<li>从菜单栏中 <strong>Edit -> Output Styles</strong> 选刚增加的 IEEETrans_BibTeX_Export</li>
+<li>编辑条目：双击需要引用的参考资料，在 Label 一栏里填一个唯一标识符。我的 label 命名习惯是 "第一作者姓氏（或全名）+发表年份+一个字母"。最后的字母是从a往后递增，为了区别同一作者在同一年发的不同文章。比如 Danny Li 在 2011 年发的第一篇文章，label 就是 dannyli2011a。</li>
+<li>在 EndNote 主窗口中选中所有需要引用的参考资料，菜单 <strong>File -> Export</strong>，Output Style 选 IEEETrans_BibTeX_Export，保存为一个 txt 文档到 LaTeX 的工作目录中。然后更改文件后缀名为 .bib，如 mybib.bib；</li>
+</ul>
+
+
+<h2>CTeX 中使用 BibTeX</h2>
+
+<hr />
+
+<p>建立好 .bib 文件后就可以按照常规使用 BibTeX 的方式建立文献参考了。</p>
+
+<ul>
+<li>编写 LaTeX 代码；</li>
+<li>在结尾前加入 BibTeX 相关代码，如</li>
+</ul>
+
+
+<div class="highlight"><pre><code class="latex"><span class="k">\bibliographystyle</span><span class="nb">{</span>plain<span class="nb">}</span>
+<span class="k">\bibliography</span><span class="nb">{</span>mybib<span class="nb">}</span> <span class="c">% mybib是Endnote导出的文件名</span>
+</code></pre></div>
+
+
+<ul>
+<li>正文中需要引用的地方就可以加入</li>
+</ul>
+
+
+<div class="highlight"><pre><code class="latex"><span class="k">\cite</span><span class="nb">{</span>dannyli2011a<span class="nb">}</span> <span class="c">% dannyli2011a 是之前在Endnote 中设置的 label</span>
+</code></pre></div>
+
+
+<h3>References</h3>
+
+<ul>
+<li>Bevan S. Weir, <a href="http://www.rhizobia.co.nz/latex/convert.html">Step-by-step guide to using EndNote with LaTeX and BibTeX</a></li>
+</ul>
+
+
+</section>
+<section class="meta">
+
+<span class="author">
+  <a href="http://dannyli.net">Danny Li</a>
+</span>
+<span class="time">
+  /
+  <time datetime="2011-11-01">2011-11-01</time>
+</span>
+<br/>
+<br/>
+<span>
+	<a  href="http://dannyli.net/notes/my-google-chrome-extensions/" class="pageNav"  >Previous</a>
+	&nbsp;&nbsp;&nbsp;
+	<a  href="http://dannyli.net/notes/connect-ntu-vpn-automatically-in-windows/" class="pageNav"  >Next</a>
+</span>
+</section>
+<!-- Duoshuo Comment BEGIN -->
+	<div class="ds-thread"></div>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"dannyli"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = 'http://static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		|| document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- Duoshuo Comment END -->
+<!--
+<script type="text/javascript">
+$(function(){
+  $(document).keydown(function(e) {
+    var url = false;
+        if (e.which == 37 || e.which == 74) {  // Left arrow and J
+            
+        url = 'http://dannyli.net/notes/my-google-chrome-extensions/';
+        
+        }
+        else if (e.which == 39 || e.which == 75) {  // Right arrow and K
+            
+        url = 'http://dannyli.net/notes/connect-ntu-vpn-automatically-in-windows/';
+        
+        }
+        if (url) {
+            window.location = url;
+        }
+  });
+})
+</script>
+-->
+
+
+        </article>
+      </div>
+
+    <footer>
+        <p><small>Powered by <a href="https://github.com/mojombo/jekyll">Jekyll</a> & <a href="http://pages.github.com">GitHub</a> | Copyright 2013 - 2013 by <a href="/about/">Danny</a></small></p>
+    </footer>
+
+    </div>
+    
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-11490513-1']);
+      _gaq.push(['_setDomainName', 'dannyli.net']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+    
+  </body>
+</html>

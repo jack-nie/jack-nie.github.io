@@ -1,0 +1,567 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <rss version="2.0"
+        xmlns:content="http://purl.org/rss/1.0/modules/content/"
+        xmlns:atom="http://www.w3.org/2005/Atom"
+  >
+  <channel>
+    <title>Danny Li</title>
+    <link href="http://dannyli.net/feed/" rel="self" />
+    <link href="http://webfrogs.github.com" />
+    <lastBuildDate>2013-07-30T00:36:04+08:00</lastBuildDate>
+    <webMaster>ccf.developer@gmail.com</webMaster>
+    
+    <item>
+      <title>不使用插件为 Jekyll 添加 Sitemap</title>
+      <link href="http://dannyli.net/notes/jekyll-sitemap-without-plugin/"/>
+      <pubDate>2013-07-27T22:17:59+08:00</pubDate>
+      <author>Danny Li</author>
+      <guid>http://dannyli.net/notes/jekyll-sitemap-without-plugin</guid>
+      <content:encoded><![CDATA[<p>将下面的代码保存为 sitemap.xml 文件保存在本地站点 repo 根目录下，编译后 push 到 GitHub 即可。</p>
+
+<div class="highlight"><pre><code class="django"><span class="x">---</span>
+<span class="x">sitemap:</span>
+<span class="x">    priority: 0.7</span>
+<span class="x">    changefreq: monthly</span>
+<span class="x">    lastmod: 2013-07-27T12:49:30-05:00</span>
+<span class="x">---</span>
+<span class="x"> </span>
+<span class="x">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="x">&lt;urlset xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd&quot; xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;&gt;</span>
+
+<span class="x">  </span><span class="cp">{%</span> <span class="k">for</span> <span class="nv">post</span> <span class="k">in</span> <span class="nv">site.posts</span> <span class="cp">%}</span><span class="x"></span>
+<span class="x">  &lt;url&gt;</span>
+<span class="x">    &lt;loc&gt;</span><span class="cp">{{</span> <span class="nv">site.url</span> <span class="cp">}}{{</span> <span class="nv">post.url</span> <span class="cp">}}</span><span class="x">&lt;/loc&gt;</span>
+<span class="x">    </span><span class="cp">{%</span> <span class="k">if</span> <span class="nv">post.lastmod</span> <span class="o">==</span> <span class="nv">null</span> <span class="cp">%}</span><span class="x"></span>
+<span class="x">    &lt;lastmod&gt;</span><span class="cp">{{</span> <span class="nv">post.date</span> <span class="o">|</span> <span class="nf">date_to_xmlschema</span> <span class="cp">}}</span><span class="x">&lt;/lastmod&gt;</span>
+<span class="x">    </span><span class="cp">{%</span> <span class="k">else</span> <span class="cp">%}</span><span class="x"></span>
+<span class="x">    &lt;lastmod&gt;</span><span class="cp">{{</span> <span class="nv">post.lastmod</span> <span class="o">|</span> <span class="nf">date_to_xmlschema</span> <span class="cp">}}</span><span class="x">&lt;/lastmod&gt;</span>
+<span class="x">    </span><span class="cp">{%</span> <span class="k">endif</span> <span class="cp">%}</span><span class="x"></span>
+<span class="x">    &lt;changefreq&gt;weekly&lt;/changefreq&gt;</span>
+<span class="x">    &lt;priority&gt;1.0&lt;/priority&gt;</span>
+<span class="x">  &lt;/url&gt;</span>
+<span class="x">  </span><span class="cp">{%</span> <span class="k">endfor</span> <span class="cp">%}</span><span class="x"></span>
+<span class="x">  </span><span class="cp">{%</span> <span class="k">for</span> <span class="nv">page</span> <span class="k">in</span> <span class="nv">site.pages</span> <span class="cp">%}</span><span class="x"></span>
+<span class="x">  </span><span class="cp">{%</span> <span class="k">if</span> <span class="nv">page.sitemap</span> <span class="p">!</span><span class="o">=</span> <span class="nv">null</span> <span class="k">and</span> <span class="nv">page.sitemap</span> <span class="p">!</span><span class="o">=</span> <span class="nv">empty</span> <span class="cp">%}</span><span class="x"></span>
+<span class="x">  &lt;url&gt;</span>
+<span class="x">    &lt;loc&gt;</span><span class="cp">{{</span> <span class="nv">site.url</span> <span class="cp">}}{{</span> <span class="nv">page.url</span> <span class="cp">}}</span><span class="x">&lt;/loc&gt;</span>
+<span class="x">    &lt;lastmod&gt;</span><span class="cp">{{</span> <span class="nv">page.sitemap.lastmod</span> <span class="o">|</span> <span class="nf">date_to_xmlschema</span> <span class="cp">}}</span><span class="x">&lt;/lastmod&gt;</span>
+<span class="x">    &lt;changefreq&gt;</span><span class="cp">{{</span> <span class="nv">page.sitemap.changefreq</span> <span class="cp">}}</span><span class="x">&lt;/changefreq&gt;</span>
+<span class="x">    &lt;priority&gt;</span><span class="cp">{{</span> <span class="nv">page.sitemap.priority</span> <span class="cp">}}</span><span class="x">&lt;/priority&gt;</span>
+<span class="x">  &lt;/url&gt;</span>
+<span class="x">  </span><span class="cp">{%</span> <span class="k">endif</span> <span class="cp">%}</span><span class="x"></span>
+<span class="x">  </span><span class="cp">{%</span> <span class="k">endfor</span> <span class="cp">%}</span><span class="x"></span>
+
+<span class="x">&lt;/urlset&gt;</span>
+</code></pre></div>
+
+
+<p>参考：<a href="http://davidensinger.com/2013/03/generating-a-sitemap-in-jekyll-without-a-plugin/">http://davidensinger.com/2013/03/generating-a-sitemap-in-jekyll-without-a-plugin/</a></p>
+]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>Escape Liquid 模板标签的方法</title>
+      <link href="http://dannyli.net/notes/escape-liquid-tags/"/>
+      <pubDate>2013-07-27T00:17:59+08:00</pubDate>
+      <author>Danny Li</author>
+      <guid>http://dannyli.net/notes/escape-liquid-tags</guid>
+      <content:encoded><![CDATA[<p>Jekyll 网站模板使用的的 Liquid 模板语言。当网页中要展示某段 Liquid 模板代码本身时，需要使用 raw 标签进行 escape：</p>
+
+<pre><code>{ % raw % } 
+    Liquid 代码内容
+{ % endraw % }
+</code></pre>
+
+<p>但是，如何 escape 带有 raw 标签的代码？比如上面这个，我只能把百分号和括号写开，不然无法编译成功。</p>
+]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>Jekyll 代码高亮利器 Pygments 配置</title>
+      <link href="http://dannyli.net/notes/pygments-config/"/>
+      <pubDate>2013-07-26T22:17:59+08:00</pubDate>
+      <author>Danny Li</author>
+      <guid>http://dannyli.net/notes/pygments-config</guid>
+      <content:encoded><![CDATA[<p><a href="http://pygments.org/">Pygments</a> 是 Jekyll 最常用的代码高亮程序。假设 Python 的 easy_install 已经可用，则执行</p>
+
+<pre><code>easy_install Pygments
+</code></pre>
+
+<p>安装 Pygments.</p>
+
+<p>Pygments 自带多种样式。在 Python 中用下面的命令可以查看所有样式列表：</p>
+
+<div class="highlight"><pre><code class="pycon"><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pygments.styles</span> <span class="kn">import</span> <span class="n">STYLE_MAP</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">STYLE_MAP</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+<span class="go">[&#39;monokai&#39;, &#39;manni&#39;, &#39;rrt&#39;, &#39;perldoc&#39;, &#39;borland&#39;, &#39;colorful&#39;, &#39;default&#39;, &#39;murphy&#39;, &#39;vs&#39;, &#39;trac&#39;, &#39;tango&#39;, &#39;fruity&#39;, &#39;autumn&#39;, &#39;bw&#39;, &#39;emacs&#39;, &#39;vim&#39;, &#39;pastie&#39;, &#39;friendly&#39;, &#39;native&#39;]</span>
+</code></pre></div>
+
+
+<p>关于不同样式，可以在 <a href="http://pygments.org/demo">Demo</a> 页面选择一个 demo，再在右边样式列表中选择不同样式查看效果。</p>
+
+<p>下一步是生成所需的 CSS 文件。假设我们想使用 <code>friendly</code> 样式，则在 Terminal 或 cmd 进入 CSS 所在路径下执行</p>
+
+<pre><code>pygmentize -S friendly -f html &gt; highlight.css
+</code></pre>
+
+<p>则产生一个 <code>highlight.css</code> 文件。</p>
+
+<p>下面介绍如何在 Jekyll 中使用 Pygments，假设一段代码需要被高亮，则在模板里使用以下 <a href="http://liquidmarkup.org/">Liquid</a> 代码</p>
+
+<pre><code>{% highlight shortname %}
+    代码内容
+{% endhighlight shortname %}
+</code></pre>
+
+<p>name 是不同语言对应的短名称，可以在<a href="http://pygments.org/docs/lexers/">这里</a>查看。</p>
+]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>Windows 安装 Jekyll 若干问题的解决</title>
+      <link href="http://dannyli.net/notes/fix-problems-of-jekyll-on-windows/"/>
+      <pubDate>2013-07-26T17:17:59+08:00</pubDate>
+      <author>Danny Li</author>
+      <guid>http://dannyli.net/notes/fix-problems-of-jekyll-on-windows</guid>
+      <content:encoded><![CDATA[<p>Jekyll 官方网站是以外链的形式给出的 <a href="http://www.madhur.co.in/blog/2011/09/01/runningjekyllwindows.html">Windows 下安装 Jekyll 方法</a>。这个方法总体上是可行的，但是这篇文章写于 2011 年，并且没有考虑中文环境下的问题，所以安装过程中会碰到种种问题。</p>
+
+<hr />
+
+<p>一，软件版本问题。建议在 Windwos 7 中下载安装以下版本 Ruby 和 DevKit：</p>
+
+<ul>
+<li><a href="http://dl.bintray.com/oneclick/rubyinstaller/rubyinstaller-1.9.3-p448.exe?direct">Ruby 1.9.3-p448</a></li>
+<li><a href="https://github.com/downloads/oneclick/rubyinstaller/DevKit-tdm-32-4.5.2-20111229-1559-sfx.exe">DevKit-tdm-32-4.5.2-20111229-1559-sfx.exe</a></li>
+</ul>
+
+
+<p>2.0 版本 Ruby 似乎会碰到一些问题。文章作者给出的一个便携版的 Jekyll 也挺坑爹，400+ M 保存在 Dropbox 上，下载解压花了我 1 个多小时，安装还不成功。主要就是因为他使用的是 Ruby 2.0。不用尝试这个了。</p>
+
+<hr />
+
+<p>二，运行 <code>jekyll serve</code> 时显示</p>
+
+<pre><code>Liquid Exception: No such file or directory - /bin/sh in ...
+</code></pre>
+
+<p>这个是语法高亮插件 Pygments 引起。解决方法是卸载最新版本的 Pygments （0.5.1+），重新安装 0.5.0 版本的 Pygments:</p>
+
+<pre><code>gem uninstall pygments.rb --version "=0.5.2"
+gem install pygments.rb --version "=0.5.0"
+</code></pre>
+
+<hr />
+
+<p>三，和第二个问题类似，提示</p>
+
+<pre><code>Liquid Exception: No such file or directory - python ...
+</code></pre>
+
+<p>原因是没将 Python 的路径添加为 PATH 环境变量。</p>
+
+<hr />
+
+<p>四，运行 <code>jekyll serve</code> 不成功，显示</p>
+
+<pre><code> ... invalid byte sequence in GBK  ...
+</code></pre>
+
+<p>这个是中文编码引起的问题。一旦 post 中有中文字符就会出现这样的问题。当然这个是 Windows 下特有的问题。解决方法是将 <code>C:/Ruby193/lib/ruby/gems/1.9.1/gems/jekyll-0.11.2/lib/jekyll/convertible.rb</code> 文件 （路径可能与此不同）中的</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="nb">self</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="nb">name</span><span class="p">))</span> 
+</code></pre></div>
+
+
+<p>改为</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="nb">self</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="nb">name</span><span class="p">),</span> <span class="ss">:encoding</span> <span class="o">=&gt;</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+
+<h3>References</h3>
+
+<ul>
+<li><a href="http://www.madhur.co.in/blog/2011/09/01/runningjekyllwindows.html">http://www.madhur.co.in/blog/2011/09/01/runningjekyllwindows.html</a></li>
+<li><a href="http://stackoverflow.com/questions/17364028/jekyll-on-windows-pygments-not-working">http://stackoverflow.com/questions/17364028/jekyll-on-windows-pygments-not-working</a></li>
+<li><a href="http://chxt6896.github.io/blog/2011/12/01/blog-pygments.html">http://chxt6896.github.io/blog/2011/12/01/blog-pygments.html</a></li>
+</ul>
+
+]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>使用 GitHub Pages 建立博客</title>
+      <link href="http://dannyli.net/notes/blogging-with-github-pages/"/>
+      <pubDate>2013-07-25T22:17:59+08:00</pubDate>
+      <author>Danny Li</author>
+      <guid>http://dannyli.net/notes/blogging-with-github-pages</guid>
+      <content:encoded><![CDATA[<h2>GitHub Pages</h2>
+
+<hr />
+
+<p>可以利用 <a href="http://pages.github.com/" title="GitHub Pages">GitHub Pages</a> 创建个人博客。对于小白，首先要知道什么是 Git 和 GitHub。当然，不知道也无所谓。但是利用 GitHub Pages 写博客（大多数程序员用其当笔记本），必须满足以下条件：</p>
+
+<ul>
+<li>喜欢折腾；</li>
+<li>喜欢简洁和格式化；</li>
+<li>学会使用 <a href="http://daringfireball.net/projects/markdown/" title="Markdown">Markdown</a> 或其他一种标记语言</li>
+</ul>
+
+
+<p>这里并不想详细写出建立 GitHub Pages 的每一步，因为关于它的建立、设置、使用网上的资料已经很详细。</p>
+
+<h2>创建 GitHub 账户</h2>
+
+<hr />
+
+<p>当然你要有一个 <a href="https://github.com/">GitHub</a> 账户。注册成功后参照下面的页面下载或配置本地 Git 环境。</p>
+
+<ul>
+<li><a href="https://help.github.com/articles/set-up-git">https://help.github.com/articles/set-up-git</a></li>
+</ul>
+
+
+<p>Windows 用户建议使用 GitHub 的 native app。非常直观好用，不用（相对）繁琐的命令行操作。</p>
+
+<h2>创建 GitHub Page</h2>
+
+<hr />
+
+<p>每一个 GitHub 分配了一个形如 username.github.io 的个人网址。比如我的是 dannyli.github.io。但是这个网址默认是没有启用的。按照下面页面指示的方法利用官网的 Automatic Page Generator 创建 GitHub Page。</p>
+
+<ul>
+<li><a href="https://help.github.com/articles/creating-pages-with-the-automatic-generator">https://help.github.com/articles/creating-pages-with-the-automatic-generator</a></li>
+</ul>
+
+
+<h2>使用本地 GitHub app</h2>
+
+<hr />
+
+<p>使用 GitHub app。将建立的空 repo "username.github.io" clone 到本地。如果是 OS X/Linux 环境，可以按照 Jekyll 官网给的方法很轻松的创建本地 Jekyll 环境，在本地编译调试产生一个默认的网站。Windows 下似乎也有方法创建本地环境，但是似乎比较繁琐。</p>
+
+<p>一个好办法是在 GitHub 搜索并 fork 别人的模板，例如 GitHub 创始人给出的一些网站：</p>
+
+<ul>
+<li><a href="https://github.com/mojombo/jekyll/wiki/sites">https://github.com/mojombo/jekyll/wiki/sites
+</a></li>
+</ul>
+
+
+<p>把 fork 的 repo 下载下来，复制粘贴到之前 clone 到本地的文件夹内，然后进行相应的修改。这种“剽窃”在开源社区是合理的，但是注意保留作者的信息（如果作者有申明）。</p>
+
+<h2>利用 Markdown 写博客</h2>
+
+<hr />
+
+<p>Markdown 其实不是一种新语言，只是 HTML 的一种转换器。语法可参照官方的 <a href="http://daringfireball.net/projects/markdown/syntax">Syntax</a>。编辑器这里推荐：</p>
+
+<ul>
+<li><a href="http://mouapp.com/">Mou</a> (OS X)</li>
+<li><a href="http://markdownpad.com/">MarkdownPad</a> (Windows)</li>
+</ul>
+
+
+<p>编辑好的文件保存为 .md 格式文件，按照要求个文件名格式保存在 _post 目录下。</p>
+
+<p>然后使用本地环境编译，然后 push 或者 sync 所有文件到 GitHub。 .md 文件都得转换成 html 格式文件才能用浏览器查看。所以，如果像 Windows 系统没有安装 Ruby 和 Jekyll 环境的是不行的。但是可以在没有 Jekyll 环境的 Windows 电脑上利用 Markdown 文件写文章，把 .md 文件 sync 到 GitHub，然后等有时间的时候再在 OS X 的电脑中编译并 sync。</p>
+]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>OS X 下安装配置 Jekyll</title>
+      <link href="http://dannyli.net/notes/osx-jekyll/"/>
+      <pubDate>2013-07-25T16:17:59+08:00</pubDate>
+      <author>Danny Li</author>
+      <guid>http://dannyli.net/notes/osx-jekyll</guid>
+      <content:encoded><![CDATA[<h2>Xcode</h2>
+
+<hr />
+
+<p>在 Mac App Store 中搜索安装 <a href="https://developer.apple.com/xcode/%E2%80%8E">Xcode</a>。</p>
+
+<p>安装完毕后，进入 Xcode，在 <code>Preferences</code> 里的 <code>Downloads</code> 中安装 <strong>Command Line Tools</strong>.</p>
+
+<h2>Ruby</h2>
+
+<hr />
+
+<p>OS X 自带 Ruby。在终端里输入</p>
+
+<pre><code>ruby -v
+</code></pre>
+
+<p>即可查看所安装的 Ruby 版本。</p>
+
+<h2>RubyGems</h2>
+
+<hr />
+
+<p>访问 <a href="http://rubygems.org/pages/download">http://rubygems.org/pages/download</a> 下载 RubyGems 文件。将文件解压到本地，在终端执行：</p>
+
+<pre><code>sudo ruby setup.rb
+</code></pre>
+
+<h2>Jekyll</h2>
+
+<hr />
+
+<p>终端执行</p>
+
+<pre><code>gem install jekyll
+gem install rdiscount
+</code></pre>
+
+<p>执行时间可能较长。</p>
+
+<p>若提示</p>
+
+<blockquote><p>ERROR: Failed to build gem native extension</p></blockquote>
+
+<p>多半是因为没装 Xcode Command Line Tools 引起。</p>
+
+<p>安装完毕后，在指定目录下执行</p>
+
+<pre><code>jekyll new my-awesome-site
+cd my-awesome-site
+jekyll serve --watch
+</code></pre>
+
+<p>则可在浏览器中以 <code>localhost:4000</code> 访问。<code>--watch</code> 选项开启页面 regeneration，也就是修改页面后刷新浏览器立即可以看到更新。</p>
+
+<h2>Pygments (语法高亮)</h2>
+
+<hr />
+
+<p>执行一下语句：</p>
+
+<pre><code>sudo easy_install Pygment
+</code></pre>
+
+<p>Pygments 语法可参照 <a href="http://pygments.org/docs/lexers/">http://pygments.org/docs/lexers/</a></p>
+
+<h2>资源</h2>
+
+<hr />
+
+<p>下面列出学习 Jekyll/Git/Markdown 的一些好资源：</p>
+
+<ul>
+<li>Jekyll: <a href="http://jekyllrb.com/docs/home/">http://jekyllrb.com/docs/home/</a></li>
+<li>Markdown: <a href="http://daringfireball.net/projects/markdown/">http://daringfireball.net/projects/markdown/</a></li>
+<li>Github: <a href="https://help.github.com/">https://help.github.com/</a></li>
+<li>GotGithub: <a href="http://www.worldhello.net/gotgithub/">http://www.worldhello.net/gotgithub/</a></li>
+</ul>
+
+]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>英语文章标题的首字母大写规则</title>
+      <link href="http://dannyli.net/notes/rules-for-capitalization-in-titles/"/>
+      <pubDate>2012-05-05T22:17:59+08:00</pubDate>
+      <author>Danny Li</author>
+      <guid>http://dannyli.net/notes/rules-for-capitalization-in-titles</guid>
+      <content:encoded><![CDATA[<p>英语文章标题的首字母大写 (capitalization) 规则有以下几种形式:</p>
+
+<h2>一、标题首字母以及专有名词首字母大写</h2>
+
+<hr />
+
+<p>这个是 <a href="http://www.apastyle.org/manual/">APA (American Psychological Association)</a> 所推荐的标题格式，包括 IEEE 在内的论文期刊很多也是使用这种风格。e.g.</p>
+
+<blockquote><p>Why it’s never too late to learn grammar</p></blockquote>
+
+<h2>二、所有单词首字母都大写</h2>
+
+<hr />
+
+<p>这种方式只是很简单地把每个单词的首字母进行大写，使用得较少。e.g.</p>
+
+<blockquote><p>Why It’s Never Too Late To Learn Grammar</p></blockquote>
+
+<h2>三、部分单词首字母都大写</h2>
+
+<hr />
+
+<p>这种方式最常见。似乎绝大多数的英文书刊报纸文章标题都是使用这种方式。e.g.</p>
+
+<blockquote><p>Why It’s Never Too Late to Learn Grammar</p></blockquote>
+
+<p>遵循以下规则：</p>
+
+<ul>
+<li>第一个和最后一个单词的首字母大写</li>
+<li>所有名词，代词，动词，形容词，副词，从属连词 (because, as, although) 大写</li>
+<li>短介词 (to, at, in, out, on, off, with, from, upon, into, by, as)、冠词 (a, an, the) 小写</li>
+<li>并列连词 (and, but, or) 小写</li>
+</ul>
+
+
+<p>其实关于标题首字母大写的问题是我在对 MP3 标题格式化时候遇到的。MP3TAG 的建议是使用第二种方式，简单，比较好写脚本，虽然不是很美观。不使用第三种方式的一个原因是这种规则只适合英文标题，遇到非英文标题就没有可参照的规则了。</p>
+
+<p>补充：</p>
+
+<h2>四、iTunes 命名规则</h2>
+
+<hr />
+
+<p>基本和第三种规则相同。但是只有以下词 (不在句首) 小写：</p>
+
+<ul>
+<li>冠词 (a, an, the)</li>
+<li>某些不表示方位的短介词 (of, to, from, for)*   并列连词 (and, but, or)</li>
+</ul>
+
+
+<h3>References</h3>
+
+<ul>
+<li><a href="http://www.dailywritingtips.com/rules-for-capitalization-in-titles/">http://www.dailywritingtips.com/rules-for-capitalization-in-titles/</a></li>
+<li><a href="http://wiki.musicbrainz.org/CapitalizationStandardEnglish">http://wiki.musicbrainz.org/CapitalizationStandardEnglish</a></li>
+<li><a href="http://www.intermezzogroup.com/download/Documents/iTunesStyleGuide5.pdf">http://www.intermezzogroup.com/download/Documents/iTunesStyleGuide5.pdf</a></li>
+</ul>
+
+]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>Windows 下自动连接 NTU VPN（不用每次输入用户名密码）</title>
+      <link href="http://dannyli.net/notes/connect-ntu-vpn-automatically-in-windows/"/>
+      <pubDate>2012-04-15T05:17:59+08:00</pubDate>
+      <author>Danny Li</author>
+      <guid>http://dannyli.net/notes/connect-ntu-vpn-automatically-in-windows</guid>
+      <content:encoded><![CDATA[<p>在 Windows 下连接 NTU 的 VPN 一般使用 Juniper Network 的 Network Connection 程序。每次连接都要手动输入用户名密码，非常不方便。今天研究了一下通过命令行连接 NTU VPN。通过命令行可以实现在桌面创建一个快捷方式，双击图标直接连接 NTU VPN。</p>
+
+<p>假设已经安装好了 NTU 官方提供的<a href="http://www.ntu.edu.sg/cits/itnetworking/remoteaccess/Pages/quickstartguide.aspx#winvpn">SSL VPN 程序</a> (Juniper Networks - Network Connection)。</p>
+
+<p>这里其实是使用一个叫 nclauncher 的命令程序。该文件位于 Network Connection 程序的安装目录下。Network Connection 程序的默认安装目录通常是 <code>%ProgramFiles%\Juniper Networks</code>。 该命令的用法可以通过输入 <code>nclauncher -help</code> 获得。在桌面创建快捷连接的步骤如下：</p>
+
+<ol>
+<li><p>打开记事本，输入以下内容</p>
+
+<pre><code> "%ProgramFiles%\Juniper Networks\Network Connect 7.3.0\nclauncher" -url https://ntuvpn.ntu.edu.sg/ -u [用户名] -p [密码] -r [域]"
+ EXIT
+</code></pre>
+
+<p>其中 <code>[用户名]</code> 和 <code>[密码]</code> 分别是 NTU 分配的用户名和密码，[域] 可填写 <strong>Student</strong>, <strong>Assoc</strong> 或者 <strong>Staff</strong>，注意大小写不能错，第一个字母必须是大写。</p>
+
+<p>  <code>%ProgramFiles%</code> 是程序默认的安装路径。如果操作系统是 64 位 Windows，则得将 <code>%ProgramFiles%</code> 改为 <code>%ProgramFiles(x86)%</code>。</p></li>
+<li><p>保存该文件为 .bat 或者 .cmd 文件到本地磁盘，如桌面；</p></li>
+<li>若要连接 VPN，双击该文件即可。</li>
+</ol>
+
+]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>使用 EndNote 和 LaTeX/BibTeX 建立论文的参考文献</title>
+      <link href="http://dannyli.net/notes/using-endnote-latex-bibtex/"/>
+      <pubDate>2011-11-01T05:17:59+08:00</pubDate>
+      <author>Danny Li</author>
+      <guid>http://dannyli.net/notes/using-endnote-latex-bibtex</guid>
+      <content:encoded><![CDATA[<p><a href="http://www.endnote.com/">EndNote</a> 是整理论文参考文献 (citation) 的绝佳工具。如果能把 EndNote 与 LaTeX 结合使用是再好不过了。这里介绍一种将 EndNote 内的书目导出为 LaTeX 可用的 BibTeX 格式的方法。</p>
+
+<p>这里使用的软件版本为 EndNote <del>X4</del> X6。NTU 的学生可以在<a href="http://www3.ntu.edu.sg/lib/ISD/EndNote/License.htm">这里</a>下载免费使用。假设 EndNote 里已经添加了所需的参考文献信息。很多数据库都自带导入 citation 到 EndNote 的功能，这里就不详细介绍。</p>
+
+<h2>EndNote 的配置</h2>
+
+<hr />
+
+<ul>
+<li>下载<a href="http://dannyli.net/downloads/IEEETrans_BibTeX_Export.ens">这个文件</a>，然后把它放到 EndNote 安装文件夹下的 styles 子文件夹中。我这里使用的是 IEEETrans 兼容的格式，如果需要其他格式，得修改 style template；</li>
+<li>打开 EndNote，从菜单栏里选取 <strong>Edit -> Output Styles -> Open Style Manager</strong></li>
+<li>找到并勾选第一步中的 BibTeX_Export，关闭该窗口</li>
+<li>从菜单栏中 <strong>Edit -> Output Styles</strong> 选刚增加的 IEEETrans_BibTeX_Export</li>
+<li>编辑条目：双击需要引用的参考资料，在 Label 一栏里填一个唯一标识符。我的 label 命名习惯是 "第一作者姓氏（或全名）+发表年份+一个字母"。最后的字母是从a往后递增，为了区别同一作者在同一年发的不同文章。比如 Danny Li 在 2011 年发的第一篇文章，label 就是 dannyli2011a。</li>
+<li>在 EndNote 主窗口中选中所有需要引用的参考资料，菜单 <strong>File -> Export</strong>，Output Style 选 IEEETrans_BibTeX_Export，保存为一个 txt 文档到 LaTeX 的工作目录中。然后更改文件后缀名为 .bib，如 mybib.bib；</li>
+</ul>
+
+
+<h2>CTeX 中使用 BibTeX</h2>
+
+<hr />
+
+<p>建立好 .bib 文件后就可以按照常规使用 BibTeX 的方式建立文献参考了。</p>
+
+<ul>
+<li>编写 LaTeX 代码；</li>
+<li>在结尾前加入 BibTeX 相关代码，如</li>
+</ul>
+
+
+<div class="highlight"><pre><code class="latex"><span class="k">\bibliographystyle</span><span class="nb">{</span>plain<span class="nb">}</span>
+<span class="k">\bibliography</span><span class="nb">{</span>mybib<span class="nb">}</span> <span class="c">% mybib是Endnote导出的文件名</span>
+</code></pre></div>
+
+
+<ul>
+<li>正文中需要引用的地方就可以加入</li>
+</ul>
+
+
+<div class="highlight"><pre><code class="latex"><span class="k">\cite</span><span class="nb">{</span>dannyli2011a<span class="nb">}</span> <span class="c">% dannyli2011a 是之前在Endnote 中设置的 label</span>
+</code></pre></div>
+
+
+<h3>References</h3>
+
+<ul>
+<li>Bevan S. Weir, <a href="http://www.rhizobia.co.nz/latex/convert.html">Step-by-step guide to using EndNote with LaTeX and BibTeX</a></li>
+</ul>
+
+]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>我所用的 Google Chrome 扩展插件</title>
+      <link href="http://dannyli.net/notes/my-google-chrome-extensions/"/>
+      <pubDate>2011-10-23T22:15:59+08:00</pubDate>
+      <author>Danny Li</author>
+      <guid>http://dannyli.net/notes/my-google-chrome-extensions</guid>
+      <content:encoded><![CDATA[<p>全面转向 Google Chrome 后，一个明显的好处就是由于内建的书签同步（已经支持设置、搜索引擎同步），高效的搜索等功能可以明显减少插件的数量。下面是我常用的 Chrome 扩展插件 (extensions)。</p>
+
+<h3>必装</h3>
+
+<hr />
+
+<ul>
+<li><a href="https://chrome.google.com/webstore/detail/cfhdojbkjhnklbpkdaibdccddilifddb">Adblock Plus</a> 屏蔽网页广告。</li>
+<li><a href="https://chrome.google.com/webstore/detail/dpplabbmogkhghncfbfdeeokoefdjegm">Proxy SwitchySharp</a> 代理软件，配合 SSH 使用。不细说。</li>
+</ul>
+
+
+<h3>选装</h3>
+
+<hr />
+
+<ul>
+<li><a href="https://chrome.google.com/webstore/detail/fnfnbeppfinmnjnjhedifcfllpcfgeea">IE Tab Multi</a> 有些网页只支持 IE。</li>
+<li><a href="https://chrome.google.com/webstore/detail/mihcahmgecmbnbcchbopgniflfhgnkff">Google Mail Checker</a> Gmail 新邮件提醒。</li>
+<li><a href="https://chrome.google.com/webstore/detail/bmagokdooijbeehmkpknfglimnifench">Firebug Lite</a> 网页调试，Firefox 上神器的移植版本。</li>
+<li><a href="https://chrome.google.com/webstore/detail/nlbjncdgjeocebhnmkbbbdekmmmcbfjd">RSS Subscription Extension</a> 提供 RSS 订阅按钮。</li>
+<li><a href="https://chrome.google.com/webstore/detail/gmpllenfapkfpdkahamlbmbichihpmmg">迅雷、快车、旋风专用链自动破解</a> 破解 thunder/flashget/qqdl 链接，方便下载。</li>
+<li><a href="https://chrome.google.com/webstore/detail/dbpojpfdiliekbbiplijcphappgcgjfn">Flag for Chrome</a> 显示网页信息包括服务器 IP、所在国家、PageRank 等等。</li>
+<li><a href="https://chrome.google.com/webstore/detail/mfjkgbjaikamkkojmakjclmkianficch">Download Assistant</a> 用来选择默认的下载器。</li>
+<li><a href="https://chrome.google.com/webstore/detail/cpngackimfmofbokmjmljamhdncknpmg">Screen Capture</a> 网页截屏。</li>
+<li><a href="https://chrome.google.com/webstore/detail/hhinaapppaileiechjoiifaancjggfjm">Last.fm Scrobbler</a> 可以记录你在视频网站看 MV 的歌曲信息。</li>
+<li><a href="https://chrome.google.com/webstore/detail/hokfcbmfpgeajcgkaeigohghnkhjmcbj">YouTube Downloader: MP3 / HD Video</a> 下载 Youtube 视频。</li>
+</ul>
+
+
+<p>现在缺少的几个插件包括：</p>
+
+<ul>
+<li>检测网络媒体文件工具（Flashgot）</li>
+<li>下载加速工具（DownThemAll）</li>
+<li><del>Twitter 工具（Echofon）</del></li>
+<li><del>搜索引擎备份同步工具</del></li>
+</ul>
+
+
+<p>由于 Chrome 不是开源软件，Chrome 版本的 Flashgot 和 DownThemAll 无法实现 Firefox 上的诸多强大功能。这也是我有时还在使用 Firefox 的原因。另外，插件太多会导致 Chrome 启动速度减慢，这也是值得注意的。</p>
+]]></content:encoded>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh" lang="zh-cn">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="author" content="Danny Li" />
+    <title>Flickr API + PHP 简单示例 | Danny Li</title>
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link href="/feed/" rel="alternate" title="Danny Li" type="application/atom+xml" />
+    <!--<link rel="stylesheet" media="all" href="/media/css/han.css">-->
+    
+    <link rel="stylesheet" href="/media/css/style.css">
+    <link rel="stylesheet" href="/media/css/highlight.css">
+    <!--<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>-->
+    <!--<script type="text/javascript" src="/media/js/han.js"></script>-->
+    <script type="text/javascript" src="/media/js/jquery-1.7.1.min.js"></script>
+  </head>
+  <script type="text/javascript">
+    function setTimeSpan(){
+    	var date = new Date();
+    	timeSpan.innerText=date.format('yyyy-MM-dd hh:mm:ss');
+    }
+    
+    Date.prototype.format = function(format)
+		{
+    var o =
+    	{
+    	    "M+" : this.getMonth()+1, //month
+    	    "d+" : this.getDate(),    //day
+    	    "h+" : this.getHours(),   //hour
+    	    "m+" : this.getMinutes(), //minute
+    	    "s+" : this.getSeconds(), //second
+    	    "q+" : Math.floor((this.getMonth()+3)/3),  //quarter
+    	    "S" : this.getMilliseconds() //millisecond
+    	}
+    	if(/(y+)/.test(format))
+    	format=format.replace(RegExp.$1,(this.getFullYear()+"").substr(4 - RegExp.$1.length));
+    	for(var k in o)
+    	if(new RegExp("("+ k +")").test(format))
+    	format = format.replace(RegExp.$1,RegExp.$1.length==1 ? o[k] : ("00"+ o[k]).substr((""+ o[k]).length));
+    	return format;
+		}
+  </script>
+  <body onLoad="setInterval(setTimeSpan,1000);">
+    <div id="container">
+      <div id="main" role="main">
+        <header>
+        <h1>Flickr API + PHP 简单示例</h1>
+        </header>
+        <nav>
+        <span><a title="home page" class="" href="/">Home</a></span>
+        <span><a title="about" class="" href="/about/">About</a></span>
+        <span><a title="categories" class="" href="/categories/">Categories</a></span>
+        <span><a title="tags" class="" href="/tags/">Tags</a></span>
+        <span><a title="tags" class="" href="/archive/">Archive</a></span>
+        </nav>
+        <article class="content">
+        <section>
+2010-07-15
+
+<span class="categories">
+ in 
+  <a href="/categories/#notes" title="notes">notes</a>&nbsp;
+  
+</span>, 
+
+
+<span class="tags">
+  tags:
+  
+  <a href="/tags/#Flickr" title="Flickr">Flickr</a>&nbsp;
+  
+  <a href="/tags/#PHP" title="PHP">PHP</a>&nbsp;
+  
+</span>
+
+</section>
+
+<section class="post">
+<p><a href="http://www.flickr.com/">Flickr</a> 是互联网上最好的相册。如果不是当年被封锁过，可能在国内的普及会更广一点。现在虽然解封了（听说部分地方还是不能访问），但以后怎样还是不好说。</p>
+
+<p>不过这不影响我使用它。Flickr 是第一个让我明白和学会使用 API 的网站。如果你懂得 PHP，这篇文章可以让你学会如何创建一个简单的程序。文章假设你已经注册过 Flickr 帐号并且使用过一段时间（上传了一些照片）。</p>
+
+<p>目标：创建一个 PHP 页面显示自己 Flickr 帐号的最新图片。类似<a href="http://dannyli.net/photos">这个页面</a>，不过没有预览大图的功能。</p>
+
+<h2>申请 API Key，建立应用程序</h2>
+
+<hr />
+
+<p>使用 Flickr 的 API，需要在官网申请一个 API Key</p>
+
+<ol>
+<li>进入 API Key 申请页面 <a href="http://www.flickr.com/services/apps/create/apply/">http://www.flickr.com/services/apps/create/apply/</a></li>
+<li>点 "APPLY FOR NON-COMMERCIAL KEY" 按钮。</li>
+<li>在下个页面填入应用程序信息，如名称和描述。自己用的话这个不是很重要。并且把下面两个条款打上勾，然后点 Submit 提交。</li>
+<li>下个页面会得到你的 Key 和一个被称做 Secret 的字串。记下这两个字符串，之后我们要用。</li>
+</ol>
+
+
+<!--more-->
+
+
+<h2>查找自己的 User ID</h2>
+
+<hr />
+
+<p>进入<a href="http://www.flickr.com/services/api/explore/?method=flickr.people.getInfo">这个</a>页面。右边有个 Your user ID，类似于 27769101@N03 的形式。记下这个 User ID。</p>
+
+<h2>建立 PHP 程序</h2>
+
+<hr />
+
+<ol>
+<li>创建一个 PHP 程序，例如命名为 flickr.php</li>
+<li>把以下代码粘贴进去，修改里面的 API KEY 和 User ID 为你自己的，保存。</li>
+</ol>
+
+
+<div class="highlight"><pre><code class="php"><span class="cp">&lt;?php</span>
+    <span class="c1"># build the API URL to call</span>
+    <span class="nv">$params</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+        <span class="s1">&#39;api_key&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;这里替换成你的 API KEY&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;method&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;flickr.people.getPublicPhotos&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;user_id&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;这里替换成你的 User ID&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;format&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;php_serial&#39;</span><span class="p">,</span>
+    <span class="p">);</span>
+
+    <span class="nv">$encoded_params</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
+    <span class="k">foreach</span> <span class="p">(</span><span class="nv">$params</span> <span class="k">as</span> <span class="nv">$k</span> <span class="o">=&gt;</span> <span class="nv">$v</span><span class="p">){</span>
+        <span class="nv">$encoded_params</span><span class="p">[]</span> <span class="o">=</span> <span class="nb">urlencode</span><span class="p">(</span><span class="nv">$k</span><span class="p">)</span><span class="o">.</span><span class="s1">&#39;=&#39;</span><span class="o">.</span><span class="nb">urlencode</span><span class="p">(</span><span class="nv">$v</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="c1">// create the url string...</span>
+
+    <span class="c1"># call the API and decode the response</span>
+
+    <span class="nv">$url</span> <span class="o">=</span> <span class="s2">&quot;http://api.flickr.com/services/rest/?&quot;</span><span class="o">.</span><span class="nb">implode</span><span class="p">(</span><span class="s1">&#39;&amp;&#39;</span><span class="p">,</span> <span class="nv">$encoded_params</span><span class="p">);</span>
+
+    <span class="c1">//if you enter above url in browser, you will get a string with relevant data.</span>
+
+    <span class="nv">$rsp</span> <span class="o">=</span> <span class="nb">file_get_contents</span><span class="p">(</span><span class="nv">$url</span><span class="p">);</span>
+
+    <span class="nv">$rsp_obj</span> <span class="o">=</span> <span class="nb">unserialize</span><span class="p">(</span><span class="nv">$rsp</span><span class="p">);</span> <span class="c1">//create an multi-dimension array with data</span>
+
+    <span class="c1"># display the photo title (or an error if it failed)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nv">$rsp_obj</span><span class="p">[</span><span class="s1">&#39;stat&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;ok&#39;</span><span class="p">){</span>
+        <span class="k">foreach</span> <span class="p">(</span><span class="nv">$rsp_obj</span><span class="p">[</span><span class="s1">&#39;photos&#39;</span><span class="p">][</span><span class="s1">&#39;photo&#39;</span><span class="p">]</span> <span class="k">as</span> <span class="nv">$photo</span><span class="p">){</span>
+            <span class="nv">$photo</span><span class="p">[</span><span class="s1">&#39;m_url&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;http://farm&#39;</span><span class="o">.</span><span class="nv">$photo</span><span class="p">[</span><span class="s1">&#39;farm&#39;</span><span class="p">]</span><span class="o">.</span><span class="s1">&#39;.static.flickr.com/&#39;</span><span class="o">.</span><span class="nv">$photo</span><span class="p">[</span><span class="s1">&#39;server&#39;</span><span class="p">]</span><span class="o">.</span><span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="nv">$photo</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span><span class="o">.</span><span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="nv">$photo</span><span class="p">[</span><span class="s1">&#39;secret&#39;</span><span class="p">]</span><span class="o">.</span><span class="s1">&#39;_s.jpg&#39;</span><span class="p">;</span>
+            <span class="k">echo</span> <span class="s1">&#39;&lt;img src=&quot;&#39;</span><span class="o">.</span><span class="nv">$photo</span><span class="p">[</span><span class="s1">&#39;m_url&#39;</span><span class="p">]</span><span class="o">.</span><span class="s1">&#39;&quot; alt=&quot;&quot; /&gt;&#39;</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+        <span class="k">echo</span> <span class="s2">&quot;Call failed!&quot;</span><span class="p">;</span>
+    <span class="p">}</span>
+
+<span class="cp">?&gt;</span><span class="x"></span>
+</code></pre></div>
+
+
+
+
+</section>
+<section class="meta">
+
+<span class="author">
+  <a href="http://dannyli.net">Danny Li</a>
+</span>
+<span class="time">
+  /
+  <time datetime="2010-07-15">2010-07-15</time>
+</span>
+<br/>
+<br/>
+<span>
+	<a  href="http://dannyli.net/notes/ieee-document-life-cycle/" class="pageNav"  >Previous</a>
+	&nbsp;&nbsp;&nbsp;
+	<a  href="http://dannyli.net/notes/setting-up-ftp-in-ntu/" class="pageNav"  >Next</a>
+</span>
+</section>
+<!-- Duoshuo Comment BEGIN -->
+	<div class="ds-thread"></div>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"dannyli"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = 'http://static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		|| document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- Duoshuo Comment END -->
+<!--
+<script type="text/javascript">
+$(function(){
+  $(document).keydown(function(e) {
+    var url = false;
+        if (e.which == 37 || e.which == 74) {  // Left arrow and J
+            
+        url = 'http://dannyli.net/notes/ieee-document-life-cycle/';
+        
+        }
+        else if (e.which == 39 || e.which == 75) {  // Right arrow and K
+            
+        url = 'http://dannyli.net/notes/setting-up-ftp-in-ntu/';
+        
+        }
+        if (url) {
+            window.location = url;
+        }
+  });
+})
+</script>
+-->
+
+
+        </article>
+      </div>
+
+    <footer>
+        <p><small>Powered by <a href="https://github.com/mojombo/jekyll">Jekyll</a> & <a href="http://pages.github.com">GitHub</a> | Copyright 2013 - 2013 by <a href="/about/">Danny</a></small></p>
+    </footer>
+
+    </div>
+    
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-11490513-1']);
+      _gaq.push(['_setDomainName', 'dannyli.net']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+    
+  </body>
+</html>

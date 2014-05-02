@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  
+  <url>
+    <loc>http://dannyli.net/notes/jekyll-sitemap-without-plugin/</loc>
+    
+    <lastmod>2013-07-27T22:17:59+08:00</lastmod>
+    
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  <url>
+    <loc>http://dannyli.net/notes/escape-liquid-tags/</loc>
+    
+    <lastmod>2013-07-27T00:17:59+08:00</lastmod>
+    
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  <url>
+    <loc>http://dannyli.net/notes/pygments-config/</loc>
+    
+    <lastmod>2013-07-26T22:17:59+08:00</lastmod>
+    
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  <url>
+    <loc>http://dannyli.net/notes/fix-problems-of-jekyll-on-windows/</loc>
+    
+    <lastmod>2013-07-26T17:17:59+08:00</lastmod>
+    
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  <url>
+    <loc>http://dannyli.net/notes/blogging-with-github-pages/</loc>
+    
+    <lastmod>2013-07-25T22:17:59+08:00</lastmod>
+    
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  <url>
+    <loc>http://dannyli.net/notes/osx-jekyll/</loc>
+    
+    <lastmod>2013-07-25T16:17:59+08:00</lastmod>
+    
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  <url>
+    <loc>http://dannyli.net/notes/rules-for-capitalization-in-titles/</loc>
+    
+    <lastmod>2012-05-05T22:17:59+08:00</lastmod>
+    
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  <url>
+    <loc>http://dannyli.net/notes/connect-ntu-vpn-automatically-in-windows/</loc>
+    
+    <lastmod>2012-04-15T05:17:59+08:00</lastmod>
+    
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  <url>
+    <loc>http://dannyli.net/notes/using-endnote-latex-bibtex/</loc>
+    
+    <lastmod>2011-11-01T05:17:59+08:00</lastmod>
+    
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  <url>
+    <loc>http://dannyli.net/notes/my-google-chrome-extensions/</loc>
+    
+    <lastmod>2011-10-23T22:15:59+08:00</lastmod>
+    
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  <url>
+    <loc>http://dannyli.net/notes/change-modified-created-date-in-macosx/</loc>
+    
+    <lastmod>2011-09-12T22:17:59+08:00</lastmod>
+    
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  <url>
+    <loc>http://dannyli.net/notes/mac-os-x-folder-localization/</loc>
+    
+    <lastmod>2011-03-24T22:17:59+08:00</lastmod>
+    
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  <url>
+    <loc>http://dannyli.net/notes/my-firefox-addons/</loc>
+    
+    <lastmod>2011-03-23T22:17:59+08:00</lastmod>
+    
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  <url>
+    <loc>http://dannyli.net/notes/writing-the-introduction/</loc>
+    
+    <lastmod>2011-03-06T22:17:59+08:00</lastmod>
+    
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  <url>
+    <loc>http://dannyli.net/notes/setting-up-ftp-in-ntu/</loc>
+    
+    <lastmod>2010-10-10T22:17:59+08:00</lastmod>
+    
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  <url>
+    <loc>http://dannyli.net/notes/flickr-api-php-example/</loc>
+    
+    <lastmod>2010-07-15T22:17:59+08:00</lastmod>
+    
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  <url>
+    <loc>http://dannyli.net/notes/ieee-document-life-cycle/</loc>
+    
+    <lastmod>2010-07-14T22:17:59+08:00</lastmod>
+    
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  <url>
+    <loc>http://dannyli.net/notes/latex-template-for-ieee-paper/</loc>
+    
+    <lastmod>2010-07-13T22:17:59+08:00</lastmod>
+    
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  <url>
+    <loc>http://dannyli.net/notes/windows-xp-apache-php4-mysql4/</loc>
+    
+    <lastmod>2010-05-03T22:17:59+08:00</lastmod>
+    
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  <url>
+    <loc>http://dannyli.net/notes/macosx-php-apache-mysql-installation/</loc>
+    
+    <lastmod>2009-11-21T22:17:59+08:00</lastmod>
+    
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <url>
+    <loc>http://dannyli.net/sitemap.xml</loc>
+    <lastmod>2013-07-29T01:49:30+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  
+  
+  
+  
+  
+
+</urlset>

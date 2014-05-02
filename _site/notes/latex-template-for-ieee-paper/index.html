@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh" lang="zh-cn">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="author" content="Danny Li" />
+    <title>IEEE 论文 LaTeX 模板 – LaTeX2e 类文件 | Danny Li</title>
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link href="/feed/" rel="alternate" title="Danny Li" type="application/atom+xml" />
+    <!--<link rel="stylesheet" media="all" href="/media/css/han.css">-->
+    
+    <link rel="stylesheet" href="/media/css/style.css">
+    <link rel="stylesheet" href="/media/css/highlight.css">
+    <!--<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>-->
+    <!--<script type="text/javascript" src="/media/js/han.js"></script>-->
+    <script type="text/javascript" src="/media/js/jquery-1.7.1.min.js"></script>
+  </head>
+  <script type="text/javascript">
+    function setTimeSpan(){
+    	var date = new Date();
+    	timeSpan.innerText=date.format('yyyy-MM-dd hh:mm:ss');
+    }
+    
+    Date.prototype.format = function(format)
+		{
+    var o =
+    	{
+    	    "M+" : this.getMonth()+1, //month
+    	    "d+" : this.getDate(),    //day
+    	    "h+" : this.getHours(),   //hour
+    	    "m+" : this.getMinutes(), //minute
+    	    "s+" : this.getSeconds(), //second
+    	    "q+" : Math.floor((this.getMonth()+3)/3),  //quarter
+    	    "S" : this.getMilliseconds() //millisecond
+    	}
+    	if(/(y+)/.test(format))
+    	format=format.replace(RegExp.$1,(this.getFullYear()+"").substr(4 - RegExp.$1.length));
+    	for(var k in o)
+    	if(new RegExp("("+ k +")").test(format))
+    	format = format.replace(RegExp.$1,RegExp.$1.length==1 ? o[k] : ("00"+ o[k]).substr((""+ o[k]).length));
+    	return format;
+		}
+  </script>
+  <body onLoad="setInterval(setTimeSpan,1000);">
+    <div id="container">
+      <div id="main" role="main">
+        <header>
+        <h1>IEEE 论文 LaTeX 模板 – LaTeX2e 类文件</h1>
+        </header>
+        <nav>
+        <span><a title="home page" class="" href="/">Home</a></span>
+        <span><a title="about" class="" href="/about/">About</a></span>
+        <span><a title="categories" class="" href="/categories/">Categories</a></span>
+        <span><a title="tags" class="" href="/tags/">Tags</a></span>
+        <span><a title="tags" class="" href="/archive/">Archive</a></span>
+        </nav>
+        <article class="content">
+        <section>
+2010-07-13
+
+<span class="categories">
+ in 
+  <a href="/categories/#notes" title="notes">notes</a>&nbsp;
+  
+</span>, 
+
+
+<span class="tags">
+  tags:
+  
+  <a href="/tags/#IEEE" title="IEEE">IEEE</a>&nbsp;
+  
+  <a href="/tags/#LaTeX" title="LaTeX">LaTeX</a>&nbsp;
+  
+  <a href="/tags/#paper" title="paper">paper</a>&nbsp;
+  
+</span>
+
+</section>
+
+<section class="post">
+<p>研究人员如果把大量时间用来写论文上显然是不本末倒置。诚然论文对各位学者们十分重要，但其实说到底这些只是“虚荣”。</p>
+
+<p>写论文的很大一部分时间是用在排版上。特别是使用 LaTeX 这样的排版方式，大多数软件不是所见即所得的编辑工具，排版要下极大的功夫。其实现在的各种 LaTeX 排版工具都有“宏命令”，如果我们能有这样一个 IEEE 的“模板”，只关心文章内容而不是文章的界面和结构，这样定能事倍功半。</p>
+
+<p><a href="http://mocha-java.uccs.edu/ieee/ieeeftp/ieeecls.pdf">这里</a>有一个 pdf 模板，打开看看和平时看的 paper 格式基本一模一样。这个 pdf 是用一个 TeX 模板生成的。</p>
+
+<h3>LaTeX2e files for formatting IEEE papers</h3>
+
+<p>类文件 ieee.cls is well documented in the above paper. 这里提供这个文件以及大量的例子。</p>
+
+<ul>
+<li><a href="http://mocha-java.uccs.edu/ieee/ieeeftp/ieee.cls">ieee.cls</a> 类文件</li>
+<li><a href="http://mocha-java.uccs.edu/ieee/ieeeftp/ieeecls.pdf">ieeecls.pdf</a> IEEE 论文：Specification of Common IEEE Styles，可以看成模板生成的 pdf 示例文件。</li>
+<li><a href="http://mocha-java.uccs.edu/ieee/ieeeftp/ieeecls.tex">ieeecls.tex</a> 以上文章 LaTeX2e 源文件。这个文件是很好的学习 LaTeX 材料，对照文章和源代码分析，效果很好。</li>
+<li><a href="http://mocha-java.uccs.edu/ieee/ieeeftp/ieeeskel.tex">ieeeskel.tex</a> IEEE 论文的简单框架。可以用这个开始写一篇新文章。</li>
+<li><a href="http://mocha-java.uccs.edu/ieee/ieeeftp/ieeefig.sty">ieeefig.sty</a> 图片格式。
+下载以上 .cls 和 .tex 文件到同一目录下，用任何 LaTeX 编辑器打开即可。</li>
+</ul>
+
+
+<p>参考：<a href="http://mocha-java.uccs.edu/ieee/">http://mocha-java.uccs.edu/ieee/</a></p>
+
+</section>
+<section class="meta">
+
+<span class="author">
+  <a href="http://dannyli.net">Danny Li</a>
+</span>
+<span class="time">
+  /
+  <time datetime="2010-07-13">2010-07-13</time>
+</span>
+<br/>
+<br/>
+<span>
+	<a  href="http://dannyli.net/notes/windows-xp-apache-php4-mysql4/" class="pageNav"  >Previous</a>
+	&nbsp;&nbsp;&nbsp;
+	<a  href="http://dannyli.net/notes/ieee-document-life-cycle/" class="pageNav"  >Next</a>
+</span>
+</section>
+<!-- Duoshuo Comment BEGIN -->
+	<div class="ds-thread"></div>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"dannyli"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = 'http://static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		|| document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- Duoshuo Comment END -->
+<!--
+<script type="text/javascript">
+$(function(){
+  $(document).keydown(function(e) {
+    var url = false;
+        if (e.which == 37 || e.which == 74) {  // Left arrow and J
+            
+        url = 'http://dannyli.net/notes/windows-xp-apache-php4-mysql4/';
+        
+        }
+        else if (e.which == 39 || e.which == 75) {  // Right arrow and K
+            
+        url = 'http://dannyli.net/notes/ieee-document-life-cycle/';
+        
+        }
+        if (url) {
+            window.location = url;
+        }
+  });
+})
+</script>
+-->
+
+
+        </article>
+      </div>
+
+    <footer>
+        <p><small>Powered by <a href="https://github.com/mojombo/jekyll">Jekyll</a> & <a href="http://pages.github.com">GitHub</a> | Copyright 2013 - 2013 by <a href="/about/">Danny</a></small></p>
+    </footer>
+
+    </div>
+    
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-11490513-1']);
+      _gaq.push(['_setDomainName', 'dannyli.net']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+    
+  </body>
+</html>

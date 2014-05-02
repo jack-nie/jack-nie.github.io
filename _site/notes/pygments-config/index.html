@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh" lang="zh-cn">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="author" content="Danny Li" />
+    <title>Jekyll 代码高亮利器 Pygments 配置 | Danny Li</title>
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link href="/feed/" rel="alternate" title="Danny Li" type="application/atom+xml" />
+    <!--<link rel="stylesheet" media="all" href="/media/css/han.css">-->
+    
+    <link rel="stylesheet" href="/media/css/style.css">
+    <link rel="stylesheet" href="/media/css/highlight.css">
+    <!--<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>-->
+    <!--<script type="text/javascript" src="/media/js/han.js"></script>-->
+    <script type="text/javascript" src="/media/js/jquery-1.7.1.min.js"></script>
+  </head>
+  <script type="text/javascript">
+    function setTimeSpan(){
+    	var date = new Date();
+    	timeSpan.innerText=date.format('yyyy-MM-dd hh:mm:ss');
+    }
+    
+    Date.prototype.format = function(format)
+		{
+    var o =
+    	{
+    	    "M+" : this.getMonth()+1, //month
+    	    "d+" : this.getDate(),    //day
+    	    "h+" : this.getHours(),   //hour
+    	    "m+" : this.getMinutes(), //minute
+    	    "s+" : this.getSeconds(), //second
+    	    "q+" : Math.floor((this.getMonth()+3)/3),  //quarter
+    	    "S" : this.getMilliseconds() //millisecond
+    	}
+    	if(/(y+)/.test(format))
+    	format=format.replace(RegExp.$1,(this.getFullYear()+"").substr(4 - RegExp.$1.length));
+    	for(var k in o)
+    	if(new RegExp("("+ k +")").test(format))
+    	format = format.replace(RegExp.$1,RegExp.$1.length==1 ? o[k] : ("00"+ o[k]).substr((""+ o[k]).length));
+    	return format;
+		}
+  </script>
+  <body onLoad="setInterval(setTimeSpan,1000);">
+    <div id="container">
+      <div id="main" role="main">
+        <header>
+        <h1>Jekyll 代码高亮利器 Pygments 配置</h1>
+        </header>
+        <nav>
+        <span><a title="home page" class="" href="/">Home</a></span>
+        <span><a title="about" class="" href="/about/">About</a></span>
+        <span><a title="categories" class="" href="/categories/">Categories</a></span>
+        <span><a title="tags" class="" href="/tags/">Tags</a></span>
+        <span><a title="tags" class="" href="/archive/">Archive</a></span>
+        </nav>
+        <article class="content">
+        <section>
+2013-07-26
+
+<span class="categories">
+ in 
+  <a href="/categories/#notes" title="notes">notes</a>&nbsp;
+  
+</span>, 
+
+
+<span class="tags">
+  tags:
+  
+  <a href="/tags/#Jekyll" title="Jekyll">Jekyll</a>&nbsp;
+  
+  <a href="/tags/#Pygments" title="Pygments">Pygments</a>&nbsp;
+  
+</span>
+
+</section>
+
+<section class="post">
+<p><a href="http://pygments.org/">Pygments</a> 是 Jekyll 最常用的代码高亮程序。假设 Python 的 easy_install 已经可用，则执行</p>
+
+<pre><code>easy_install Pygments
+</code></pre>
+
+<p>安装 Pygments.</p>
+
+<p>Pygments 自带多种样式。在 Python 中用下面的命令可以查看所有样式列表：</p>
+
+<div class="highlight"><pre><code class="pycon"><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pygments.styles</span> <span class="kn">import</span> <span class="n">STYLE_MAP</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">STYLE_MAP</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+<span class="go">[&#39;monokai&#39;, &#39;manni&#39;, &#39;rrt&#39;, &#39;perldoc&#39;, &#39;borland&#39;, &#39;colorful&#39;, &#39;default&#39;, &#39;murphy&#39;, &#39;vs&#39;, &#39;trac&#39;, &#39;tango&#39;, &#39;fruity&#39;, &#39;autumn&#39;, &#39;bw&#39;, &#39;emacs&#39;, &#39;vim&#39;, &#39;pastie&#39;, &#39;friendly&#39;, &#39;native&#39;]</span>
+</code></pre></div>
+
+
+<p>关于不同样式，可以在 <a href="http://pygments.org/demo">Demo</a> 页面选择一个 demo，再在右边样式列表中选择不同样式查看效果。</p>
+
+<p>下一步是生成所需的 CSS 文件。假设我们想使用 <code>friendly</code> 样式，则在 Terminal 或 cmd 进入 CSS 所在路径下执行</p>
+
+<pre><code>pygmentize -S friendly -f html &gt; highlight.css
+</code></pre>
+
+<p>则产生一个 <code>highlight.css</code> 文件。</p>
+
+<p>下面介绍如何在 Jekyll 中使用 Pygments，假设一段代码需要被高亮，则在模板里使用以下 <a href="http://liquidmarkup.org/">Liquid</a> 代码</p>
+
+<pre><code>{% highlight shortname %}
+    代码内容
+{% endhighlight shortname %}
+</code></pre>
+
+<p>name 是不同语言对应的短名称，可以在<a href="http://pygments.org/docs/lexers/">这里</a>查看。</p>
+
+</section>
+<section class="meta">
+
+<span class="author">
+  <a href="http://dannyli.net">Danny Li</a>
+</span>
+<span class="time">
+  /
+  <time datetime="2013-07-26">2013-07-26</time>
+</span>
+<br/>
+<br/>
+<span>
+	<a  href="http://dannyli.net/notes/fix-problems-of-jekyll-on-windows/" class="pageNav"  >Previous</a>
+	&nbsp;&nbsp;&nbsp;
+	<a  href="http://dannyli.net/notes/escape-liquid-tags/" class="pageNav"  >Next</a>
+</span>
+</section>
+<!-- Duoshuo Comment BEGIN -->
+	<div class="ds-thread"></div>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"dannyli"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = 'http://static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		|| document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- Duoshuo Comment END -->
+<!--
+<script type="text/javascript">
+$(function(){
+  $(document).keydown(function(e) {
+    var url = false;
+        if (e.which == 37 || e.which == 74) {  // Left arrow and J
+            
+        url = 'http://dannyli.net/notes/fix-problems-of-jekyll-on-windows/';
+        
+        }
+        else if (e.which == 39 || e.which == 75) {  // Right arrow and K
+            
+        url = 'http://dannyli.net/notes/escape-liquid-tags/';
+        
+        }
+        if (url) {
+            window.location = url;
+        }
+  });
+})
+</script>
+-->
+
+
+        </article>
+      </div>
+
+    <footer>
+        <p><small>Powered by <a href="https://github.com/mojombo/jekyll">Jekyll</a> & <a href="http://pages.github.com">GitHub</a> | Copyright 2013 - 2013 by <a href="/about/">Danny</a></small></p>
+    </footer>
+
+    </div>
+    
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-11490513-1']);
+      _gaq.push(['_setDomainName', 'dannyli.net']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+    
+  </body>
+</html>

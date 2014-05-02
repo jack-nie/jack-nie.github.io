@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh" lang="zh-cn">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="author" content="Danny Li" />
+    <title>Windows 下自动连接 NTU VPN（不用每次输入用户名密码） | Danny Li</title>
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link href="/feed/" rel="alternate" title="Danny Li" type="application/atom+xml" />
+    <!--<link rel="stylesheet" media="all" href="/media/css/han.css">-->
+    
+    <link rel="stylesheet" href="/media/css/style.css">
+    <link rel="stylesheet" href="/media/css/highlight.css">
+    <!--<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>-->
+    <!--<script type="text/javascript" src="/media/js/han.js"></script>-->
+    <script type="text/javascript" src="/media/js/jquery-1.7.1.min.js"></script>
+  </head>
+  <script type="text/javascript">
+    function setTimeSpan(){
+    	var date = new Date();
+    	timeSpan.innerText=date.format('yyyy-MM-dd hh:mm:ss');
+    }
+    
+    Date.prototype.format = function(format)
+		{
+    var o =
+    	{
+    	    "M+" : this.getMonth()+1, //month
+    	    "d+" : this.getDate(),    //day
+    	    "h+" : this.getHours(),   //hour
+    	    "m+" : this.getMinutes(), //minute
+    	    "s+" : this.getSeconds(), //second
+    	    "q+" : Math.floor((this.getMonth()+3)/3),  //quarter
+    	    "S" : this.getMilliseconds() //millisecond
+    	}
+    	if(/(y+)/.test(format))
+    	format=format.replace(RegExp.$1,(this.getFullYear()+"").substr(4 - RegExp.$1.length));
+    	for(var k in o)
+    	if(new RegExp("("+ k +")").test(format))
+    	format = format.replace(RegExp.$1,RegExp.$1.length==1 ? o[k] : ("00"+ o[k]).substr((""+ o[k]).length));
+    	return format;
+		}
+  </script>
+  <body onLoad="setInterval(setTimeSpan,1000);">
+    <div id="container">
+      <div id="main" role="main">
+        <header>
+        <h1>Windows 下自动连接 NTU VPN（不用每次输入用户名密码）</h1>
+        </header>
+        <nav>
+        <span><a title="home page" class="" href="/">Home</a></span>
+        <span><a title="about" class="" href="/about/">About</a></span>
+        <span><a title="categories" class="" href="/categories/">Categories</a></span>
+        <span><a title="tags" class="" href="/tags/">Tags</a></span>
+        <span><a title="tags" class="" href="/archive/">Archive</a></span>
+        </nav>
+        <article class="content">
+        <section>
+2012-04-15
+
+<span class="categories">
+ in 
+  <a href="/categories/#notes" title="notes">notes</a>&nbsp;
+  
+</span>, 
+
+
+<span class="tags">
+  tags:
+  
+  <a href="/tags/#VPN" title="VPN">VPN</a>&nbsp;
+  
+  <a href="/tags/#NTU" title="NTU">NTU</a>&nbsp;
+  
+  <a href="/tags/#Windows" title="Windows">Windows</a>&nbsp;
+  
+</span>
+
+</section>
+
+<section class="post">
+<p>在 Windows 下连接 NTU 的 VPN 一般使用 Juniper Network 的 Network Connection 程序。每次连接都要手动输入用户名密码，非常不方便。今天研究了一下通过命令行连接 NTU VPN。通过命令行可以实现在桌面创建一个快捷方式，双击图标直接连接 NTU VPN。</p>
+
+<p>假设已经安装好了 NTU 官方提供的<a href="http://www.ntu.edu.sg/cits/itnetworking/remoteaccess/Pages/quickstartguide.aspx#winvpn">SSL VPN 程序</a> (Juniper Networks - Network Connection)。</p>
+
+<p>这里其实是使用一个叫 nclauncher 的命令程序。该文件位于 Network Connection 程序的安装目录下。Network Connection 程序的默认安装目录通常是 <code>%ProgramFiles%\Juniper Networks</code>。 该命令的用法可以通过输入 <code>nclauncher -help</code> 获得。在桌面创建快捷连接的步骤如下：</p>
+
+<ol>
+<li><p>打开记事本，输入以下内容</p>
+
+<pre><code> "%ProgramFiles%\Juniper Networks\Network Connect 7.3.0\nclauncher" -url https://ntuvpn.ntu.edu.sg/ -u [用户名] -p [密码] -r [域]"
+ EXIT
+</code></pre>
+
+<p>其中 <code>[用户名]</code> 和 <code>[密码]</code> 分别是 NTU 分配的用户名和密码，[域] 可填写 <strong>Student</strong>, <strong>Assoc</strong> 或者 <strong>Staff</strong>，注意大小写不能错，第一个字母必须是大写。</p>
+
+<p>  <code>%ProgramFiles%</code> 是程序默认的安装路径。如果操作系统是 64 位 Windows，则得将 <code>%ProgramFiles%</code> 改为 <code>%ProgramFiles(x86)%</code>。</p></li>
+<li><p>保存该文件为 .bat 或者 .cmd 文件到本地磁盘，如桌面；</p></li>
+<li>若要连接 VPN，双击该文件即可。</li>
+</ol>
+
+
+</section>
+<section class="meta">
+
+<span class="author">
+  <a href="http://dannyli.net">Danny Li</a>
+</span>
+<span class="time">
+  /
+  <time datetime="2012-04-15">2012-04-15</time>
+</span>
+<br/>
+<br/>
+<span>
+	<a  href="http://dannyli.net/notes/using-endnote-latex-bibtex/" class="pageNav"  >Previous</a>
+	&nbsp;&nbsp;&nbsp;
+	<a  href="http://dannyli.net/notes/rules-for-capitalization-in-titles/" class="pageNav"  >Next</a>
+</span>
+</section>
+<!-- Duoshuo Comment BEGIN -->
+	<div class="ds-thread"></div>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"dannyli"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = 'http://static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		|| document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- Duoshuo Comment END -->
+<!--
+<script type="text/javascript">
+$(function(){
+  $(document).keydown(function(e) {
+    var url = false;
+        if (e.which == 37 || e.which == 74) {  // Left arrow and J
+            
+        url = 'http://dannyli.net/notes/using-endnote-latex-bibtex/';
+        
+        }
+        else if (e.which == 39 || e.which == 75) {  // Right arrow and K
+            
+        url = 'http://dannyli.net/notes/rules-for-capitalization-in-titles/';
+        
+        }
+        if (url) {
+            window.location = url;
+        }
+  });
+})
+</script>
+-->
+
+
+        </article>
+      </div>
+
+    <footer>
+        <p><small>Powered by <a href="https://github.com/mojombo/jekyll">Jekyll</a> & <a href="http://pages.github.com">GitHub</a> | Copyright 2013 - 2013 by <a href="/about/">Danny</a></small></p>
+    </footer>
+
+    </div>
+    
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-11490513-1']);
+      _gaq.push(['_setDomainName', 'dannyli.net']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+    
+  </body>
+</html>

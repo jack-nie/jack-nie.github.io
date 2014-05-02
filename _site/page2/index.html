@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh" lang="zh-cn">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="author" content="Danny Li" />
+    <title>Log. | Danny Li</title>
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link href="/feed/" rel="alternate" title="Danny Li" type="application/atom+xml" />
+    <!--<link rel="stylesheet" media="all" href="/media/css/han.css">-->
+    
+    <link rel="stylesheet" href="/media/css/style.css">
+    <link rel="stylesheet" href="/media/css/highlight.css">
+    <!--<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>-->
+    <!--<script type="text/javascript" src="/media/js/han.js"></script>-->
+    <script type="text/javascript" src="/media/js/jquery-1.7.1.min.js"></script>
+  </head>
+  <script type="text/javascript">
+    function setTimeSpan(){
+    	var date = new Date();
+    	timeSpan.innerText=date.format('yyyy-MM-dd hh:mm:ss');
+    }
+    
+    Date.prototype.format = function(format)
+		{
+    var o =
+    	{
+    	    "M+" : this.getMonth()+1, //month
+    	    "d+" : this.getDate(),    //day
+    	    "h+" : this.getHours(),   //hour
+    	    "m+" : this.getMinutes(), //minute
+    	    "s+" : this.getSeconds(), //second
+    	    "q+" : Math.floor((this.getMonth()+3)/3),  //quarter
+    	    "S" : this.getMilliseconds() //millisecond
+    	}
+    	if(/(y+)/.test(format))
+    	format=format.replace(RegExp.$1,(this.getFullYear()+"").substr(4 - RegExp.$1.length));
+    	for(var k in o)
+    	if(new RegExp("("+ k +")").test(format))
+    	format = format.replace(RegExp.$1,RegExp.$1.length==1 ? o[k] : ("00"+ o[k]).substr((""+ o[k]).length));
+    	return format;
+		}
+  </script>
+  <body onLoad="setInterval(setTimeSpan,1000);">
+    <div id="container">
+      <div id="main" role="main">
+        <header>
+        <h1>Log.</h1>
+        </header>
+        <nav>
+        <span><a title="home page" class="" href="/">Home</a></span>
+        <span><a title="about" class="" href="/about/">About</a></span>
+        <span><a title="categories" class="" href="/categories/">Categories</a></span>
+        <span><a title="tags" class="" href="/tags/">Tags</a></span>
+        <span><a title="tags" class="" href="/archive/">Archive</a></span>
+        </nav>
+        <article class="content">
+        <section class="post">
+<ul class="listing">
+
+  
+  
+    
+    <li class="listing-seperator">2010</li>
+  
+  <li class="listing-item">
+    <time datetime="2010-07-14">2010-07-14</time>
+    <a href="/notes/ieee-document-life-cycle/" title="IEEE 论文生命周期">IEEE 论文生命周期</a>
+  </li>
+
+  
+  
+  <li class="listing-item">
+    <time datetime="2010-07-13">2010-07-13</time>
+    <a href="/notes/latex-template-for-ieee-paper/" title="IEEE 论文 LaTeX 模板 – LaTeX2e 类文件">IEEE 论文 LaTeX 模板 – LaTeX2e 类文件</a>
+  </li>
+
+  
+  
+  <li class="listing-item">
+    <time datetime="2010-05-03">2010-05-03</time>
+    <a href="/notes/windows-xp-apache-php4-mysql4/" title="Windows XP 下搭建 Apache + PHP 4 + MySQL 4 环境">Windows XP 下搭建 Apache + PHP 4 + MySQL 4 环境</a>
+  </li>
+
+  
+  
+    
+    <li class="listing-seperator">2009</li>
+  
+  <li class="listing-item">
+    <time datetime="2009-11-21">2009-11-21</time>
+    <a href="/notes/macosx-php-apache-mysql-installation/" title="Mac OS X 中架构 PHP + Apache + MySQL 环境">Mac OS X 中架构 PHP + Apache + MySQL 环境</a>
+  </li>
+
+</ul>
+
+<div id="post-pagination" class="paginator">
+
+  
+    
+    <a href="/"><前页</a>
+    
+  
+
+      
+      <a href="/">1</a>
+      
+
+    
+      
+      <span class="current-page">2</span>
+      
+    
+
+  
+    <span class="next disabled" >后页></span>
+  
+  (共20篇)
+</div>
+
+
+</section>
+
+
+
+        </article>
+      </div>
+
+    <footer>
+        <p><small>Powered by <a href="https://github.com/mojombo/jekyll">Jekyll</a> & <a href="http://pages.github.com">GitHub</a> | Copyright 2013 - 2013 by <a href="/about/">Danny</a></small></p>
+    </footer>
+
+    </div>
+    
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-11490513-1']);
+      _gaq.push(['_setDomainName', 'dannyli.net']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+    
+  </body>
+</html>

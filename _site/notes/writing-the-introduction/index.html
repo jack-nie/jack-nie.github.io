@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh" lang="zh-cn">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="author" content="Danny Li" />
+    <title>论文的简介 (Introduction) 部分 | Danny Li</title>
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link href="/feed/" rel="alternate" title="Danny Li" type="application/atom+xml" />
+    <!--<link rel="stylesheet" media="all" href="/media/css/han.css">-->
+    
+    <link rel="stylesheet" href="/media/css/style.css">
+    <link rel="stylesheet" href="/media/css/highlight.css">
+    <!--<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>-->
+    <!--<script type="text/javascript" src="/media/js/han.js"></script>-->
+    <script type="text/javascript" src="/media/js/jquery-1.7.1.min.js"></script>
+  </head>
+  <script type="text/javascript">
+    function setTimeSpan(){
+    	var date = new Date();
+    	timeSpan.innerText=date.format('yyyy-MM-dd hh:mm:ss');
+    }
+    
+    Date.prototype.format = function(format)
+		{
+    var o =
+    	{
+    	    "M+" : this.getMonth()+1, //month
+    	    "d+" : this.getDate(),    //day
+    	    "h+" : this.getHours(),   //hour
+    	    "m+" : this.getMinutes(), //minute
+    	    "s+" : this.getSeconds(), //second
+    	    "q+" : Math.floor((this.getMonth()+3)/3),  //quarter
+    	    "S" : this.getMilliseconds() //millisecond
+    	}
+    	if(/(y+)/.test(format))
+    	format=format.replace(RegExp.$1,(this.getFullYear()+"").substr(4 - RegExp.$1.length));
+    	for(var k in o)
+    	if(new RegExp("("+ k +")").test(format))
+    	format = format.replace(RegExp.$1,RegExp.$1.length==1 ? o[k] : ("00"+ o[k]).substr((""+ o[k]).length));
+    	return format;
+		}
+  </script>
+  <body onLoad="setInterval(setTimeSpan,1000);">
+    <div id="container">
+      <div id="main" role="main">
+        <header>
+        <h1>论文的简介 (Introduction) 部分</h1>
+        </header>
+        <nav>
+        <span><a title="home page" class="" href="/">Home</a></span>
+        <span><a title="about" class="" href="/about/">About</a></span>
+        <span><a title="categories" class="" href="/categories/">Categories</a></span>
+        <span><a title="tags" class="" href="/tags/">Tags</a></span>
+        <span><a title="tags" class="" href="/archive/">Archive</a></span>
+        </nav>
+        <article class="content">
+        <section>
+2011-03-06
+
+<span class="categories">
+ in 
+  <a href="/categories/#notes" title="notes">notes</a>&nbsp;
+  
+</span>, 
+
+
+<span class="tags">
+  tags:
+  
+  <a href="/tags/#paper" title="paper">paper</a>&nbsp;
+  
+</span>
+
+</section>
+
+<section class="post">
+<p>柏拉图说：好的开始是事情成功的一半 (The beginning is half of the whole)。论文的简介 (Introduction) 部分是公认最难写。如果有一个好的 Introduction，论文就成功了一半。</p>
+
+<p>对于一些简单的报告文章，可以这样开头：</p>
+
+<blockquote><p>The purpose of this paper is to ...</p>
+
+<p>This paper describes and analyzes ...</p>
+
+<p>My aim in this paper is to ...</p>
+
+<p>In this paper we report on ...</p></blockquote>
+
+<p>但是呢，对于大多数 research papers (>90%)， 这样的开头是很少见的。即使有，一般都是把它们<strong>放在 Introduction 部分的最后</strong>。这是为什么呢？有两点原因：</p>
+
+<p><strong>1. 我们要吸引读者。</strong>这样把内容介绍放在开头开门见山，对于同一领域内的读者当然很好，但是对于其他领域内或者不是很了解的人就很糟糕：他们都不知道你在说什么，哪有兴趣继续看下去？</p>
+
+<p><strong>2. 为了符合论文写作惯例。 </strong>这个听起来有点扯，不过确实是这样。大家都是按照某种方式、结构来写。通常是以下面这种“<a href="http://www.sp.uconn.edu/~jbl00001/swales_cars_introductions_model.htm">Create-a-research space (CARS)</a>”模型来建立：</p>
+
+<table width="100%">
+<tr><td width="13%">第一步</td><td>
+建立研究领域 (Establishing a research territory)
+
+*   显示你所研究的**领域**是很重要、有意思、有问题可提出、值得研究的。
+*   介绍以前其他人的研究成果 (Literature Review)。这一步是一个专门的话题，很重要，必须有。
+</td><tr>
+<tr><td>第二步</td><td>
+给自己找位置 (Establishing a niche)。
+
+*   上面说的领域是值得研究，也有很多人研究，但是如果他们都研究完了，研究透彻了，没有问题或者问题都被解决了，你还进来搀和什么呢？所以这一步就是告诉读者前人研究的不足或者没有考虑到的地方 (gap)，或者在前人研究的成果上延伸开来。很重要，必须有。</td><tr>
+
+<tr><td>第三步</td><td>
+占领位置 (Occupying the niche)。
+
+*   介绍或者陈述此研究的目的和意义。 (Objective/purpose, 最开始说过的开头句型就可以放在这里，必须有。)
+*   此研究的问题和假设。(Scope)
+*   此研究的重要性和价值。(Significant)
+*   最后是文章的组织结构。(Organization, 这个可以没有)
+
+</td><tr>
+</table>
+
+
+<p>多读几篇论文就会看到大家都是这么写的。这里有个“竞争”。你和同行们的竞争，中心概念就是，你得让读者知道你很了解你所研究领域的所有：意义、发展情况、他人研究成果、缺陷和不足、可改进的地方。读者看完要知道，哦，这个话题很有意义，有意思，有前景，多少人了研究，研究到什么程度了，还有什么问题没考虑或没解决，然后这个作者的这个研究填补了这个空白 ... 嗯，很好。</p>
+
+<h3>一个通俗的模板</h3>
+
+<hr />
+
+<ul>
+<li>最近大家很关注某研究领域。</li>
+<li>这个领域内出现了某些个问题。</li>
+<li>大家人都关注啊，很多人跑出来做了些研究。</li>
+<li>其中 A 老师研究了这个部分， B 老师研究了那个部分。</li>
+<li>但是呢，他们忽略了某个重要问题。另外某个问题没人考虑。</li>
+<li>我就是来做他们没做的，因为这个很重要，做它的目的是为了 ...</li>
+</ul>
+
+
+<h3>一些在 Literature review 里需要注意的要点</h3>
+
+<hr />
+
+<ul>
+<li>Citation 格式</li>
+<li>不要用完成时 (has/have done)，用过去时 (e.g. A report was done ...)</li>
+<li>一些单词不要用复数形式 (research/knowledge/evidence/information/feedback)。如果需要表示复数，可在后再加其他可数名词 (research studies/projects)</li>
+<li>过去时表示什么已经做了，现在时表示一些真理、现象。</li>
+<li>General -> Specific</li>
+<li>整段引用时用引号</li>
+</ul>
+
+
+</section>
+<section class="meta">
+
+<span class="author">
+  <a href="http://dannyli.net">Danny Li</a>
+</span>
+<span class="time">
+  /
+  <time datetime="2011-03-06">2011-03-06</time>
+</span>
+<br/>
+<br/>
+<span>
+	<a  href="http://dannyli.net/notes/setting-up-ftp-in-ntu/" class="pageNav"  >Previous</a>
+	&nbsp;&nbsp;&nbsp;
+	<a  href="http://dannyli.net/notes/my-firefox-addons/" class="pageNav"  >Next</a>
+</span>
+</section>
+<!-- Duoshuo Comment BEGIN -->
+	<div class="ds-thread"></div>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"dannyli"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = 'http://static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		|| document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- Duoshuo Comment END -->
+<!--
+<script type="text/javascript">
+$(function(){
+  $(document).keydown(function(e) {
+    var url = false;
+        if (e.which == 37 || e.which == 74) {  // Left arrow and J
+            
+        url = 'http://dannyli.net/notes/setting-up-ftp-in-ntu/';
+        
+        }
+        else if (e.which == 39 || e.which == 75) {  // Right arrow and K
+            
+        url = 'http://dannyli.net/notes/my-firefox-addons/';
+        
+        }
+        if (url) {
+            window.location = url;
+        }
+  });
+})
+</script>
+-->
+
+
+        </article>
+      </div>
+
+    <footer>
+        <p><small>Powered by <a href="https://github.com/mojombo/jekyll">Jekyll</a> & <a href="http://pages.github.com">GitHub</a> | Copyright 2013 - 2013 by <a href="/about/">Danny</a></small></p>
+    </footer>
+
+    </div>
+    
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-11490513-1']);
+      _gaq.push(['_setDomainName', 'dannyli.net']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+    
+  </body>
+</html>
