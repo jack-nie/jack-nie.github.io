@@ -1,6 +1,6 @@
 markdown: rdiscount
 permalink: /:categories/:title/
-url: http://kingguy.net
+url: jack-nie.github.io 
 author: Jack Nie
 pygments: true
 safe: true
