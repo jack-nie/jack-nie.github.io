@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7"><![endif]-->
+<!--[if IE 7]><html class="no-js lt-ie9 lt-ie8" <![endif]-->
+<!--[if IE 8]><html class="no-js lt-ie9" <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <title>CSS居中完全指导手册</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/assets/img/favicon.ico" />
+
+    <!-- Come and get me RSS readers -->
+    <link rel="alternate" type="application/rss+xml" title="Jack Nie" href="http://jack-nie.github.com/feed.xml" />
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <!--[if IE 8]><link rel="stylesheet" href="/assets/css/ie.css"><![endif]-->
+    <link rel="canonical" href="http://jack-nie.github.com/blog/centering-css-complete-guide/">
+
+    <!-- Modernizr -->
+    <script src="/assets/js/modernizr.custom.15390.js" type="text/javascript"></script>
+
+     <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
+<script>
+   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-58263416-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+ 
+</head>
+
+
+<body>
+
+    <div class="header">
+     <div class="container">
+         <h1 class="logo"><a href="/">Jack Nie</a></h1>
+         <nav class="nav-collapse">
+             <ul class="noList">
+                 
+                 <li class="element first  ">
+                     <a href="/index.html">Home</a>
+                 </li> 
+                 
+                 <li class="element   ">
+                     <a href="/about.html">About</a>
+                 </li> 
+                 
+                 <li class="element   last">
+                     <a href="/contact.html">Contact</a>
+                 </li> 
+                 
+                 <li> <a href="https://github.com/jack-nie" target="_blank">GitHub</a></li>
+             </ul>
+         </nav>
+     </div>
+ </div><!-- end .header -->
+
+
+   <div class="content">
+      <div class="container">
+         <div class="post">
+  
+  <h1 class="postTitle">CSS居中完全指导手册</h1>
+  <p class="meta">April 23, 2015 | <span class="time">7</span> Minute Read</p>
+  
+  <p>前端开发中，CSS居中一直是一个令人头痛的问题。为什么CSS居中这么困难呢？其实实现CSS居中并不难，难的是如何从众多的CSS居中方法中选择一个合适的解决方案，通常你并不知道那种解决方案适合当前的情形。所以，让我们来整理一个决策树，希望能够帮助大家更容易的解决CSS居中的问题。</p>
+
+<h3>一.水平居中</h3>
+
+<h4>1.是否是 inline或者inline-*元素</h4>
+
+<p>将inline元素放置在block父元素中，然后给父元素加上<code>text-align: center;</code></p>
+
+<div class="highlight"><pre><code class="language-html" data-lang="html">HTML: 
+    <span class="nt">&lt;header&gt;</span>
+      This text is centered.
+    <span class="nt">&lt;/header&gt;</span>
+    
+    <span class="nt">&lt;nav</span> <span class="na">role=</span><span class="s">&#39;navigation&#39;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;#0&quot;</span><span class="nt">&gt;</span>One<span class="nt">&lt;/a&gt;</span>
+      <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;#0&quot;</span><span class="nt">&gt;</span>Two<span class="nt">&lt;/a&gt;</span>
+      <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;#0&quot;</span><span class="nt">&gt;</span>Three<span class="nt">&lt;/a&gt;</span>
+      <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;#0&quot;</span><span class="nt">&gt;</span>Four<span class="nt">&lt;/a&gt;</span>
+    <span class="nt">&lt;/nav&gt;</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="nt">CSS</span><span class="o">:</span>
+    <span class="nt">body</span> <span class="p">{</span>
+      <span class="k">background</span><span class="o">:</span> <span class="m">#f06d06</span><span class="p">;</span>
+    <span class="p">}</span>
+    
+    <span class="nt">header</span><span class="o">,</span> <span class="nt">nav</span> <span class="p">{</span>
+      <span class="k">text-align</span><span class="o">:</span> <span class="k">center</span><span class="p">;</span>
+      <span class="k">background</span><span class="o">:</span> <span class="nb">white</span><span class="p">;</span>
+      <span class="k">margin</span><span class="o">:</span> <span class="m">20px</span> <span class="m">0</span><span class="p">;</span>
+      <span class="k">padding</span><span class="o">:</span> <span class="m">10px</span><span class="p">;</span>
+    <span class="p">}</span>
+   
+    <span class="nt">nav</span> <span class="nt">a</span> <span class="p">{</span>
+      <span class="k">text-decoration</span><span class="o">:</span> <span class="k">none</span><span class="p">;</span>
+      <span class="k">background</span><span class="o">:</span> <span class="m">#333</span><span class="p">;</span>
+      <span class="k">border</span><span class="o">-</span><span class="n">radius</span><span class="o">:</span> <span class="m">5px</span><span class="p">;</span>
+      <span class="k">color</span><span class="o">:</span> <span class="nb">white</span><span class="p">;</span>
+      <span class="k">padding</span><span class="o">:</span> <span class="m">3px</span> <span class="m">8px</span><span class="p">;</span>
+    <span class="p">}</span></code></pre></div>
+
+<h4>2.是否是block元素</h4>
+
+<p>可以利用<code>margin:0 auto;</code>来实现水平居中，利用这种技术的前提是该元素拥有一个固定的宽度。</p>
+
+<div class="highlight"><pre><code class="language-html" data-lang="html">HTML:
+     <span class="nt">&lt;main&gt;</span>
+      <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;center&quot;</span><span class="nt">&gt;</span>
+     I&#39;m a block level element and am centered.
+      <span class="nt">&lt;/div&gt;</span>
+     <span class="nt">&lt;/main&gt;</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="nt">CSS</span><span class="o">:</span>
+    <span class="nt">body</span> <span class="p">{</span>
+      <span class="k">background</span><span class="o">:</span> <span class="m">#f06d06</span><span class="p">;</span>
+    <span class="p">}</span>
+    
+    <span class="nt">main</span> <span class="p">{</span>
+      <span class="k">background</span><span class="o">:</span> <span class="nb">white</span><span class="p">;</span>
+      <span class="k">margin</span><span class="o">:</span> <span class="m">20px</span> <span class="m">0</span><span class="p">;</span>
+      <span class="k">padding</span><span class="o">:</span> <span class="m">10px</span><span class="p">;</span>
+    <span class="p">}</span>
+    
+    <span class="nc">.center</span> <span class="p">{</span>
+      <span class="k">margin</span><span class="o">:</span> <span class="m">0</span> <span class="k">auto</span><span class="p">;</span>
+      <span class="k">width</span><span class="o">:</span> <span class="m">200px</span><span class="p">;</span>
+      <span class="k">background</span><span class="o">:</span> <span class="nb">black</span><span class="p">;</span>
+      <span class="k">padding</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+      <span class="k">color</span><span class="o">:</span> <span class="nb">white</span><span class="p">;</span>
+    <span class="p">}</span></code></pre></div>
+
+<h4>3.是否有多个block元素需要居中</h4>
+
+<p>如果你有多种block级别的元素需要在一行中水平居中，那么你最好赋予这些元素的display属性不同的值。</p>
+
+<div class="highlight"><pre><code class="language-html" data-lang="html">HTML:
+    <span class="nt">&lt;main</span> <span class="na">class=</span><span class="s">&quot;inline-block-center&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;div&gt;</span>
+    I&#39;m an element that is block-like with my siblings and we&#39;re centered in a row.
+      <span class="nt">&lt;/div&gt;</span>
+      <span class="nt">&lt;div&gt;</span>
+    I&#39;m an element that is block-like with my siblings and we&#39;re centered in a row. I have more content in me than my siblings do.
+      <span class="nt">&lt;/div&gt;</span>
+      <span class="nt">&lt;div&gt;</span>
+    I&#39;m an element that is block-like with my siblings and we&#39;re centered in a row.
+      <span class="nt">&lt;/div&gt;</span>
+    <span class="nt">&lt;/main&gt;</span>
+    <span class="nt">&lt;main</span> <span class="na">class=</span><span class="s">&quot;flex-center&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;div&gt;</span>
+    I&#39;m an element that is block-like with my siblings and we&#39;re centered in a row.
+      <span class="nt">&lt;/div&gt;</span>
+      <span class="nt">&lt;div&gt;</span>
+    I&#39;m an element that is block-like with my siblings and we&#39;re centered in a row. I have more content in me than my siblings do.
+      <span class="nt">&lt;/div&gt;</span>
+      <span class="nt">&lt;div&gt;</span>
+    I&#39;m an element that is block-like with my siblings and we&#39;re centered in a row.
+      <span class="nt">&lt;/div&gt;</span>
+    <span class="nt">&lt;/main&gt;</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="nt">CSS</span><span class="o">:</span>
+    <span class="nt">body</span> <span class="p">{</span>
+      <span class="k">background</span><span class="o">:</span> <span class="m">#f06d06</span><span class="p">;</span>
+      <span class="k">font-size</span><span class="o">:</span> <span class="m">80%</span><span class="p">;</span>
+    <span class="p">}</span>
+    
+    <span class="nt">main</span> <span class="p">{</span>
+      <span class="k">background</span><span class="o">:</span> <span class="nb">white</span><span class="p">;</span>
+      <span class="k">margin</span><span class="o">:</span> <span class="m">20px</span> <span class="m">0</span><span class="p">;</span>
+      <span class="k">padding</span><span class="o">:</span> <span class="m">10px</span><span class="p">;</span>
+    <span class="p">}</span>
+    
+    <span class="nt">main</span> <span class="nt">div</span> <span class="p">{</span>
+      <span class="k">background</span><span class="o">:</span> <span class="nb">black</span><span class="p">;</span>
+      <span class="k">color</span><span class="o">:</span> <span class="nb">white</span><span class="p">;</span>
+      <span class="k">padding</span><span class="o">:</span> <span class="m">15px</span><span class="p">;</span>
+      <span class="k">max-width</span><span class="o">:</span> <span class="m">125px</span><span class="p">;</span>
+      <span class="k">margin</span><span class="o">:</span> <span class="m">5px</span><span class="p">;</span>
+    <span class="p">}</span>
+    
+    <span class="nc">.inline-block-center</span> <span class="p">{</span>
+      <span class="k">text-align</span><span class="o">:</span> <span class="k">center</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="nc">.inline-block-center</span> <span class="nt">div</span> <span class="p">{</span>
+      <span class="k">display</span><span class="o">:</span> <span class="k">inline</span><span class="o">-</span><span class="k">block</span><span class="p">;</span>
+      <span class="k">text-align</span><span class="o">:</span> <span class="k">left</span><span class="p">;</span>
+    <span class="p">}</span>
+    
+    <span class="nc">.flex-center</span> <span class="p">{</span>
+      <span class="k">display</span><span class="o">:</span> <span class="n">flex</span><span class="p">;</span>
+      <span class="k">justify</span><span class="o">-</span><span class="k">content</span><span class="o">:</span> <span class="k">center</span><span class="p">;</span>
+    <span class="p">}</span></code></pre></div>
+
+<h3>二.垂直居中</h3>
+
+<p>相对而言，CSS垂直居中的实现更加的复杂一点。</p>
+
+<h4>1.是否是inline或者inline-*元素</h4>
+
+<ul>
+<li>需要居中的元素是否只有一行?
+有时候赋予元素相等的上下内边距就可以实现元素的垂直居中。</li>
+</ul>
+
+<div class="highlight"><pre><code class="language-html" data-lang="html">HTML:
+        <span class="nt">&lt;main&gt;</span>
+          <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;#0&quot;</span><span class="nt">&gt;</span>We&#39;re<span class="nt">&lt;/a&gt;</span>
+          <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;#0&quot;</span><span class="nt">&gt;</span>Centered<span class="nt">&lt;/a&gt;</span>
+          <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;#0&quot;</span><span class="nt">&gt;</span>Bits of<span class="nt">&lt;/a&gt;</span>
+          <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;#0&quot;</span><span class="nt">&gt;</span>Text<span class="nt">&lt;/a&gt;</span>
+        <span class="nt">&lt;/main&gt;</span></code></pre></div>
+        
+
+<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="nt">CSS</span><span class="o">:</span>
+        <span class="nt">body</span> <span class="p">{</span>
+          <span class="k">background</span><span class="o">:</span> <span class="m">#f06d06</span><span class="p">;</span>
+          <span class="k">font-size</span><span class="o">:</span> <span class="m">80%</span><span class="p">;</span>
+        <span class="p">}</span>
+    
+        <span class="nt">main</span> <span class="p">{</span>
+          <span class="k">background</span><span class="o">:</span> <span class="nb">white</span><span class="p">;</span>
+          <span class="k">margin</span><span class="o">:</span> <span class="m">20px</span> <span class="m">0</span><span class="p">;</span>
+          <span class="k">padding</span><span class="o">:</span> <span class="m">50px</span><span class="p">;</span>
+        <span class="p">}</span>
+    
+        <span class="nt">main</span> <span class="nt">a</span> <span class="p">{</span>
+          <span class="k">background</span><span class="o">:</span> <span class="nb">black</span><span class="p">;</span>
+          <span class="k">color</span><span class="o">:</span> <span class="nb">white</span><span class="p">;</span>
+          <span class="k">padding</span><span class="o">:</span> <span class="m">40px</span> <span class="m">30px</span><span class="p">;</span>
+          <span class="k">text-decoration</span><span class="o">:</span> <span class="k">none</span><span class="p">;</span>
+        <span class="p">}</span></code></pre></div>
+
+<p>如果padding的解决方案不能满足要求，并且需要居中的文字不会被包裹，那么可以设置line-height和height的值相等。</p>
+
+<div class="highlight"><pre><code class="language-html" data-lang="html">HTML:
+        <span class="nt">&lt;main&gt;</span>
+          <span class="nt">&lt;div&gt;</span>
+              I&#39;m a centered line.
+         <span class="nt">&lt;/div&gt;</span>
+        <span class="nt">&lt;/main&gt;</span></code></pre></div>
+        
+
+<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="nt">CSS</span><span class="o">:</span>
+        <span class="nt">body</span> <span class="p">{</span>
+          <span class="k">background</span><span class="o">:</span> <span class="m">#f06d06</span><span class="p">;</span>
+          <span class="k">font-size</span><span class="o">:</span> <span class="m">80%</span><span class="p">;</span>
+        <span class="p">}</span>
+     
+        <span class="nt">main</span> <span class="p">{</span>
+          <span class="k">background</span><span class="o">:</span> <span class="nb">white</span><span class="p">;</span>
+          <span class="k">margin</span><span class="o">:</span> <span class="m">20px</span> <span class="m">0</span><span class="p">;</span>
+          <span class="k">padding</span><span class="o">:</span> <span class="m">40px</span><span class="p">;</span>
+        <span class="p">}</span>
+    
+        <span class="nt">main</span> <span class="nt">div</span> <span class="p">{</span>
+          <span class="k">background</span><span class="o">:</span> <span class="nb">black</span><span class="p">;</span>
+          <span class="k">color</span><span class="o">:</span> <span class="nb">white</span><span class="p">;</span>
+          <span class="k">height</span><span class="o">:</span> <span class="m">100px</span><span class="p">;</span>
+          <span class="k">line-height</span><span class="o">:</span> <span class="m">100px</span><span class="p">;</span>
+          <span class="k">padding</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+          <span class="k">width</span><span class="o">:</span> <span class="m">50%</span><span class="p">;</span>
+          <span class="k">white-space</span><span class="o">:</span> <span class="k">nowrap</span><span class="p">;</span>
+        <span class="p">}</span></code></pre></div>
+    
+
+<ul>
+<li>需要居中的元素是否有多行？
+设置相同的上下内边距同样可以让多行的inline元素居中，如果这种技术不能够实现居中，可以采用<code>display:table-cell;</code>来实现垂直居中。</li>
+</ul>
+
+<div class="highlight"><pre><code class="language-html" data-lang="html">HTML:
+          <span class="nt">&lt;table&gt;</span>
+            <span class="nt">&lt;tr&gt;</span>
+              <span class="nt">&lt;td&gt;</span>
+                I&#39;m vertically centered multiple lines of text in a real table cell.
+             <span class="nt">&lt;/td&gt;</span>
+            <span class="nt">&lt;/tr&gt;</span>
+          <span class="nt">&lt;/table&gt;</span>
+      
+          <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;center-table&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;p&gt;</span>I&#39;m vertically centered multiple lines of text in a CSS-created table layout.<span class="nt">&lt;/p&gt;</span>
+          <span class="nt">&lt;/div&gt;</span></code></pre></div>
+          
+
+<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="nt">CSS</span><span class="o">:</span>
+          <span class="nt">body</span> <span class="p">{</span>
+            <span class="k">background</span><span class="o">:</span> <span class="m">#f06d06</span><span class="p">;</span>
+            <span class="k">font-size</span><span class="o">:</span> <span class="m">80%</span><span class="p">;</span>
+          <span class="p">}</span>
+      
+          <span class="nt">table</span> <span class="p">{</span>
+            <span class="k">background</span><span class="o">:</span> <span class="nb">white</span><span class="p">;</span>
+            <span class="k">width</span><span class="o">:</span> <span class="m">240px</span><span class="p">;</span>
+            <span class="k">border-collapse</span><span class="o">:</span> <span class="k">separate</span><span class="p">;</span>
+            <span class="k">margin</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+            <span class="k">height</span><span class="o">:</span> <span class="m">250px</span><span class="p">;</span>
+          <span class="p">}</span>
+      
+          <span class="nt">table</span> <span class="nt">td</span> <span class="p">{</span>
+            <span class="k">background</span><span class="o">:</span> <span class="nb">black</span><span class="p">;</span>
+            <span class="k">color</span><span class="o">:</span> <span class="nb">white</span><span class="p">;</span>
+            <span class="k">padding</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+            <span class="k">border</span><span class="o">:</span> <span class="m">10px</span> <span class="k">solid</span> <span class="nb">white</span><span class="p">;</span>
+            <span class="c">/* default is vertical-align: middle; */</span>
+          <span class="p">}</span>
+      
+          <span class="nc">.center-table</span> <span class="p">{</span>
+            <span class="k">display</span><span class="o">:</span> <span class="n">table</span><span class="p">;</span>
+            <span class="k">height</span><span class="o">:</span> <span class="m">250px</span><span class="p">;</span>
+            <span class="k">background</span><span class="o">:</span> <span class="nb">white</span><span class="p">;</span>
+            <span class="k">width</span><span class="o">:</span> <span class="m">240px</span><span class="p">;</span>
+            <span class="k">margin</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+          <span class="p">}</span>
+          <span class="nc">.center-table</span> <span class="nt">p</span> <span class="p">{</span>
+            <span class="k">display</span><span class="o">:</span> <span class="k">table-cell</span><span class="p">;</span>
+            <span class="k">margin</span><span class="o">:</span> <span class="m">0</span><span class="p">;</span>
+            <span class="k">background</span><span class="o">:</span> <span class="nb">black</span><span class="p">;</span>
+            <span class="k">color</span><span class="o">:</span> <span class="nb">white</span><span class="p">;</span>
+            <span class="k">padding</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+            <span class="k">border</span><span class="o">:</span> <span class="m">10px</span> <span class="k">solid</span> <span class="nb">white</span><span class="p">;</span>
+            <span class="k">vertical-align</span><span class="o">:</span> <span class="k">middle</span><span class="p">;</span>
+          <span class="p">}</span></code></pre></div>
+
+<p>另外的一种实现垂直居中的方案是采用<code>display:flex;</code>这种方案相对来讲也比较简单。利用flex-box方案需要父容器有一个固定的高度。</p>
+
+<div class="highlight"><pre><code class="language-html" data-lang="html">HTML:
+          <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;flex-center&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;p&gt;</span>I&#39;m vertically centered multiple lines of text in a flexbox container.<span class="nt">&lt;/p&gt;</span>
+          <span class="nt">&lt;/div&gt;</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="nt">CSS</span><span class="o">:</span>      
+          <span class="nt">body</span> <span class="p">{</span>
+              <span class="k">background</span><span class="o">:</span> <span class="m">#f06d06</span><span class="p">;</span>
+              <span class="k">font-size</span><span class="o">:</span> <span class="m">80%</span><span class="p">;</span>
+          <span class="p">}</span>
+        
+          <span class="nt">div</span> <span class="p">{</span>
+              <span class="k">background</span><span class="o">:</span> <span class="nb">white</span><span class="p">;</span>
+              <span class="k">width</span><span class="o">:</span> <span class="m">240px</span><span class="p">;</span>
+              <span class="k">margin</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+           <span class="p">}</span>
+        
+          <span class="nc">.flex-center</span> <span class="p">{</span>
+              <span class="k">background</span><span class="o">:</span> <span class="nb">black</span><span class="p">;</span>
+              <span class="k">color</span><span class="o">:</span> <span class="nb">white</span><span class="p">;</span>
+              <span class="k">border</span><span class="o">:</span> <span class="m">10px</span> <span class="k">solid</span> <span class="nb">white</span><span class="p">;</span>
+              <span class="k">display</span><span class="o">:</span> <span class="n">flex</span><span class="p">;</span>
+              <span class="n">flex</span><span class="o">-</span><span class="k">direction</span><span class="o">:</span> <span class="n">column</span><span class="p">;</span>
+              <span class="k">justify</span><span class="o">-</span><span class="k">content</span><span class="o">:</span> <span class="k">center</span><span class="p">;</span>
+              <span class="k">height</span><span class="o">:</span> <span class="m">200px</span><span class="p">;</span>
+              <span class="n">resize</span><span class="o">:</span> <span class="n">vertical</span><span class="p">;</span>
+              <span class="k">overflow</span><span class="o">:</span> <span class="k">auto</span><span class="p">;</span>
+          <span class="p">}</span>
+          <span class="nc">.flex-center</span> <span class="nt">p</span> <span class="p">{</span>
+              <span class="k">margin</span><span class="o">:</span> <span class="m">0</span><span class="p">;</span>
+              <span class="k">padding</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+          <span class="p">}</span></code></pre></div>
+
+<p>如果以上方案都不能满足要求，可以尝试采用&quot;Goast Element&quot;技术，该技术在容器中放置一个100%高度的伪元素来实现目标元素的居中。</p>
+
+<div class="highlight"><pre><code class="language-html" data-lang="html">HTML:
+        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;ghost-center&quot;</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;p&gt;</span>I&#39;m vertically centered multiple lines of text in a container. Centered with a ghost pseudo element<span class="nt">&lt;/p&gt;</span>
+        <span class="nt">&lt;/div&gt;</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="nt">CSS</span><span class="o">:</span>      
+        <span class="nt">body</span> <span class="p">{</span>
+          <span class="k">background</span><span class="o">:</span> <span class="m">#f06d06</span><span class="p">;</span>
+          <span class="k">font-size</span><span class="o">:</span> <span class="m">80%</span><span class="p">;</span>
+        <span class="p">}</span>
+        
+        <span class="nt">div</span> <span class="p">{</span>
+          <span class="k">background</span><span class="o">:</span> <span class="nb">white</span><span class="p">;</span>
+          <span class="k">width</span><span class="o">:</span> <span class="m">240px</span><span class="p">;</span>
+          <span class="k">height</span><span class="o">:</span> <span class="m">200px</span><span class="p">;</span>
+          <span class="k">margin</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+          <span class="k">color</span><span class="o">:</span> <span class="nb">white</span><span class="p">;</span>
+          <span class="n">resize</span><span class="o">:</span> <span class="n">vertical</span><span class="p">;</span>
+          <span class="k">overflow</span><span class="o">:</span> <span class="k">auto</span><span class="p">;</span>
+          <span class="k">padding</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+        <span class="p">}</span>
+        
+        <span class="nc">.ghost-center</span> <span class="p">{</span>
+          <span class="k">position</span><span class="o">:</span> <span class="k">relative</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="nc">.ghost-center</span><span class="o">:</span><span class="nd">:before</span> <span class="p">{</span>
+          <span class="k">content</span><span class="o">:</span> <span class="s2">&quot; &quot;</span><span class="p">;</span>
+          <span class="k">display</span><span class="o">:</span> <span class="k">inline</span><span class="o">-</span><span class="k">block</span><span class="p">;</span>
+          <span class="k">height</span><span class="o">:</span> <span class="m">100%</span><span class="p">;</span>
+          <span class="k">width</span><span class="o">:</span> <span class="m">1%</span><span class="p">;</span>
+          <span class="k">vertical-align</span><span class="o">:</span> <span class="k">middle</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="nc">.ghost-center</span> <span class="nt">p</span> <span class="p">{</span>
+          <span class="k">display</span><span class="o">:</span> <span class="k">inline</span><span class="o">-</span><span class="k">block</span><span class="p">;</span>
+          <span class="k">vertical-align</span><span class="o">:</span> <span class="k">middle</span><span class="p">;</span>
+          <span class="k">width</span><span class="o">:</span> <span class="m">190px</span><span class="p">;</span>
+          <span class="k">margin</span><span class="o">:</span> <span class="m">0</span><span class="p">;</span>
+          <span class="k">padding</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+          <span class="k">background</span><span class="o">:</span> <span class="nb">black</span><span class="p">;</span>
+        <span class="p">}</span></code></pre></div>
+
+<h4>2.是否是block元素</h4>
+
+<ul>
+<li>元素高度已知
+大多数情况下我们并不知道需要居中的元素的高度，原因有很多，这里不赘述。倘若你知道元素的高度，那么可以利用如下的方法实现block元素的垂直居中。</li>
+</ul>
+
+<div class="highlight"><pre><code class="language-html" data-lang="html">HTML:
+        <span class="nt">&lt;main&gt;</span>
+      
+          <span class="nt">&lt;div&gt;</span>
+             I&#39;m a block-level element with a fixed height, centered vertically within my parent.
+          <span class="nt">&lt;/div&gt;</span>
+          
+        <span class="nt">&lt;/main&gt;</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="nt">CSS</span><span class="o">:</span>        
+        <span class="nt">body</span> <span class="p">{</span>
+          <span class="k">background</span><span class="o">:</span> <span class="m">#f06d06</span><span class="p">;</span>
+          <span class="k">font-size</span><span class="o">:</span> <span class="m">80%</span><span class="p">;</span>
+        <span class="p">}</span>
+        
+        <span class="nt">main</span> <span class="p">{</span>
+          <span class="k">background</span><span class="o">:</span> <span class="nb">white</span><span class="p">;</span>
+          <span class="k">height</span><span class="o">:</span> <span class="m">300px</span><span class="p">;</span>
+          <span class="k">margin</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+          <span class="k">width</span><span class="o">:</span> <span class="m">300px</span><span class="p">;</span>
+          <span class="k">position</span><span class="o">:</span> <span class="k">relative</span><span class="p">;</span>
+          <span class="n">resize</span><span class="o">:</span> <span class="n">vertical</span><span class="p">;</span>
+          <span class="k">overflow</span><span class="o">:</span> <span class="k">auto</span><span class="p">;</span>
+        <span class="p">}</span>
+        
+        <span class="nt">main</span> <span class="nt">div</span> <span class="p">{</span>
+          <span class="k">position</span><span class="o">:</span> <span class="k">absolute</span><span class="p">;</span>
+          <span class="k">top</span><span class="o">:</span> <span class="m">50%</span><span class="p">;</span>
+          <span class="k">left</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+          <span class="k">right</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+          <span class="k">height</span><span class="o">:</span> <span class="m">100px</span><span class="p">;</span>
+          <span class="k">margin-top</span><span class="o">:</span> <span class="m">-70px</span><span class="p">;</span>
+          <span class="k">background</span><span class="o">:</span> <span class="nb">black</span><span class="p">;</span>
+          <span class="k">color</span><span class="o">:</span> <span class="nb">white</span><span class="p">;</span>
+          <span class="k">padding</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+        <span class="p">}</span></code></pre></div>
+
+<ul>
+<li>元素的高度未知</li>
+</ul>
+
+<div class="highlight"><pre><code class="language-html" data-lang="html">HTML:    
+        <span class="nt">&lt;main&gt;</span>
+          
+          <span class="nt">&lt;div&gt;</span>
+             I&#39;m a block-level element with an unknown height, centered vertically within my parent.
+          <span class="nt">&lt;/div&gt;</span>
+          
+        <span class="nt">&lt;/main&gt;</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="nt">CSS</span><span class="o">:</span>
+        <span class="nt">body</span> <span class="p">{</span>
+          <span class="k">background</span><span class="o">:</span> <span class="m">#f06d06</span><span class="p">;</span>
+          <span class="k">font-size</span><span class="o">:</span> <span class="m">80%</span><span class="p">;</span>
+        <span class="p">}</span>
+        
+        <span class="nt">main</span> <span class="p">{</span>
+          <span class="k">background</span><span class="o">:</span> <span class="nb">white</span><span class="p">;</span>
+          <span class="k">height</span><span class="o">:</span> <span class="m">300px</span><span class="p">;</span>
+          <span class="k">margin</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+          <span class="k">width</span><span class="o">:</span> <span class="m">300px</span><span class="p">;</span>
+          <span class="k">position</span><span class="o">:</span> <span class="k">relative</span><span class="p">;</span>
+          <span class="n">resize</span><span class="o">:</span> <span class="n">vertical</span><span class="p">;</span>
+          <span class="k">overflow</span><span class="o">:</span> <span class="k">auto</span><span class="p">;</span>
+        <span class="p">}</span>
+        
+        <span class="nt">main</span> <span class="nt">div</span> <span class="p">{</span>
+          <span class="k">position</span><span class="o">:</span> <span class="k">absolute</span><span class="p">;</span>
+          <span class="k">top</span><span class="o">:</span> <span class="m">50%</span><span class="p">;</span>
+          <span class="k">left</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+          <span class="k">right</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+          <span class="k">background</span><span class="o">:</span> <span class="nb">black</span><span class="p">;</span>
+          <span class="k">color</span><span class="o">:</span> <span class="nb">white</span><span class="p">;</span>
+          <span class="k">padding</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+          <span class="n">transform</span><span class="o">:</span> <span class="n">translateY</span><span class="p">(</span><span class="m">-50%</span><span class="p">);</span>
+          <span class="n">resize</span><span class="o">:</span> <span class="n">vertical</span><span class="p">;</span>
+          <span class="k">overflow</span><span class="o">:</span> <span class="k">auto</span><span class="p">;</span>
+        <span class="p">}</span></code></pre></div>
+
+<h4>3.是否可以使用flex-box</h4>
+
+<div class="highlight"><pre><code class="language-html" data-lang="html">HTML:
+        <span class="nt">&lt;main&gt;</span>
+          
+          <span class="nt">&lt;div&gt;</span>
+             I&#39;m a block-level element with an unknown height, centered vertically within my parent.
+          <span class="nt">&lt;/div&gt;</span>
+          
+        <span class="nt">&lt;/main&gt;</span></code></pre></div>
+ 
+
+<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="nt">CSS</span><span class="o">:</span>      
+        <span class="nt">body</span> <span class="p">{</span>
+          <span class="k">background</span><span class="o">:</span> <span class="m">#f06d06</span><span class="p">;</span>
+          <span class="k">font-size</span><span class="o">:</span> <span class="m">80%</span><span class="p">;</span>
+        <span class="p">}</span>
+        
+        <span class="nt">main</span> <span class="p">{</span>
+          <span class="k">background</span><span class="o">:</span> <span class="nb">white</span><span class="p">;</span>
+          <span class="k">height</span><span class="o">:</span> <span class="m">300px</span><span class="p">;</span>
+          <span class="k">width</span><span class="o">:</span> <span class="m">200px</span><span class="p">;</span>
+          <span class="k">padding</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+          <span class="k">margin</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+          <span class="k">display</span><span class="o">:</span> <span class="n">flex</span><span class="p">;</span>
+          <span class="n">flex</span><span class="o">-</span><span class="k">direction</span><span class="o">:</span> <span class="n">column</span><span class="p">;</span>
+          <span class="k">justify</span><span class="o">-</span><span class="k">content</span><span class="o">:</span> <span class="k">center</span><span class="p">;</span>
+          <span class="n">resize</span><span class="o">:</span> <span class="n">vertical</span><span class="p">;</span>
+          <span class="k">overflow</span><span class="o">:</span> <span class="k">auto</span><span class="p">;</span>
+        <span class="p">}</span>
+        
+        <span class="nt">main</span> <span class="nt">div</span> <span class="p">{</span>
+          <span class="k">background</span><span class="o">:</span> <span class="nb">black</span><span class="p">;</span>
+          <span class="k">color</span><span class="o">:</span> <span class="nb">white</span><span class="p">;</span>
+          <span class="k">padding</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+          <span class="n">resize</span><span class="o">:</span> <span class="n">vertical</span><span class="p">;</span>
+          <span class="k">overflow</span><span class="o">:</span> <span class="k">auto</span><span class="p">;</span>
+        <span class="p">}</span></code></pre></div>
+       
+
+<h3>三.水平居中和垂直居中</h3>
+
+<p>可以组合前文提到的方案来实现元素的水平和垂直居中，下面给出三种比较常见的组合。</p>
+
+<h4>1.元素的宽度和高度固定</h4>
+
+<p>使用负边距来定位，左右负边距设置为宽度的一半，上下负边距设定为高度的一半，这种方案的兼容性很好。</p>
+
+<div class="highlight"><pre><code class="language-html" data-lang="html">HTML:    
+        <span class="nt">&lt;main&gt;</span>
+          
+          <span class="nt">&lt;div&gt;</span>
+             I&#39;m a block-level element a fixed height and width, centered vertically within my parent.
+          <span class="nt">&lt;/div&gt;</span>
+          
+        <span class="nt">&lt;/main&gt;</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="nt">CSS</span><span class="o">:</span>        
+        <span class="nt">body</span> <span class="p">{</span>
+          <span class="k">background</span><span class="o">:</span> <span class="m">#f06d06</span><span class="p">;</span>
+          <span class="k">font-size</span><span class="o">:</span> <span class="m">80%</span><span class="p">;</span>
+          <span class="k">padding</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+        <span class="p">}</span>
+        
+        <span class="nt">main</span> <span class="p">{</span>
+          <span class="k">position</span><span class="o">:</span> <span class="k">relative</span><span class="p">;</span>
+          <span class="k">background</span><span class="o">:</span> <span class="nb">white</span><span class="p">;</span>
+          <span class="k">height</span><span class="o">:</span> <span class="m">200px</span><span class="p">;</span>
+          <span class="k">width</span><span class="o">:</span> <span class="m">60%</span><span class="p">;</span>
+          <span class="k">margin</span><span class="o">:</span> <span class="m">0</span> <span class="k">auto</span><span class="p">;</span>
+          <span class="k">padding</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+          <span class="n">resize</span><span class="o">:</span> <span class="k">both</span><span class="p">;</span>
+          <span class="k">overflow</span><span class="o">:</span> <span class="k">auto</span><span class="p">;</span>
+        <span class="p">}</span>
+        
+        <span class="nt">main</span> <span class="nt">div</span> <span class="p">{</span>
+          <span class="k">background</span><span class="o">:</span> <span class="nb">black</span><span class="p">;</span>
+          <span class="k">color</span><span class="o">:</span> <span class="nb">white</span><span class="p">;</span>
+          <span class="k">width</span><span class="o">:</span> <span class="m">200px</span><span class="p">;</span>
+          <span class="k">height</span><span class="o">:</span> <span class="m">100px</span><span class="p">;</span>
+          <span class="k">margin</span><span class="o">:</span> <span class="m">-70px</span> <span class="m">0</span> <span class="m">0</span> <span class="m">-120px</span><span class="p">;</span>
+          <span class="k">position</span><span class="o">:</span> <span class="k">absolute</span><span class="p">;</span>
+          <span class="k">top</span><span class="o">:</span> <span class="m">50%</span><span class="p">;</span>
+          <span class="k">left</span><span class="o">:</span> <span class="m">50%</span><span class="p">;</span>
+          <span class="k">padding</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+        <span class="p">}</span></code></pre></div>
+
+<h4>2.元素的宽度和高度未知。</h4>
+
+<p>如果元素的高度和宽度未知，那么可以利用transform属性来实现。</p>
+
+<div class="highlight"><pre><code class="language-html" data-lang="html">HTML:
+        <span class="nt">&lt;main&gt;</span>
+          
+          <span class="nt">&lt;div&gt;</span>
+             I&#39;m a block-level element of an unknown height and width, centered vertically within my parent.
+          <span class="nt">&lt;/div&gt;</span>
+          
+        <span class="nt">&lt;/main&gt;</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="nt">CSS</span><span class="o">:</span>        
+        <span class="nt">body</span> <span class="p">{</span>
+          <span class="k">background</span><span class="o">:</span> <span class="m">#f06d06</span><span class="p">;</span>
+          <span class="k">font-size</span><span class="o">:</span> <span class="m">80%</span><span class="p">;</span>
+          <span class="k">padding</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+        <span class="p">}</span>
+        
+        <span class="nt">main</span> <span class="p">{</span>
+          <span class="k">position</span><span class="o">:</span> <span class="k">relative</span><span class="p">;</span>
+          <span class="k">background</span><span class="o">:</span> <span class="nb">white</span><span class="p">;</span>
+          <span class="k">height</span><span class="o">:</span> <span class="m">200px</span><span class="p">;</span>
+          <span class="k">width</span><span class="o">:</span> <span class="m">60%</span><span class="p">;</span>
+          <span class="k">margin</span><span class="o">:</span> <span class="m">0</span> <span class="k">auto</span><span class="p">;</span>
+          <span class="k">padding</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+          <span class="n">resize</span><span class="o">:</span> <span class="k">both</span><span class="p">;</span>
+          <span class="k">overflow</span><span class="o">:</span> <span class="k">auto</span><span class="p">;</span>
+        <span class="p">}</span>
+        
+        <span class="nt">main</span> <span class="nt">div</span> <span class="p">{</span>
+          <span class="k">background</span><span class="o">:</span> <span class="nb">black</span><span class="p">;</span>
+          <span class="k">color</span><span class="o">:</span> <span class="nb">white</span><span class="p">;</span>
+          <span class="k">width</span><span class="o">:</span> <span class="m">50%</span><span class="p">;</span>
+          <span class="n">transform</span><span class="o">:</span> <span class="n">translate</span><span class="p">(</span><span class="m">-50%</span><span class="o">,</span> <span class="m">-50%</span><span class="p">);</span>
+          <span class="k">position</span><span class="o">:</span> <span class="k">absolute</span><span class="p">;</span>
+          <span class="k">top</span><span class="o">:</span> <span class="m">50%</span><span class="p">;</span>
+          <span class="k">left</span><span class="o">:</span> <span class="m">50%</span><span class="p">;</span>
+          <span class="k">padding</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+          <span class="n">resize</span><span class="o">:</span> <span class="k">both</span><span class="p">;</span>
+          <span class="k">overflow</span><span class="o">:</span> <span class="k">auto</span><span class="p">;</span>
+        <span class="p">}</span></code></pre></div>
+        
+
+<h4>3.是否可以使用flex-box</h4>
+
+<div class="highlight"><pre><code class="language-html" data-lang="html">HTML:
+        <span class="nt">&lt;main&gt;</span>
+          
+          <span class="nt">&lt;div&gt;</span>
+             I&#39;m a block-level-ish element of an unknown width and height, centered vertically within my parent.
+          <span class="nt">&lt;/div&gt;</span>
+          
+        <span class="nt">&lt;/main&gt;</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="nt">CSS</span><span class="o">:</span>
+        <span class="nt">body</span> <span class="p">{</span>
+          <span class="k">background</span><span class="o">:</span> <span class="m">#f06d06</span><span class="p">;</span>
+          <span class="k">font-size</span><span class="o">:</span> <span class="m">80%</span><span class="p">;</span>
+          <span class="k">padding</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+        <span class="p">}</span>
+        
+        <span class="nt">main</span> <span class="p">{</span>
+          <span class="k">background</span><span class="o">:</span> <span class="nb">white</span><span class="p">;</span>
+          <span class="k">height</span><span class="o">:</span> <span class="m">200px</span><span class="p">;</span>
+          <span class="k">width</span><span class="o">:</span> <span class="m">60%</span><span class="p">;</span>
+          <span class="k">margin</span><span class="o">:</span> <span class="m">0</span> <span class="k">auto</span><span class="p">;</span>
+          <span class="k">padding</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+          <span class="k">display</span><span class="o">:</span> <span class="n">flex</span><span class="p">;</span>
+          <span class="k">justify</span><span class="o">-</span><span class="k">content</span><span class="o">:</span> <span class="k">center</span><span class="p">;</span>
+          <span class="n">align</span><span class="o">-</span><span class="n">items</span><span class="o">:</span> <span class="k">center</span><span class="p">;</span>
+          <span class="n">resize</span><span class="o">:</span> <span class="k">both</span><span class="p">;</span>
+          <span class="k">overflow</span><span class="o">:</span> <span class="k">auto</span><span class="p">;</span>
+        <span class="p">}</span>
+        
+        <span class="nt">main</span> <span class="nt">div</span> <span class="p">{</span>
+          <span class="k">background</span><span class="o">:</span> <span class="nb">black</span><span class="p">;</span>
+          <span class="k">color</span><span class="o">:</span> <span class="nb">white</span><span class="p">;</span>
+          <span class="k">width</span><span class="o">:</span> <span class="m">50%</span><span class="p">;</span>
+          <span class="k">padding</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+          <span class="n">resize</span><span class="o">:</span> <span class="k">both</span><span class="p">;</span>
+          <span class="k">overflow</span><span class="o">:</span> <span class="k">auto</span><span class="p">;</span>
+        <span class="p">}</span></code></pre></div>
+
+<p>参考：<a href="https://css-tricks.com/centering-css-complete-guide/" title="Centering CSS Complete Guide">https://css-tricks.com/centering-css-complete-guide/</a></p>
+
+
+  <!-- POST NAVIGATION -->
+  <div class="postNav clearfix">
+      
+     
+  </div>
+</div>
+
+      </div>
+   </div><!-- end .content -->
+
+   <div class="footer">
+   <div class="container">
+      <p class="copy">&copy; <script type="text/javascript">document.write(new Date().getFullYear());</script> <a href="jack-nie.github.io">Jack Nie</a> Powered by <a href="http://jekyllrb.com">Jekyll</a></p>
+
+      <div class="footer-links"> 
+         <ul class="noList"> 
+            
+            <li><a href="https://www.facebook.com/jack-nie">
+                  <svg id="facebook-square" class="custom-icon" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 100 100" style="height: 30px; width: 30px;"><circle class="outer-shape" cx="50" cy="50" r="48" style="opacity: 1;"></circle>
+                  <path class="inner-shape" style="opacity: 1;" transform="translate(25,25) scale(0.5)" d="M82.667,1H17.335C8.351,1,1,8.351,1,17.336v65.329c0,8.99,7.351,16.335,16.334,16.335h65.332 C91.652,99.001,99,91.655,99,82.665V17.337C99,8.353,91.652,1.001,82.667,1L82.667,1z M84.318,50H68.375v42.875H50V50h-8.855V35.973 H50v-9.11c0-12.378,5.339-19.739,19.894-19.739h16.772V22.3H72.967c-4.066-0.007-4.57,2.12-4.57,6.078l-0.023,7.594H86.75 l-2.431,14.027V50z"></path>
+                  </svg>
+            </a></li>
+            
+            
+            <li><a href="https://twitter.com/jack-nie">
+                  <svg id="twitter" class="custom-icon" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 100 100" style="height: 30px; width: 30px;"><circle class="outer-shape" cx="50" cy="50" r="48" style="opacity: 1;"></circle>
+                  <path class="inner-shape" style="opacity: 1;" transform="translate(25,25) scale(0.5)" d="M99.001,19.428c-3.606,1.608-7.48,2.695-11.547,3.184c4.15-2.503,7.338-6.466,8.841-11.189 c-3.885,2.318-8.187,4-12.768,4.908c-3.667-3.931-8.893-6.387-14.676-6.387c-11.104,0-20.107,9.054-20.107,20.223 c0,1.585,0.177,3.128,0.52,4.609c-16.71-0.845-31.525-8.895-41.442-21.131C6.092,16.633,5.1,20.107,5.1,23.813 c0,7.017,3.55,13.208,8.945,16.834c-3.296-0.104-6.397-1.014-9.106-2.529c-0.002,0.085-0.002,0.17-0.002,0.255 c0,9.799,6.931,17.972,16.129,19.831c-1.688,0.463-3.463,0.71-5.297,0.71c-1.296,0-2.555-0.127-3.783-0.363 c2.559,8.034,9.984,13.882,18.782,14.045c-6.881,5.424-15.551,8.657-24.971,8.657c-1.623,0-3.223-0.096-4.796-0.282 c8.898,5.738,19.467,9.087,30.82,9.087c36.982,0,57.206-30.817,57.206-57.543c0-0.877-0.02-1.748-0.059-2.617 C92.896,27.045,96.305,23.482,99.001,19.428z"></path>
+                  </svg>
+            </a></li>
+            
+            
+            <li><a href="https://github.com/jack-nie">
+                  <svg id="github" class="custom-icon" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 100 100" style="height: 30px; width: 30px;"><circle class="outer-shape" cx="50" cy="50" r="48" style="opacity: 1;"></circle>
+                  <path class="inner-shape" style="opacity: 1;" transform="translate(25,25) scale(0.5)" d="M50,1C22.938,1,1,22.938,1,50s21.938,49,49,49s49-21.938,49-49S77.062,1,50,1z M79.099,79.099 c-3.782,3.782-8.184,6.75-13.083,8.823c-1.245,0.526-2.509,0.989-3.79,1.387v-7.344c0-3.86-1.324-6.699-3.972-8.517 c1.659-0.16,3.182-0.383,4.57-0.67c1.388-0.287,2.855-0.702,4.402-1.245c1.547-0.543,2.935-1.189,4.163-1.938 c1.228-0.75,2.409-1.723,3.541-2.919s2.082-2.552,2.847-4.067s1.372-3.334,1.818-5.455c0.446-2.121,0.67-4.458,0.67-7.01 c0-4.945-1.611-9.155-4.833-12.633c1.467-3.828,1.308-7.991-0.478-12.489l-1.197-0.143c-0.829-0.096-2.321,0.255-4.474,1.053 c-2.153,0.798-4.57,2.105-7.249,3.924c-3.797-1.053-7.736-1.579-11.82-1.579c-4.115,0-8.039,0.526-11.772,1.579 c-1.69-1.149-3.294-2.097-4.809-2.847c-1.515-0.75-2.727-1.26-3.637-1.532c-0.909-0.271-1.754-0.439-2.536-0.503 c-0.782-0.064-1.284-0.079-1.507-0.048c-0.223,0.031-0.383,0.064-0.478,0.096c-1.787,4.53-1.946,8.694-0.478,12.489 c-3.222,3.477-4.833,7.688-4.833,12.633c0,2.552,0.223,4.889,0.67,7.01c0.447,2.121,1.053,3.94,1.818,5.455 c0.765,1.515,1.715,2.871,2.847,4.067s2.313,2.169,3.541,2.919c1.228,0.751,2.616,1.396,4.163,1.938 c1.547,0.543,3.014,0.957,4.402,1.245c1.388,0.287,2.911,0.511,4.57,0.67c-2.616,1.787-3.924,4.626-3.924,8.517v7.487 c-1.445-0.43-2.869-0.938-4.268-1.53c-4.899-2.073-9.301-5.041-13.083-8.823c-3.782-3.782-6.75-8.184-8.823-13.083 C9.934,60.948,8.847,55.56,8.847,50s1.087-10.948,3.231-16.016c2.073-4.899,5.041-9.301,8.823-13.083s8.184-6.75,13.083-8.823 C39.052,9.934,44.44,8.847,50,8.847s10.948,1.087,16.016,3.231c4.9,2.073,9.301,5.041,13.083,8.823 c3.782,3.782,6.75,8.184,8.823,13.083c2.143,5.069,3.23,10.457,3.23,16.016s-1.087,10.948-3.231,16.016 C85.848,70.915,82.88,75.317,79.099,79.099L79.099,79.099z"></path>
+                  </svg>
+            </a></li>
+             
+            
+         </ul>
+      </div>
+   </div>
+</div><!-- end .footer -->
+
+
+   <!-- Add jQuery and other scripts -->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src=""><\/script>')</script>
+<script src="/assets/js/dropcap.min.js"></script>
+<script src="/assets/js/responsive-nav.min.js"></script>
+<script src="/assets/js/scripts.js"></script>
+
+
+</body>
+
+</html>

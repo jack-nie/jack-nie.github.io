@@ -1,8 +1,27 @@
-markdown: rdiscount
-permalink: /:categories/:title/
-url: jack-nie.github.io 
-author: Jack Nie
-pygments: true
-safe: true
-paginate: 16
+title: Jack Nie
+description: Long Form Jekyll theme built with SASS / COMPASS / SUSY
 
+url: http://jack-nie.github.com
+baseurl: ""
+paginate_path: "blog/page:num/"
+permalink: blog/:title/
+
+markdown: redcarpet
+highlighter: pygments
+paginate: 5
+
+navigation:
+ - title: Home
+   url: /index.html
+ - title: About
+   url: /about.html
+ - title: Contact
+   url: /contact.html
+
+social:
+   github: jack-nie
+   twitter: jack-nie
+   facebook: jack-nie
+   email: hust.ud.hui@gmail.com
+
+google_analytics: "UA-58263416-1"
