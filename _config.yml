@@ -1,6 +1,6 @@
 markdown: rdiscount
 permalink: /:categories/:title/
-url: http://dannyli.net
+url: http://kingguy.net
 author: Jack Nie
 pygments: true
 safe: true

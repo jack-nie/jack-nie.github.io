@@ -1,7 +1,7 @@
 <!-- Duoshuo Comment BEGIN -->
 	<div class="ds-thread"></div>
 <script type="text/javascript">
-var duoshuoQuery = {short_name:"dannyli"};
+var duoshuoQuery = {short_name:"Jack Nie"};
 	(function() {
 		var ds = document.createElement('script');
 		ds.type = 'text/javascript';ds.async = true;
