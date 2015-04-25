@@ -9,7 +9,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
-    <title>Contact Jack Nie</title>
+    <title>build_stubbed详解--Factory Girl</title>
 
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="/assets/img/favicon.ico" />
@@ -20,7 +20,7 @@
     <!-- Stylesheet -->
     <link rel="stylesheet" href="/assets/css/style.css">
     <!--[if IE 8]><link rel="stylesheet" href="/assets/css/ie.css"><![endif]-->
-    <link rel="canonical" href="http://jack-nie.github.com/contact.html">
+    <link rel="canonical" href="http://jack-nie.github.com/blog/explain-build_stubbed/">
 
     <!-- Modernizr -->
     <script src="/assets/js/modernizr.custom.15390.js" type="text/javascript"></script>
@@ -56,7 +56,7 @@ ga('send', 'pageview');
                      <a href="/about.html">About</a>
                  </li> 
                  
-                 <li class="element  current last">
+                 <li class="element   last">
                      <a href="/contact.html">Contact</a>
                  </li> 
                  
@@ -69,7 +69,67 @@ ga('send', 'pageview');
 
    <div class="content">
       <div class="container">
-         <p>Feel free to email to <a href="mailto:hust.ud.hui@gmail.com">hust.ud.hui@gmail.com</a></p>
+         <div class="post">
+  
+  <h1 class="postTitle">build_stubbed详解--Factory Girl</h1>
+  <p class="meta">February 20, 2015 | <span class="time">0</span> Minute Read</p>
+  
+  <p>build<em>stubbed是在FactoryGirl中引入的一个方法，build</em>stubbed和build都是用来创建实例并分配属性。区别是build<em>stubbed使得对象看起来像是被持久化了，实际上并没有。它采用build</em>stubbed策略来创建关联，并且提供了少量的同数据库进行交互的方法，如果调用他们，这些方法会被触发。通过这种策略，可以加快测试的速度，同时减少对数据库的依赖。</p>
+
+<p>但是如果创建的对象有关联的对象的话，被关联的对象是会被持久化到数据中的。为了避免这一情况的
+发生可以将不必要的的关联设置为nil。</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Ruby</span> <span class="ss">Code</span><span class="p">:</span>
+    <span class="n">assoiation</span> <span class="ss">:store</span>
+    <span class="n">assoiation</span> <span class="ss">:area</span>
+    
+    <span class="no">FactoryGirl</span><span class="o">.</span><span class="n">build_stubbed</span><span class="p">(</span><span class="ss">:store</span><span class="p">,</span> <span class="ss">company</span><span class="p">:</span> <span class="n">fg_company</span><span class="p">,</span> <span class="ss">area</span><span class="p">:</span> <span class="kp">nil</span><span class="p">)</span></code></pre></div>
+
+<p>通过这种方式就不会额外的创建被关联的数据了。如果创建时有很多依赖，但是你忘记了将其中的一个
+或者几个关联设置为nil，同样会往数据库中写入很多数据。这里给出解决方案：
+1. 在FactoryGirl的定义中手动的删除assoiation。
+2. 将所有的实例变量移入before(:all)代码块中。</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Ruby</span> <span class="ss">Code</span><span class="p">:</span>
+    <span class="n">before</span><span class="p">(</span><span class="ss">:all</span><span class="p">)</span> <span class="k">do</span>
+      <span class="vi">@company</span> <span class="o">=</span> <span class="no">FactoryGirl</span><span class="o">.</span><span class="n">build_stubbed</span><span class="p">(</span><span class="ss">:company</span><span class="p">)</span>
+      <span class="vi">@store</span> <span class="o">=</span> <span class="no">FactoryGirl</span><span class="o">.</span><span class="n">build_stubbed</span><span class="p">(</span><span class="ss">:store</span><span class="p">,</span> <span class="ss">company</span><span class="p">:</span> <span class="n">company</span><span class="p">)</span>
+    <span class="k">end</span></code></pre></div>
+
+<p>或者采用下面的方案：</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Ruby</span> <span class="ss">Code</span><span class="p">:</span>
+    <span class="n">factory</span> <span class="ss">:post</span> <span class="k">do</span>
+      <span class="n">title</span> <span class="c1"># sequence</span>
+      <span class="n">author</span> <span class="c1"># sequence, so the example is shorter</span>
+      <span class="c1"># stuff</span>
+      <span class="n">after</span><span class="p">(</span><span class="ss">:build</span><span class="p">)</span> <span class="p">{</span><span class="o">|</span><span class="nb">p</span><span class="o">|</span> <span class="nb">p</span><span class="o">.</span><span class="n">comments</span> <span class="o">||=</span> <span class="n">create_list</span><span class="p">(</span><span class="ss">:comment</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="ss">post</span><span class="p">:</span> <span class="nb">p</span><span class="p">)</span> <span class="p">}</span>
+      <span class="n">after</span><span class="p">(</span><span class="ss">:stub</span><span class="p">)</span> <span class="p">{</span><span class="o">|</span><span class="nb">p</span><span class="o">|</span> <span class="nb">p</span><span class="o">.</span><span class="n">comments</span> <span class="o">||=</span> <span class="n">build_stubbed_list</span><span class="p">(</span><span class="ss">:comment</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="ss">post</span><span class="p">:</span> <span class="nb">p</span><span class="p">}</span>
+    <span class="k">end</span>
+    
+    <span class="n">create</span><span class="p">(</span><span class="ss">:post</span><span class="p">)</span> <span class="c1"># with auto comments</span>
+    <span class="n">create</span><span class="p">(</span><span class="ss">:post</span><span class="p">,</span> <span class="ss">comments</span><span class="p">:</span> <span class="n">some_other_comments</span><span class="p">)</span> <span class="c1"># with comments for a specific test</span>
+    <span class="n">build_stubbed</span><span class="p">(</span><span class="ss">:post</span><span class="p">)</span> <span class="c1"># with auto comments and no DB</span>
+    <span class="n">build_stubbed</span><span class="p">(</span><span class="ss">:post</span><span class="p">,</span> <span class="ss">comments</span><span class="p">:</span> <span class="o">[]</span><span class="p">)</span> <span class="c1"># a post with no comments, still not touching the DB</span></code></pre></div>
+
+<p>这种用法使得before(:all)仅仅被用作提供事物功能的一个骨架。这就导致了测试状态更加的依赖测试的顺序，这是应该避免的。当然，也可以通过在before/after :all 代码块中加入清除数据的逻辑来解决。</p>
+
+<p>参考资料：</p>
+
+<p><a href="http://blog.spoolz.com/2012/07/09/small-revelation-factorygirl-build_stubbed-associations-and-let/" title="small-revelation-factorygirl-build_stubbed-associations-and-let">http://blog.spoolz.com/2012/07/09/small-revelation-factorygirl-build_stubbed-associations-and-let/</a>
+<a href="https://robots.thoughtbot.com/use-factory-girls-build-stubbed-for-a-faster-test" title="use-factory-girls-build-stubbed-for-a-faster-test">https://robots.thoughtbot.com/use-factory-girls-build-stubbed-for-a-faster-test</a></p>
+
+
+  <!-- POST NAVIGATION -->
+  <div class="postNav clearfix">
+      
+      
+      <a class="next" href="/blog/centering-css-complete-guide/"><span>CSS居中完全指导手册&nbsp;&raquo;</span>
+       
+      </a>
+     
+  </div>
+</div>
 
       </div>
    </div><!-- end .content -->
