@@ -5,8 +5,8 @@
     <description>Long Form Jekyll theme built with SASS / COMPASS / SUSY</description>
     <link>http://jack-nie.github.com/</link>
     <atom:link href="http://jack-nie.github.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sat, 25 Apr 2015 17:36:39 -0700</pubDate>
-    <lastBuildDate>Sat, 25 Apr 2015 17:36:39 -0700</lastBuildDate>
+    <pubDate>Sat, 25 Apr 2015 17:47:03 -0700</pubDate>
+    <lastBuildDate>Sat, 25 Apr 2015 17:47:03 -0700</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       
@@ -159,9 +159,8 @@
 要避免写一个充满了方法的模板类，但是没有子类覆写这些方法，这会提高维护成本。
 要避免提供过少的钩子，在某些时候，这就迫使子类不得不覆写整个方法。&lt;/p&gt;
 
-&lt;p&gt;参考资料：&lt;/br&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://reefpoints.dockyard.com/ruby/2013/07/10/design-patterns-template-pattern.html&quot; title=&quot;Design Patterns: The Template Method Pattern&quot;&gt;http://reefpoints.dockyard.com/ruby/2013/07/10/design-patterns-template-pattern.html&lt;/a&gt;&lt;/br&gt;
+&lt;p&gt;参考资料：&lt;/br&gt;
+&lt;a href=&quot;http://reefpoints.dockyard.com/ruby/2013/07/10/design-patterns-template-pattern.html&quot; title=&quot;Design Patterns: The Template Method Pattern&quot;&gt;http://reefpoints.dockyard.com/ruby/2013/07/10/design-patterns-template-pattern.html&lt;/a&gt;&lt;/br&gt;
 &lt;a href=&quot;http://edapx.com/2013/10/27/template-pattern/&quot; title=&quot;#1 template pattern&quot;&gt;http://edapx.com/2013/10/27/template-pattern/&lt;/a&gt;&lt;/br&gt;
 &lt;a href=&quot;http://tammersaleh.com/posts/the-template-pattern-is-underused/&quot; title=&quot;The Template Pattern is underused&quot;&gt;http://tammersaleh.com/posts/the-template-pattern-is-underused/&lt;/a&gt;&lt;/p&gt;
 </description>
@@ -435,9 +434,8 @@
 
 &lt;p&gt;那么这二者之间的共同点和关键的不同之处是什么呢？我们你们其中的一些人已经很清楚了，另外一些人可能会很困惑（就像我最初一样）。二者都是将领域特定算法封装进对象中。最关键的区别在于策略模式通过策略在运行时改变上下文对象的行为，模板方法模式通过使用一个算法的框架实现，并且通过在框架的子类中覆写方法来改变其行为。&lt;/p&gt;
 
-&lt;h3&gt;原文：&lt;/h3&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://rubylogs.com/pattern-to-pattern-template-method-and-strategy/&quot; title=&quot;Pattern to pattern: Template Method &amp;amp; Strategy&quot;&gt;http://rubylogs.com/pattern-to-pattern-template-method-and-strategy/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;原文：&lt;/br&gt;
+&lt;a href=&quot;http://rubylogs.com/pattern-to-pattern-template-method-and-strategy/&quot; title=&quot;Pattern to pattern: Template Method &amp;amp; Strategy&quot;&gt;http://rubylogs.com/pattern-to-pattern-template-method-and-strategy/&lt;/a&gt;&lt;/p&gt;
 </description>
         
           <description>&lt;p&gt;最近我写了一片关于&lt;a href=&quot;http://rubylogs.com/template-method-pattern-in-ruby/&quot;&gt;模板方法模式&lt;/a&gt;以及怎样在Ruby中实现的文章。有读者在文章的评论中指出模板方法模式实际上是策略模式。在经过仔细的考虑该怎么回答这个问题在之后，我决定写一篇文章来比较这两个模式。&lt;/p&gt;
@@ -614,7 +612,8 @@
         &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mo&quot;&gt;003&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
         &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;h3&gt;参考资料：&lt;a href=&quot;http://blog.diatomenterprises.com/arrays-are-the-workhorse-of-ruby/&quot;&gt;http://blog.diatomenterprises.com/arrays-are-the-workhorse-of-ruby/&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;参考资料：&lt;/br&gt;
+&lt;a href=&quot;http://blog.diatomenterprises.com/arrays-are-the-workhorse-of-ruby/&quot;&gt;http://blog.diatomenterprises.com/arrays-are-the-workhorse-of-ruby/&lt;/a&gt;        &lt;/p&gt;
 </description>
         
           <description>&lt;p&gt;在这篇文章中，我将深入探讨&lt;code&gt;Arrays&lt;/code&gt;。数组中有很多方法我们每天都用，但是也有一部分方法我们甚至不知道他们的存在。&lt;/p&gt;
@@ -825,7 +824,8 @@
 
 &lt;p&gt;现在你知道了&lt;code&gt;#instance_eval&lt;/code&gt;和&lt;code&gt;#instance_exec&lt;/code&gt;在表现方式上是类似的，如果你需要传递参数，那么请使用&lt;code&gt;#instance_exec&lt;/code&gt;。&lt;/p&gt;
 
-&lt;h3&gt;原文：&lt;a href=&quot;http://www.saturnflyer.com/blog/jim/2015/04/22/the-difference-between-instance_eval-and-instance_exec/&quot; title=&quot;The Difference Between Instance_eval And Instance_exec&quot;&gt;http://www.saturnflyer.com/blog/jim/2015/04/22/the-difference-between-instance&lt;em&gt;eval-and-instance&lt;/em&gt;exec/&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;原文：&lt;/br&gt;
+&lt;a href=&quot;http://www.saturnflyer.com/blog/jim/2015/04/22/the-difference-between-instance_eval-and-instance_exec/&quot; title=&quot;The Difference Between Instance_eval And Instance_exec&quot;&gt;http://www.saturnflyer.com/blog/jim/2015/04/22/the-difference-between-instance&lt;em&gt;eval-and-instance&lt;/em&gt;exec/&lt;/a&gt;&lt;/p&gt;
 </description>
         
           <description>&lt;p&gt;&lt;code&gt;#instance_eval&lt;/code&gt;和&lt;code&gt;#instance_exec&lt;/code&gt;之间有一个非常重要的区别。&lt;a href=&quot;https://github.com/thoughtbot/factory_girl&quot;&gt;Factory Girl&lt;/a&gt;是一个展示如何优雅的使用以上两者的很好的例子。&lt;/p&gt;
@@ -1439,7 +1439,8 @@
           &lt;span class=&quot;k&quot;&gt;overflow&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;auto&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
         &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;h3&gt;参考资料：&lt;a href=&quot;https://css-tricks.com/centering-css-complete-guide/&quot; title=&quot;Centering CSS Complete Guide&quot;&gt;https://css-tricks.com/centering-css-complete-guide/&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;参考资料：&lt;/br&gt;
+&lt;a href=&quot;https://css-tricks.com/centering-css-complete-guide/&quot; title=&quot;Centering CSS Complete Guide&quot;&gt;https://css-tricks.com/centering-css-complete-guide/&lt;/a&gt;&lt;/p&gt;
 </description>
         
           <description>&lt;p&gt;前端开发中，CSS居中一直是一个令人头痛的问题。为什么CSS居中这么困难呢？其实实现CSS居中并不难，难的是如何从众多的CSS居中方法中选择一个合适的解决方案，通常你并不知道那种解决方案适合当前的情形。所以，让我们来整理一个决策树，希望能够帮助大家更容易的解决CSS居中的问题。&lt;/p&gt;

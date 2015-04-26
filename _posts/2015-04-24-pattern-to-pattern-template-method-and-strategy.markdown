@@ -114,5 +114,5 @@ date:   2015-04-24
 ###策略模式和模板方法模式
 那么这二者之间的共同点和关键的不同之处是什么呢？我们你们其中的一些人已经很清楚了，另外一些人可能会很困惑（就像我最初一样）。二者都是将领域特定算法封装进对象中。最关键的区别在于策略模式通过策略在运行时改变上下文对象的行为，模板方法模式通过使用一个算法的框架实现，并且通过在框架的子类中覆写方法来改变其行为。
 
-###原文：
+原文：</br>
 [http://rubylogs.com/pattern-to-pattern-template-method-and-strategy/](http://rubylogs.com/pattern-to-pattern-template-method-and-strategy/ "Pattern to pattern: Template Method & Strategy")

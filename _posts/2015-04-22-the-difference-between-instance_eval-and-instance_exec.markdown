@@ -195,5 +195,6 @@ callback对象存储了代码块，并且Ruby允许我们检查代码块的元�
         {% endhighlight %}
 现在你知道了`#instance_eval`和`#instance_exec`在表现方式上是类似的，如果你需要传递参数，那么请使用`#instance_exec`。
 
-###原文：[http://www.saturnflyer.com/blog/jim/2015/04/22/the-difference-between-instance_eval-and-instance_exec/](http://www.saturnflyer.com/blog/jim/2015/04/22/the-difference-between-instance_eval-and-instance_exec/ "The Difference Between Instance_eval And Instance_exec")
+原文：</br>
+[http://www.saturnflyer.com/blog/jim/2015/04/22/the-difference-between-instance_eval-and-instance_exec/](http://www.saturnflyer.com/blog/jim/2015/04/22/the-difference-between-instance_eval-and-instance_exec/ "The Difference Between Instance_eval And Instance_exec")
 

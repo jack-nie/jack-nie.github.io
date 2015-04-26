@@ -146,7 +146,6 @@ date:   2015-04-25
 要避免提供过少的钩子，在某些时候，这就迫使子类不得不覆写整个方法。
 
 参考资料：</br>
-
 [http://reefpoints.dockyard.com/ruby/2013/07/10/design-patterns-template-pattern.html](http://reefpoints.dockyard.com/ruby/2013/07/10/design-patterns-template-pattern.html "Design Patterns: The Template Method Pattern")</br>
 [http://edapx.com/2013/10/27/template-pattern/](http://edapx.com/2013/10/27/template-pattern/ "#1 template pattern")</br>
 [http://tammersaleh.com/posts/the-template-pattern-is-underused/](http://tammersaleh.com/posts/the-template-pattern-is-underused/ "The Template Pattern is underused")
