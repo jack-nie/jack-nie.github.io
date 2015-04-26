@@ -74,6 +74,12 @@ ga('send', 'pageview');
   <ul class="posts noList">
     
       <li>
+        <span class="date">April 25, 2015</span>
+        <h3><a class="post-link" href="/blog/template-method/">模板方法模式</a></h3>
+        <p class="description">作为一个软件工程师，拥有一些设计模式的知识总是会受欢迎的。如果你没有听过设计模式，他们基本上是开发者遇到的一些通用问题的可复用的解决方案。设计模式的列表很长，了解全部的设计模式是都非常困难的。好吧，困难或许不是一个很准确的词，但是要掌握全部的设计模式需要很多的实践。让我们来看看设计模式中最简单的一个——模板方法，并且用Ruby来实现它。模板方法模式模板方法模式定义了一个操作中算法的框架，而将一些步骤延迟到子类中。模板方法模式使得子类可以不改变一个算法的结构即可重定义该算法的某些特定步骤。模...</p>
+      </li>
+    
+      <li>
         <span class="date">April 24, 2015</span>
         <h3><a class="post-link" href="/blog/pattern-to-pattern-template-method-and-strategy/">【翻译】模板方法模式和策略模式的比较</a></h3>
         <p class="description">最近我写了一片关于模板方法模式以及怎样在Ruby中实现的文章。有读者在文章的评论中指出模板方法模式实际上是策略模式。在经过仔细的考虑该怎么回答这个问题在之后，我决定写一篇文章来比较这两个模式。所以，在这里我将展示我对于设计模式的理解，让我们来看一下这两个模式之间的共同点以及二者之间的关键区别。模板方法模式关于这个模式需要记住的最重要的一点是：样板方法写在父类中，而特定的算法则在子类中实现(通常是覆盖)。也就是说，所有的子类都会共享父类的功能(继承)，但父类仅仅是一个框架类。另一方面来讲，子...</p>
@@ -97,16 +103,12 @@ ga('send', 'pageview');
         <p class="description">前端开发中，CSS居中一直是一个令人头痛的问题。为什么CSS居中这么困难呢？其实实现CSS居中并不难，难的是如何从众多的CSS居中方法中选择一个合适的解决方案，通常你并不知道那种解决方案适合当前的情形。所以，让我们来整理一个决策树，希望能够帮助大家更容易的解决CSS居中的问题。一.水平居中1.是否是 inline或者inline-*元素将inline元素放置在block父元素中，然后给父元素加上text-align: center;HTML:     &lt;header&gt;     ...</p>
       </li>
     
-      <li>
-        <span class="date">February 20, 2015</span>
-        <h3><a class="post-link" href="/blog/explain-build_stubbed/">build_stubbed详解--Factory Girl</a></h3>
-        <p class="description">buildstubbed是在FactoryGirl中引入的一个方法，buildstubbed和build都是用来创建实例并分配属性。区别是buildstubbed使得对象看起来像是被持久化了，实际上并没有。它采用buildstubbed策略来创建关联，并且提供了少量的同数据库进行交互的方法，如果调用他们，这些方法会被触发。通过这种策略，可以加快测试的速度，同时减少对数据库的依赖。但是如果创建的对象有关联的对象的话，被关联的对象是会被持久化到数据中的。为了避免这一情况的发生可以将不必要的的关...</p>
-      </li>
-    
   </ul>
   <!-- Pagination links -->
   <div class="pagination">
     
+    
+      <a href="/blog/page2/" class="next button__outline">Older Posts</a>
     
   </div>
 </div>

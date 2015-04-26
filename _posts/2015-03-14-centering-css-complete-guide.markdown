@@ -602,6 +602,6 @@ CSS:
           overflow: auto;
         }
         {% endhighlight %}
-参考：[https://css-tricks.com/centering-css-complete-guide/](https://css-tricks.com/centering-css-complete-guide/ "Centering CSS Complete Guide")
+###参考资料：[https://css-tricks.com/centering-css-complete-guide/](https://css-tricks.com/centering-css-complete-guide/ "Centering CSS Complete Guide")
 
 

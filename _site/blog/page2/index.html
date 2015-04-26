@@ -9,7 +9,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
-    <title>Your New Jekyll Site</title>
+    <title></title>
 
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="/assets/img/favicon.ico" />
@@ -20,7 +20,7 @@
     <!-- Stylesheet -->
     <link rel="stylesheet" href="/assets/css/style.css">
     <!--[if IE 8]><link rel="stylesheet" href="/assets/css/ie.css"><![endif]-->
-    <link rel="canonical" href="http://jack-nie.github.com/articles.html">
+    <link rel="canonical" href="http://jack-nie.github.com/blog/page2/">
 
     <!-- Modernizr -->
     <script src="/assets/js/modernizr.custom.15390.js" type="text/javascript"></script>
@@ -48,7 +48,7 @@ ga('send', 'pageview');
          <nav class="nav-collapse">
              <ul class="noList">
                  
-                 <li class="element first  ">
+                 <li class="element first current ">
                      <a href="/index.html">Home</a>
                  </li> 
                  
@@ -69,47 +69,24 @@ ga('send', 'pageview');
 
    <div class="content">
       <div class="container">
-         <div id="articles">
-  <h1>Articles</h1>
+         <div class="home" id="home">
+  <h1 class="pageTitle">Recent Posts</h1>
   <ul class="posts noList">
     
       <li>
-        <span class="date">25 Apr 2015</span>
-        <h3><a href="/blog/template-method/">模板方法模式</a></h3>
-        <p class="description">作为一个软件工程师，拥有一些设计模式的知识总是会受欢迎的。如果你没有听过设计模式，他们基本上是开发者遇到的一些通用问题的可复用的解决方案。设计模式的列表很长，了解全部的设计模式是都非常困难的。好吧，困难或许不是一个很准确的词，但是要掌...</p>
-      </li>
-    
-      <li>
-        <span class="date">24 Apr 2015</span>
-        <h3><a href="/blog/pattern-to-pattern-template-method-and-strategy/">【翻译】模板方法模式和策略模式的比较</a></h3>
-        <p class="description">最近我写了一片关于模板方法模式以及怎样在Ruby中实现的文章。有读者在文章的评论中指出模板方法模式实际上是策略模式。在经过仔细的考虑该怎么回答这个问题在之后，我决定写一篇文章来比较这两个模式。所以，在这里我将展示我对于设计模式的理解，...</p>
-      </li>
-    
-      <li>
-        <span class="date">23 Apr 2015</span>
-        <h3><a href="/blog/array-is-one-of-the-workhorses-in-ruby/">Ruby中的Array详解</a></h3>
-        <p class="description">在这篇文章中，我将深入探讨Arrays。数组中有很多方法我们每天都用，但是也有一部分方法我们甚至不知道他们的存在。基础关于数组有一个非常无聊的定义，但是我们必须记住：数组的下标是从0开始的。一个负数下标表明从数组的最后开始计数--也就...</p>
-      </li>
-    
-      <li>
-        <span class="date">22 Apr 2015</span>
-        <h3><a href="/blog/the-difference-between-instance_eval-and-instance_exec/">【翻译】instance_eval和instance_exec之间的区别</a></h3>
-        <p class="description">#instance_eval和#instance_exec之间有一个非常重要的区别。Factory Girl是一个展示如何优雅的使用以上两者的很好的例子。但是首先，在你急不可耐的准备构建令人惊奇的DSL之前，让我们来看一下#insta...</p>
-      </li>
-    
-      <li>
-        <span class="date">14 Mar 2015</span>
-        <h3><a href="/blog/centering-css-complete-guide/">CSS居中完全指导手册</a></h3>
-        <p class="description">前端开发中，CSS居中一直是一个令人头痛的问题。为什么CSS居中这么困难呢？其实实现CSS居中并不难，难的是如何从众多的CSS居中方法中选择一个合适的解决方案，通常你并不知道那种解决方案适合当前的情形。所以，让我们来整理一个决策树，希...</p>
-      </li>
-    
-      <li>
-        <span class="date">20 Feb 2015</span>
-        <h3><a href="/blog/explain-build_stubbed/">build_stubbed详解--Factory Girl</a></h3>
-        <p class="description">buildstubbed是在FactoryGirl中引入的一个方法，buildstubbed和build都是用来创建实例并分配属性。区别是buildstubbed使得对象看起来像是被持久化了，实际上并没有。它采用buildstubbe...</p>
+        <span class="date">February 20, 2015</span>
+        <h3><a class="post-link" href="/blog/explain-build_stubbed/">build_stubbed详解--Factory Girl</a></h3>
+        <p class="description">buildstubbed是在FactoryGirl中引入的一个方法，buildstubbed和build都是用来创建实例并分配属性。区别是buildstubbed使得对象看起来像是被持久化了，实际上并没有。它采用buildstubbed策略来创建关联，并且提供了少量的同数据库进行交互的方法，如果调用他们，这些方法会被触发。通过这种策略，可以加快测试的速度，同时减少对数据库的依赖。但是如果创建的对象有关联的对象的话，被关联的对象是会被持久化到数据中的。为了避免这一情况的发生可以将不必要的的关...</p>
       </li>
     
   </ul>
+  <!-- Pagination links -->
+  <div class="pagination">
+    
+      <a href="/index.html" class="previous button__outline">Newer Posts</a> 
+    
+    
+  </div>
 </div>
 
       </div>

@@ -5,9 +5,316 @@
     <description>Long Form Jekyll theme built with SASS / COMPASS / SUSY</description>
     <link>http://jack-nie.github.com/</link>
     <atom:link href="http://jack-nie.github.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sat, 25 Apr 2015 08:27:00 -0700</pubDate>
-    <lastBuildDate>Sat, 25 Apr 2015 08:27:00 -0700</lastBuildDate>
+    <pubDate>Sat, 25 Apr 2015 17:36:39 -0700</pubDate>
+    <lastBuildDate>Sat, 25 Apr 2015 17:36:39 -0700</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      
+      <item>
+        <title>模板方法模式</title>
+        <description>&lt;p&gt;作为一个软件工程师，拥有一些设计模式的知识总是会受欢迎的。如果你没有听过设计模式，他们基本上是开发者遇到的一些通用问题的可复用的解决方案。设计模式的列表很长，了解全部的设计模式是都非常困难的。好吧，困难或许不是一个很准确的词，但是要掌握全部的设计模式需要很多的实践。让我们来看看设计模式中最简单的一个——模板方法，并且用Ruby来实现它。&lt;/p&gt;
+
+&lt;h3&gt;模板方法模式&lt;/h3&gt;
+
+&lt;p&gt;模板方法模式定义了一个操作中算法的框架，而将一些步骤延迟到子类中。模板方法模式使得子类可以不改变一个算法的结构即可重定义该算法的某些特定步骤。模板方法是一种基于继承的代码复用技术，他是一种类行为模式。
+模板方法模式是结构最简单的行为型设计模式，在其结构中只存在父类与子类之间的继承关系。通过使用模板方法模式，可以将一些复杂流程的实现步骤封装在一系列基本方法中，在抽象父类中提供一个称之为模板方法的方法来定义这些基本方法的执行次序，而通过其子类来覆盖某些步骤，从而使得相同的算法框架可以有不同的执行结果。模板方法模式提供了一个模板方法来定义算法框架，而某些具体步骤的实现可以在其子类中完成。&lt;/p&gt;
+
+&lt;h3&gt;简单既是美&lt;/h3&gt;
+
+&lt;p&gt;模板方法的优美之处在于它的简单性，但是关于它的定义却很冗长，导致你昏昏欲睡。通过将一系列的过程封装进不同的方法中来实现其行为的可配置性，使得子类可以覆写这些方法。下面是一个简单的例子：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;no&quot;&gt;Ruby&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;Code&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;MagicCutter&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;initialize&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;vegetable&lt;/span&gt;
+        &lt;span class=&quot;vi&quot;&gt;@vegetable&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;vegetable&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+      &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;give_me_the_vegetable_cutted_off&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;prepapre_the_blade&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;cut_the_vegetable&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+      &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;prepapre_the_blade&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;raise&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;Called abstract method: prepapre_the_blade&amp;#39;&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+      &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;cut_the_vegetable&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;raise&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;Called abstract method: cut_the_vegetable&amp;#39;&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;框架方法是&lt;code&gt;give_me_the_vegetable_cutted_off&lt;/code&gt;，它调用了一些列的方法，可以在子类中覆写这些方法使其拥有不同的行为。子类仅仅定义了那些将要改变的行为，覆写定义在框架类中的方法，但是&lt;code&gt;give_me_the_vegetable_cutted_off&lt;/code&gt;不会被改变。让我们来看一下子类是如何实现的：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;no&quot;&gt;Ruby&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;Code&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;require_relative&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;magic_cutter&amp;#39;&lt;/span&gt;
+    
+    &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;AubergineCutter&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;MagicCutter&lt;/span&gt;
+    
+      &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;prepapre_the_blade&lt;/span&gt;
+        &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Hey! that&amp;#39;s a &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;vi&quot;&gt;@vegetable&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;
+        &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;i need a very sharp knife&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+      &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;cut_the_vegetable&lt;/span&gt;
+        &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;I slice the &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;vi&quot;&gt;@vegetable&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;  in long thumbsized pieces, ready to be grilled&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+    &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;PotatoCutter&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;MagicCutter&lt;/span&gt;
+    
+      &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;prepapre_the_blade&lt;/span&gt;
+        &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Hey! that&amp;#39;s a &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;vi&quot;&gt;@vegetable&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;
+        &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;i take a professional potato cutter for my french fries&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+      &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;cut_the_vegetable&lt;/span&gt;
+        &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;put the &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;vi&quot;&gt;@vegetable&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt; in the cutter an press it&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;继承、方法覆写……这些看起来很熟悉，但是结果却令人满意。&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;no&quot;&gt;Ruby&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;Code&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;au&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;AubergineCutter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;Aubergine&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;po&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;PotatoCutter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;Potato&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;au&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;give_me_the_vegetable_cutted_off&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;po&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;give_me_the_vegetable_cutted_off&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;钩子方法&lt;/h3&gt;
+
+&lt;p&gt;通过观察上面的两个子类，可以发现&lt;code&gt;puts “Hey! that’s a #{@vegetable}”&lt;/code&gt;被重复了两次，并且从来不会被改变。更进一步，可以发现&lt;code&gt;PotatoCutter&lt;/code&gt;并没有定义对蔬菜进行剥皮的操作，这正是引入钩子方法的时刻。钩子方法允许在子类覆写框架的实现并且定义一些新的东西，或者继承其默认的实现。让我们通过一个例子来看一下如何实现钩子方法&lt;code&gt;truly_excitement&lt;/code&gt;和&lt;code&gt;prepare_the_vegetable&lt;/code&gt;。&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;no&quot;&gt;Ruby&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;Code&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;MagicCutter&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;initialize&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;vegetable&lt;/span&gt;
+        &lt;span class=&quot;vi&quot;&gt;@vegetable&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;vegetable&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+      &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;give_me_the_vegetable_cutted_off&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;truly_excitement&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;prepapre_the_vegetable&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;prepapre_the_blade&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;cut_the_vegetable&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+      &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;truly_excitement&lt;/span&gt;
+        &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Hey! that&amp;#39;s a &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;vi&quot;&gt;@vegetable&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+      &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;prepapre_the_vegetable&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+      &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;prepapre_the_blade&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;raise&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;Called abstract method: prepapre_the_blade&amp;#39;&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+      &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;cut_the_vegetable&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;raise&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;Called abstract method: cut_the_vegetable&amp;#39;&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+    &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;PotatoCutter&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;MagicCutter&lt;/span&gt;
+    
+      &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;prepapre_the_vegetable&lt;/span&gt;
+        &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;skin the potato&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+      &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;prepapre_the_blade&lt;/span&gt;
+        &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;i take a professional potato cutter for my french fries&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+      &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;cut_the_vegetable&lt;/span&gt;
+        &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;put the potato in the cutter an press it&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+    &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;PotatoCutter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;Potato&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;give_me_the_vegetable_cutted_off&lt;/span&gt;
+    
+    &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;AubergineCutter&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;MagicCutter&lt;/span&gt;
+    
+      &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;prepapre_the_blade&lt;/span&gt;
+        &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;i need a very sharp knife&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+      &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;cut_the_vegetable&lt;/span&gt;
+        &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;I slice the &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;vi&quot;&gt;@vegetable&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;  in long thumbsized pieces, ready to be grilled&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+    &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;AubergineCutter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;Aubergine&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;give_me_the_vegetable_cutted_off&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;这些钩子方法的默认实现通常是空的，他们的存在仅仅是为了告诉子类将要发生什么，但是不需要子类覆写不必要的方法。上面的例子中&lt;code&gt;prepare_vegetable&lt;/code&gt;是一个空的方法，将留给子类来决定如何实现它。&lt;/p&gt;
+
+&lt;h3&gt;一些需要注意的地方&lt;/h3&gt;
+
+&lt;p&gt;模板方法越简单越好。
+要避免写一个充满了方法的模板类，但是没有子类覆写这些方法，这会提高维护成本。
+要避免提供过少的钩子，在某些时候，这就迫使子类不得不覆写整个方法。&lt;/p&gt;
+
+&lt;p&gt;参考资料：&lt;/br&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://reefpoints.dockyard.com/ruby/2013/07/10/design-patterns-template-pattern.html&quot; title=&quot;Design Patterns: The Template Method Pattern&quot;&gt;http://reefpoints.dockyard.com/ruby/2013/07/10/design-patterns-template-pattern.html&lt;/a&gt;&lt;/br&gt;
+&lt;a href=&quot;http://edapx.com/2013/10/27/template-pattern/&quot; title=&quot;#1 template pattern&quot;&gt;http://edapx.com/2013/10/27/template-pattern/&lt;/a&gt;&lt;/br&gt;
+&lt;a href=&quot;http://tammersaleh.com/posts/the-template-pattern-is-underused/&quot; title=&quot;The Template Pattern is underused&quot;&gt;http://tammersaleh.com/posts/the-template-pattern-is-underused/&lt;/a&gt;&lt;/p&gt;
+</description>
+        
+          <description>&lt;p&gt;作为一个软件工程师，拥有一些设计模式的知识总是会受欢迎的。如果你没有听过设计模式，他们基本上是开发者遇到的一些通用问题的可复用的解决方案。设计模式的列表很长，了解全部的设计模式是都非常困难的。好吧，困难或许不是一个很准确的词，但是要掌握全部的设计模式需要很多的实践。让我们来看看设计模式中最简单的一个——模板方法，并且用Ruby来实现它。&lt;/p&gt;
+
+&lt;h3&gt;模板方法模式&lt;/h3&gt;
+
+&lt;p&gt;模板方法模式定义了一个操作中算法的框架，而将一些步骤延迟到子类中。模板方法模式使得子类可以不改变一个算法的结构即可重定义该算法的某些特定步骤。模板方法是一种基于继承的代码复用技术，他是一种类行为模式。
+模板方法模式是结构最简单的行为型设计模式，在其结构中只存在父类与子类之间的继承关系。通过使用模板方法模式，可以将一些复杂流程的实现步骤封装在一系列基本方法中，在抽象父类中提供一个称之为模板方法的方法来定义这些基本方法的执行次序，而通过其子类来覆盖某些步骤，从而使得相同的算法框架可以有不同的执行结果。模板方法模式提供了一个模板方法来定义算法框架，而某些具体步骤的实现可以在其子类中完成。&lt;/p&gt;
+
+&lt;h3&gt;简单既是美&lt;/h3&gt;
+
+&lt;p&gt;模板方法的优美之处在于它的简单性，但是关于它的定义却很冗长，导致你昏昏欲睡。通过将一系列的过程封装进不同的方法中来实现其行为的可配置性，使得子类可以覆写这些方法。下面是一个简单的例子：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;no&quot;&gt;Ruby&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;Code&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;MagicCutter&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;initialize&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;vegetable&lt;/span&gt;
+        &lt;span class=&quot;vi&quot;&gt;@vegetable&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;vegetable&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+      &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;give_me_the_vegetable_cutted_off&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;prepapre_the_blade&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;cut_the_vegetable&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+      &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;prepapre_the_blade&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;raise&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;Called abstract method: prepapre_the_blade&amp;#39;&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+      &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;cut_the_vegetable&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;raise&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;Called abstract method: cut_the_vegetable&amp;#39;&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;框架方法是&lt;code&gt;give_me_the_vegetable_cutted_off&lt;/code&gt;，它调用了一些列的方法，可以在子类中覆写这些方法使其拥有不同的行为。子类仅仅定义了那些将要改变的行为，覆写定义在框架类中的方法，但是&lt;code&gt;give_me_the_vegetable_cutted_off&lt;/code&gt;不会被改变。让我们来看一下子类是如何实现的：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;no&quot;&gt;Ruby&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;Code&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;require_relative&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;magic_cutter&amp;#39;&lt;/span&gt;
+    
+    &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;AubergineCutter&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;MagicCutter&lt;/span&gt;
+    
+      &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;prepapre_the_blade&lt;/span&gt;
+        &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Hey! that&amp;#39;s a &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;vi&quot;&gt;@vegetable&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;
+        &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;i need a very sharp knife&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+      &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;cut_the_vegetable&lt;/span&gt;
+        &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;I slice the &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;vi&quot;&gt;@vegetable&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;  in long thumbsized pieces, ready to be grilled&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+    &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;PotatoCutter&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;MagicCutter&lt;/span&gt;
+    
+      &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;prepapre_the_blade&lt;/span&gt;
+        &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Hey! that&amp;#39;s a &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;vi&quot;&gt;@vegetable&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;
+        &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;i take a professional potato cutter for my french fries&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+      &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;cut_the_vegetable&lt;/span&gt;
+        &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;put the &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;vi&quot;&gt;@vegetable&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt; in the cutter an press it&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;继承、方法覆写……这些看起来很熟悉，但是结果却令人满意。&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;no&quot;&gt;Ruby&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;Code&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;au&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;AubergineCutter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;Aubergine&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;po&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;PotatoCutter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;Potato&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;au&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;give_me_the_vegetable_cutted_off&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;po&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;give_me_the_vegetable_cutted_off&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;钩子方法&lt;/h3&gt;
+
+&lt;p&gt;通过观察上面的两个子类，可以发现&lt;code&gt;puts “Hey! that’s a #{@vegetable}”&lt;/code&gt;被重复了两次，并且从来不会被改变。更进一步，可以发现&lt;code&gt;PotatoCutter&lt;/code&gt;并没有定义对蔬菜进行剥皮的操作，这正是引入钩子方法的时刻。钩子方法允许在子类覆写框架的实现并且定义一些新的东西，或者继承其默认的实现。让我们通过一个例子来看一下如何实现钩子方法&lt;code&gt;truly_excitement&lt;/code&gt;和&lt;code&gt;prepare_the_vegetable&lt;/code&gt;。&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;no&quot;&gt;Ruby&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;Code&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;MagicCutter&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;initialize&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;vegetable&lt;/span&gt;
+        &lt;span class=&quot;vi&quot;&gt;@vegetable&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;vegetable&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+      &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;give_me_the_vegetable_cutted_off&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;truly_excitement&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;prepapre_the_vegetable&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;prepapre_the_blade&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;cut_the_vegetable&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+      &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;truly_excitement&lt;/span&gt;
+        &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Hey! that&amp;#39;s a &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;vi&quot;&gt;@vegetable&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+      &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;prepapre_the_vegetable&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+      &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;prepapre_the_blade&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;raise&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;Called abstract method: prepapre_the_blade&amp;#39;&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+      &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;cut_the_vegetable&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;raise&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;Called abstract method: cut_the_vegetable&amp;#39;&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+    &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;PotatoCutter&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;MagicCutter&lt;/span&gt;
+    
+      &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;prepapre_the_vegetable&lt;/span&gt;
+        &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;skin the potato&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+      &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;prepapre_the_blade&lt;/span&gt;
+        &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;i take a professional potato cutter for my french fries&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+      &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;cut_the_vegetable&lt;/span&gt;
+        &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;put the potato in the cutter an press it&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+    &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;PotatoCutter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;Potato&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;give_me_the_vegetable_cutted_off&lt;/span&gt;
+    
+    &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;AubergineCutter&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;MagicCutter&lt;/span&gt;
+    
+      &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;prepapre_the_blade&lt;/span&gt;
+        &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;i need a very sharp knife&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+      &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;cut_the_vegetable&lt;/span&gt;
+        &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;I slice the &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;vi&quot;&gt;@vegetable&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;  in long thumbsized pieces, ready to be grilled&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+    &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;AubergineCutter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;Aubergine&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;give_me_the_vegetable_cutted_off&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;这些钩子方法的默认实现通常是空的，他们的存在仅仅是为了告诉子类将要发生什么，但是不需要子类覆写不必要的方法。上面的例子中&lt;code&gt;prepare_vegetable&lt;/code&gt;是一个空的方法，将留给子类来决定如何实现它。&lt;/p&gt;
+</description>
+        
+        <pubDate>Sat, 25 Apr 2015 00:00:00 -0700</pubDate>
+        <link>http://jack-nie.github.com/blog/template-method/</link>
+        <guid isPermaLink="true">http://jack-nie.github.com/blog/template-method/</guid>
+        
+        
+      </item>
+      
     
       
       <item>
@@ -128,8 +435,9 @@
 
 &lt;p&gt;那么这二者之间的共同点和关键的不同之处是什么呢？我们你们其中的一些人已经很清楚了，另外一些人可能会很困惑（就像我最初一样）。二者都是将领域特定算法封装进对象中。最关键的区别在于策略模式通过策略在运行时改变上下文对象的行为，模板方法模式通过使用一个算法的框架实现，并且通过在框架的子类中覆写方法来改变其行为。&lt;/p&gt;
 
-&lt;p&gt;原文：
-&lt;a href=&quot;http://rubylogs.com/pattern-to-pattern-template-method-and-strategy/&quot; title=&quot;Pattern to pattern: Template Method &amp;amp; Strategy&quot;&gt;http://rubylogs.com/pattern-to-pattern-template-method-and-strategy/&lt;/a&gt;&lt;/p&gt;
+&lt;h3&gt;原文：&lt;/h3&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://rubylogs.com/pattern-to-pattern-template-method-and-strategy/&quot; title=&quot;Pattern to pattern: Template Method &amp;amp; Strategy&quot;&gt;http://rubylogs.com/pattern-to-pattern-template-method-and-strategy/&lt;/a&gt;&lt;/p&gt;
 </description>
         
           <description>&lt;p&gt;最近我写了一片关于&lt;a href=&quot;http://rubylogs.com/template-method-pattern-in-ruby/&quot;&gt;模板方法模式&lt;/a&gt;以及怎样在Ruby中实现的文章。有读者在文章的评论中指出模板方法模式实际上是策略模式。在经过仔细的考虑该怎么回答这个问题在之后，我决定写一篇文章来比较这两个模式。&lt;/p&gt;
@@ -306,7 +614,7 @@
         &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mo&quot;&gt;003&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
         &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;参考：&lt;a href=&quot;http://blog.diatomenterprises.com/arrays-are-the-workhorse-of-ruby/&quot;&gt;http://blog.diatomenterprises.com/arrays-are-the-workhorse-of-ruby/&lt;/a&gt;        &lt;/p&gt;
+&lt;h3&gt;参考资料：&lt;a href=&quot;http://blog.diatomenterprises.com/arrays-are-the-workhorse-of-ruby/&quot;&gt;http://blog.diatomenterprises.com/arrays-are-the-workhorse-of-ruby/&lt;/a&gt;&lt;/h3&gt;
 </description>
         
           <description>&lt;p&gt;在这篇文章中，我将深入探讨&lt;code&gt;Arrays&lt;/code&gt;。数组中有很多方法我们每天都用，但是也有一部分方法我们甚至不知道他们的存在。&lt;/p&gt;
@@ -517,7 +825,7 @@
 
 &lt;p&gt;现在你知道了&lt;code&gt;#instance_eval&lt;/code&gt;和&lt;code&gt;#instance_exec&lt;/code&gt;在表现方式上是类似的，如果你需要传递参数，那么请使用&lt;code&gt;#instance_exec&lt;/code&gt;。&lt;/p&gt;
 
-&lt;p&gt;翻译：&lt;a href=&quot;http://www.saturnflyer.com/blog/jim/2015/04/22/the-difference-between-instance_eval-and-instance_exec/&quot; title=&quot;The Difference Between Instance_eval And Instance_exec&quot;&gt;http://www.saturnflyer.com/blog/jim/2015/04/22/the-difference-between-instance&lt;em&gt;eval-and-instance&lt;/em&gt;exec/&lt;/a&gt;&lt;/p&gt;
+&lt;h3&gt;原文：&lt;a href=&quot;http://www.saturnflyer.com/blog/jim/2015/04/22/the-difference-between-instance_eval-and-instance_exec/&quot; title=&quot;The Difference Between Instance_eval And Instance_exec&quot;&gt;http://www.saturnflyer.com/blog/jim/2015/04/22/the-difference-between-instance&lt;em&gt;eval-and-instance&lt;/em&gt;exec/&lt;/a&gt;&lt;/h3&gt;
 </description>
         
           <description>&lt;p&gt;&lt;code&gt;#instance_eval&lt;/code&gt;和&lt;code&gt;#instance_exec&lt;/code&gt;之间有一个非常重要的区别。&lt;a href=&quot;https://github.com/thoughtbot/factory_girl&quot;&gt;Factory Girl&lt;/a&gt;是一个展示如何优雅的使用以上两者的很好的例子。&lt;/p&gt;
@@ -1131,7 +1439,7 @@
           &lt;span class=&quot;k&quot;&gt;overflow&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;auto&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
         &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;参考：&lt;a href=&quot;https://css-tricks.com/centering-css-complete-guide/&quot; title=&quot;Centering CSS Complete Guide&quot;&gt;https://css-tricks.com/centering-css-complete-guide/&lt;/a&gt;&lt;/p&gt;
+&lt;h3&gt;参考资料：&lt;a href=&quot;https://css-tricks.com/centering-css-complete-guide/&quot; title=&quot;Centering CSS Complete Guide&quot;&gt;https://css-tricks.com/centering-css-complete-guide/&lt;/a&gt;&lt;/h3&gt;
 </description>
         
           <description>&lt;p&gt;前端开发中，CSS居中一直是一个令人头痛的问题。为什么CSS居中这么困难呢？其实实现CSS居中并不难，难的是如何从众多的CSS居中方法中选择一个合适的解决方案，通常你并不知道那种解决方案适合当前的情形。所以，让我们来整理一个决策树，希望能够帮助大家更容易的解决CSS居中的问题。&lt;/p&gt;
@@ -1194,9 +1502,8 @@
 
 &lt;p&gt;这种用法使得before(:all)仅仅被用作提供事物功能的一个骨架。这就导致了测试状态更加的依赖测试的顺序，这是应该避免的。当然，也可以通过在before/after :all 代码块中加入清除数据的逻辑来解决。&lt;/p&gt;
 
-&lt;p&gt;参考资料：&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://blog.spoolz.com/2012/07/09/small-revelation-factorygirl-build_stubbed-associations-and-let/&quot; title=&quot;small-revelation-factorygirl-build_stubbed-associations-and-let&quot;&gt;http://blog.spoolz.com/2012/07/09/small-revelation-factorygirl-build_stubbed-associations-and-let/&lt;/a&gt;
+&lt;p&gt;参考资料：&lt;/br&gt;
+&lt;a href=&quot;http://blog.spoolz.com/2012/07/09/small-revelation-factorygirl-build_stubbed-associations-and-let/&quot; title=&quot;small-revelation-factorygirl-build_stubbed-associations-and-let&quot;&gt;http://blog.spoolz.com/2012/07/09/small-revelation-factorygirl-build_stubbed-associations-and-let/&lt;/a&gt;&lt;/br&gt;
 &lt;a href=&quot;https://robots.thoughtbot.com/use-factory-girls-build-stubbed-for-a-faster-test&quot; title=&quot;use-factory-girls-build-stubbed-for-a-faster-test&quot;&gt;https://robots.thoughtbot.com/use-factory-girls-build-stubbed-for-a-faster-test&lt;/a&gt;&lt;/p&gt;
 </description>
         
