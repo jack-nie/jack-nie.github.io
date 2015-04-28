@@ -1,4 +1,3 @@
-
 ---
 layout: post
 title:  "【翻译】装饰器模式"
