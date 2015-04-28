@@ -60,7 +60,7 @@ tags: ["设计模式"]
 - 将请求转发（代理）给该组件。
 - 在请求转发之前或者之后执行一些额外的操作。
 
-这种方法比类继承更加的灵活，因为你可以有多种组合混合和匹配职责因为它的透明性，你可以递归的潜逃装饰器，所以它允许添加无限数量的职责。
+这种方法比类继承更加的灵活，因为你可以有多种组合混合和匹配职责因为它的透明性，你可以递归的嵌套装饰器，所以它允许添加无限数量的职责。
 
 ###Ruby中的替代实现
 我通过研究在Ruby中发现了4个常用的实现：
@@ -309,7 +309,7 @@ Rails中的`Object`中的方法是Ruby种方法的两倍：
 我认为我现在理解不同的Ruby实现的好处和坏处，并且有一个如何使用它们的计划：
 
 - 以PORO开始。
-- 假如我需要透明接口或者被撞时的对象的类会在Rails中引发问题，使用`SimpleDelegator`
+- 假如我需要透明接口或者被装饰的对象的类会在Rails中引发问题，使用`SimpleDelegator`
 
 原文：</br>
 [https://robots.thoughtbot.com/evaluating-alternative-decorator-implementations-in](https://robots.thoughtbot.com/evaluating-alternative-decorator-implementations-in "Evaluating Alternative Decorator Implementations In Ruby")</br>
