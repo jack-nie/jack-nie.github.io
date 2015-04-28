@@ -15,10 +15,9 @@ I'm passionate about web-development, particularly in Ruby On Rails.
 
 ###Interests
 
-Software architecture
-Ruby On Rails
-JavaScript, jQuery
-HTML5 + CSS3
-Continuous Integration and Deployment
-Test-driven development / BDD
+- Software architecture
+- Ruby On Rails
+- JavaScript, jQuery
+- Continuous Integration and Deployment
+- Test-driven development / BDD
 
