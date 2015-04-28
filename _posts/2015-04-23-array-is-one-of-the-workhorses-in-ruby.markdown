@@ -166,5 +166,6 @@ tags: ["Ruby"]
 		=> [1, 2]
 		{% endhighlight %}
 
-参考资料：</br>
-[http://blog.diatomenterprises.com/arrays-are-the-workhorse-of-ruby/](http://blog.diatomenterprises.com/arrays-are-the-workhorse-of-ruby/)        
+参考资料：
+
+- [http://blog.diatomenterprises.com/arrays-are-the-workhorse-of-ruby/](http://blog.diatomenterprises.com/arrays-are-the-workhorse-of-ruby/)        

@@ -4,7 +4,7 @@ title:  "观察者模式"
 date:   2015-04-26
 keywords: ["Ruby","设计模式"]
 description: "观察者模式"
-category: "设计模式"
+category: "design-pattern"
 tags: ["Ruby","设计模式"]
 ---
 {% include JB/setup %}
@@ -164,7 +164,8 @@ tags: ["Ruby","设计模式"]
 ###总结
 观察者模式和<a href="https://jack-nie.github.io/blog/pattern-to-pattern-template-method-and-strategy/">策略模式</a>之间有一些相似之处,二者都是用一个对象（观察者模式的被观察者对象和策略模式的上下文对象）调用另一个对象（观察者模式的观察者和策略模式的策略）。二者的区别在于目的和适用情形的不同，观察者模式通过观察主题的不同状态来做出响应，策略模式则依赖于具体的策略来实现。
 
-参考资料：</br>
-[http://blog.khd.me/ruby/observer-and-singleton-design-patterns-in-ruby/](http://blog.khd.me/ruby/observer-and-singleton-design-patterns-in-ruby/ "OBSERVER AND SINGLETON DESIGN PATTERNS IN RUBY")</br>
-[http://www.runtime-era.com/2012/12/basic-observer-design-pattern-in-ruby.html](http://www.runtime-era.com/2012/12/basic-observer-design-pattern-in-ruby.html "Quick Review: Basic Observer Design Pattern in Ruby")</br>
-[http://reefpoints.dockyard.com/2013/08/20/design-patterns-observer-pattern.html](http://reefpoints.dockyard.com/2013/08/20/design-patterns-observer-pattern.html "Design Patterns: The Observer Pattern")
+参考资料：
+
+- [http://blog.khd.me/ruby/observer-and-singleton-design-patterns-in-ruby/](http://blog.khd.me/ruby/observer-and-singleton-design-patterns-in-ruby/ "OBSERVER AND SINGLETON DESIGN PATTERNS IN RUBY")
+- [http://www.runtime-era.com/2012/12/basic-observer-design-pattern-in-ruby.html](http://www.runtime-era.com/2012/12/basic-observer-design-pattern-in-ruby.html "Quick Review: Basic Observer Design Pattern in Ruby")
+- [http://reefpoints.dockyard.com/2013/08/20/design-patterns-observer-pattern.html](http://reefpoints.dockyard.com/2013/08/20/design-patterns-observer-pattern.html "Design Patterns: The Observer Pattern")

@@ -4,7 +4,7 @@ title:  "build_stubbed详解--Factory Girl"
 date:   2015-02-20
 keywords: ["Rspec", "Rails", "测试"]
 description: "build_stubbed详解"
-category: "测试"
+category: "test"
 tags: ["Rspec", "Rails", "测试"]
 ---
 {% include JB/setup %}
@@ -48,6 +48,7 @@ build_stubbed是在FactoryGirl中引入的一个方法，build_stubbed和build�
 	{% endhighlight %}
 这种用法使得before(:all)仅仅被用作提供事物功能的一个骨架。这就导致了测试状态更加的依赖测试的顺序，这是应该避免的。当然，也可以通过在before/after :all 代码块中加入清除数据的逻辑来解决。
 
-参考资料：</br>
-[http://blog.spoolz.com/2012/07/09/small-revelation-factorygirl-build_stubbed-associations-and-let/](http://blog.spoolz.com/2012/07/09/small-revelation-factorygirl-build_stubbed-associations-and-let/ "small-revelation-factorygirl-build_stubbed-associations-and-let")</br>
-[https://robots.thoughtbot.com/use-factory-girls-build-stubbed-for-a-faster-test](https://robots.thoughtbot.com/use-factory-girls-build-stubbed-for-a-faster-test "use-factory-girls-build-stubbed-for-a-faster-test")
+参考资料：
+
+- [http://blog.spoolz.com/2012/07/09/small-revelation-factorygirl-build_stubbed-associations-and-let/](http://blog.spoolz.com/2012/07/09/small-revelation-factorygirl-build_stubbed-associations-and-let/ "small-revelation-factorygirl-build_stubbed-associations-and-let")
+- [https://robots.thoughtbot.com/use-factory-girls-build-stubbed-for-a-faster-test](https://robots.thoughtbot.com/use-factory-girls-build-stubbed-for-a-faster-test "use-factory-girls-build-stubbed-for-a-faster-test")

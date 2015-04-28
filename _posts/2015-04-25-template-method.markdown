@@ -4,7 +4,7 @@ title:  "模板方法模式"
 date:   2015-04-25
 keywords: ["Ruby","设计模式"]
 description: "模板方法模式"
-category: "设计模式"
+category: "design-pattern"
 tags: ["Ruby","设计模式"]
 ---
 {% include JB/setup %}
@@ -149,7 +149,8 @@ tags: ["Ruby","设计模式"]
 要避免写一个充满了方法的模板类，但是没有子类覆写这些方法，这会提高维护成本。
 要避免提供过少的钩子，在某些时候，这就迫使子类不得不覆写整个方法。
 
-参考资料：</br>
-[http://reefpoints.dockyard.com/ruby/2013/07/10/design-patterns-template-pattern.html](http://reefpoints.dockyard.com/ruby/2013/07/10/design-patterns-template-pattern.html "Design Patterns: The Template Method Pattern")</br>
-[http://edapx.com/2013/10/27/template-pattern/](http://edapx.com/2013/10/27/template-pattern/ "#1 template pattern")</br>
-[http://tammersaleh.com/posts/the-template-pattern-is-underused/](http://tammersaleh.com/posts/the-template-pattern-is-underused/ "The Template Pattern is underused")
+参考资料：
+
+- [http://reefpoints.dockyard.com/ruby/2013/07/10/design-patterns-template-pattern.html](http://reefpoints.dockyard.com/ruby/2013/07/10/design-patterns-template-pattern.html "Design Patterns: The Template Method Pattern")
+- [http://edapx.com/2013/10/27/template-pattern/](http://edapx.com/2013/10/27/template-pattern/ "#1 template pattern")
+- [http://tammersaleh.com/posts/the-template-pattern-is-underused/](http://tammersaleh.com/posts/the-template-pattern-is-underused/ "The Template Pattern is underused")

@@ -4,7 +4,7 @@ title:  "【翻译】装饰器模式"
 date:   2015-04-28
 keywords: ["设计模式", "Rails", "Ruby"]
 description: "装饰器模式"
-category: "设计模式"
+category: "design-pattern"
 tags: ["设计模式"]
 ---
 {% include JB/setup %}
@@ -311,9 +311,12 @@ Rails中的`Object`中的方法是Ruby种方法的两倍：
 - 以PORO开始。
 - 假如我需要透明接口或者被装饰的对象的类会在Rails中引发问题，使用`SimpleDelegator`
 
-原文：</br>
-[https://robots.thoughtbot.com/evaluating-alternative-decorator-implementations-in](https://robots.thoughtbot.com/evaluating-alternative-decorator-implementations-in "Evaluating Alternative Decorator Implementations In Ruby")</br>
-深入阅读：</br>
-[http://codebrahma.com/design/patterns/2014/04/28/ruby-decorators.html](http://codebrahma.com/design/patterns/2014/04/28/ruby-decorators.html "ruby-decorators")</br>
-[https://sourcemaking.com/design_patterns/decorator](https://sourcemaking.com/design_patterns/decorator "decorator")</br>
-[https://robots.thoughtbot.com/tidy-views-and-beyond-with-decorators](https://robots.thoughtbot.com/tidy-views-and-beyond-with-decorators "tidy-views-and-beyond-with-decorators")
+原文：
+
+- [https://robots.thoughtbot.com/evaluating-alternative-decorator-implementations-in](https://robots.thoughtbot.com/evaluating-alternative-decorator-implementations-in "Evaluating Alternative Decorator Implementations In Ruby")
+
+深入阅读：
+
+- [http://codebrahma.com/design/patterns/2014/04/28/ruby-decorators.html](http://codebrahma.com/design/patterns/2014/04/28/ruby-decorators.html "ruby-decorators")
+- [https://sourcemaking.com/design_patterns/decorator](https://sourcemaking.com/design_patterns/decorator "decorator")
+- [https://robots.thoughtbot.com/tidy-views-and-beyond-with-decorators](https://robots.thoughtbot.com/tidy-views-and-beyond-with-decorators "tidy-views-and-beyond-with-decorators")

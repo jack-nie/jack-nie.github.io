@@ -4,7 +4,7 @@ title:  "适配器模式"
 date:   2015-04-27
 keywords: ["Ruby","设计模式"]
 description: "适配器模式"
-category: "设计模式"
+category: "design-pattern"
 tags: ["Ruby","设计模式"]
 ---
 {% include JB/setup %}
@@ -111,6 +111,7 @@ tags: ["Ruby","设计模式"]
     {% endhighlight %}
 需要值得注意的一点是，适配器模式不并是那种会让架构变得更合理的模式，更多的时候它只是充当救火队员的角色，帮助解决由于前期架构设计不合理导致的接口不匹配的问题。更好的做法是在设计的时候就尽量把以后可能出现的情况多考虑一些。
 
-参考资料：</br>
-[https://martin91.github.io/blog/2014/03/03/jie-du-rails-gua-pei-qi-mo-shi/](https://martin91.github.io/blog/2014/03/03/jie-du-rails-gua-pei-qi-mo-shi/ "jie-du-rails-gua-pei-qi-mo-shi")</br>
-[http://blog.csdn.net/guolin_blog/article/details/9400153](http://blog.csdn.net/guolin_blog/article/details/9400153 " Ruby设计模式透析之 —— 适配器(Adapter)")
+参考资料：
+
+- [https://martin91.github.io/blog/2014/03/03/jie-du-rails-gua-pei-qi-mo-shi/](https://martin91.github.io/blog/2014/03/03/jie-du-rails-gua-pei-qi-mo-shi/ "jie-du-rails-gua-pei-qi-mo-shi")
+- [http://blog.csdn.net/guolin_blog/article/details/9400153](http://blog.csdn.net/guolin_blog/article/details/9400153 " Ruby设计模式透析之 —— 适配器(Adapter)")
