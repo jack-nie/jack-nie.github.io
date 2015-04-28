@@ -2,8 +2,12 @@
 layout: post
 title:  "build_stubbed详解--Factory Girl"
 date:   2015-02-20
+keywords: ["Rspec", "Rails", "测试"]
+description: "build_stubbed详解"
+category: "测试"
+tags: ["Rspec", "Rails", "测试"]
 ---
-
+{% include JB/setup %}
 build_stubbed是在FactoryGirl中引入的一个方法，build_stubbed和build都是用来创建实例并分配属性。区别是build_stubbed使得对象看起来像是被持久化了，实际上并没有。它采用build_stubbed策略来创建关联，并且提供了少量的同数据库进行交互的方法，如果调用他们，这些方法会被触发。通过这种策略，可以加快测试的速度，同时减少对数据库的依赖。
 
 但是如果创建的对象有关联的对象的话，被关联的对象是会被持久化到数据中的。为了避免这一情况的

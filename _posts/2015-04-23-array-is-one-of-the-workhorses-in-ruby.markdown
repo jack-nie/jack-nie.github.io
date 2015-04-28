@@ -2,7 +2,12 @@
 layout: post
 title:  "Ruby中的Array详解"
 date:   2015-04-23
+keywords: ["Ruby","array"]
+description: "Ruby中的Array详解"
+category: "Ruby"
+tags: ["Ruby"]
 ---
+{% include JB/setup %}
 在这篇文章中，我将深入探讨`Arrays`。数组中有很多方法我们每天都用，但是也有一部分方法我们甚至不知道他们的存在。
 ###基础
 关于数组有一个非常无聊的定义，但是我们必须记住：数组的下标是从0开始的。一个负数下标表明从数组的最后开始计数--也就是说-1代表数组的最后一个数，-2代表倒数第2个数，以此类推。

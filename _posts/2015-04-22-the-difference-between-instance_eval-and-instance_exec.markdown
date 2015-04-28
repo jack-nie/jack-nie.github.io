@@ -2,8 +2,12 @@
 layout: post
 title:  "【翻译】instance_eval和instance_exec之间的区别"
 date:   2015-04-22
+keywords: ["Ruby","instance_eval","instance_exec"]
+description: "instance_eval和instance_exec之间的区别"
+category: "Ruby"
+tags: ["Ruby"]
 ---
-
+{% include JB/setup %}
 `#instance_eval`和`#instance_exec`之间有一个非常重要的区别。<a href="https://github.com/thoughtbot/factory_girl">Factory Girl</a>是一个展示如何优雅的使用以上两者的很好的例子。
 
 但是首先，在你急不可耐的准备构建令人惊奇的DSL之前，让我们来看一下`#instance_eval`是什么以及有什么作用。

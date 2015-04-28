@@ -2,8 +2,12 @@
 layout: post
 title:  "【翻译】模板方法模式和策略模式的比较"
 date:   2015-04-24
+keywords: ["Ruby","设计模式"]
+description: "模板方法模式和策略模式的比较"
+category: "设计模式"
+tags: ["Ruby","设计模式"]
 ---
-
+{% include JB/setup %}
 最近我写了一片关于<a href="http://rubylogs.com/template-method-pattern-in-ruby/">模板方法模式</a>以及怎样在Ruby中实现的文章。有读者在文章的评论中指出模板方法模式实际上是策略模式。在经过仔细的考虑该怎么回答这个问题在之后，我决定写一篇文章来比较这两个模式。
 
 所以，在这里我将展示我对于设计模式的理解，让我们来看一下这两个模式之间的共同点以及二者之间的关键区别。

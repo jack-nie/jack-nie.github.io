@@ -2,8 +2,12 @@
 layout: post
 title:  "CSS居中完全指导手册"
 date:   2015-03-14
+keywords: ["CSS","居中"]
+description: "CSS居中完全指导手册"
+category: "CSS"
+tags: ["CSS"]
 ---
-
+{% include JB/setup %}
 前端开发中，CSS居中一直是一个令人头痛的问题。为什么CSS居中这么困难呢？其实实现CSS居中并不难，难的是如何从众多的CSS居中方法中选择一个合适的解决方案，通常你并不知道那种解决方案适合当前的情形。所以，让我们来整理一个决策树，希望能够帮助大家更容易的解决CSS居中的问题。
 ###  一.水平居中
 ####  1.是否是 inline或者inline-*元素
