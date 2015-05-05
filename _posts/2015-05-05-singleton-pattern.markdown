@@ -23,21 +23,29 @@ Ruby的标准库实现了singleton模块，可以用来实现单例模式。
 
 ###实现
 首先通过`require`和`include`引入`singleton`模块。
-
+    
+    {% highlight ruby %}
+    Ruby Code:
     require 'singleton'
 
     class BlogConfig
       include Singleton
     end
+    {% endhighlight %}
+
 如果通过new方法来实例化该类，将会得到一个NoMethodError的异常，构造器被设置成私有的以防止其他的实例被创建。为了得到该类的实例，需要通过`instance`方法，当首次调用该方法时，该类的一个实例就被创建，再次调用，会返回已经创建好的实例。
 
+    {% highlight ruby %}
+    Ruby Code:
     first, second = BlogConfig.instance, BlogConfig.instance
     first == second
     #=> true
-
+    {% endhighlight %}
 ###自己造轮子
 我们可以模仿Singleton模块自己创造一个。关键步骤在于将要include该模块的类的new方法设置为私有的，防止不小心调用了new方法。
 
+    {% highlight ruby %}
+    Ruby Code:
     module Singleton
       def self.included(base)
         base.instance_variable_set("@instance", base.new)
@@ -64,6 +72,7 @@ Ruby的标准库实现了singleton模块，可以用来实现单例模式。
     puts b.object_id
     #=> 23304264
     #=> 23304264
+    {% endhighlight %}
 
 ###单例的缺点
 
