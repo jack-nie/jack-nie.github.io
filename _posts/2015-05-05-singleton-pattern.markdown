@@ -24,46 +24,46 @@ Ruby的标准库实现了singleton模块，可以用来实现单例模式。
 ###实现
 首先通过`require`和`include`引入`singleton`模块。
 
-  require 'singleton'
+    require 'singleton'
 
-  class BlogConfig
-    include Singleton
-  end
+    class BlogConfig
+      include Singleton
+    end
 如果通过new方法来实例化该类，将会得到一个NoMethodError的异常，构造器被设置成私有的以防止其他的实例被创建。为了得到该类的实例，需要通过`instance`方法，当首次调用该方法时，该类的一个实例就被创建，再次调用，会返回已经创建好的实例。
 
-  first, second = BlogConfig.instance, BlogConfig.instance
-  first == second
-  #=> true
+    first, second = BlogConfig.instance, BlogConfig.instance
+    first == second
+    #=> true
 
 ###自己造轮子
 我们可以模仿Singleton模块自己创造一个。关键步骤在于将要include该模块的类的new方法设置为私有的，防止不小心调用了new方法。
 
-  module Singleton
-    def self.included(base)
-      base.instance_variable_set("@instance", base.new)
-      base.extend(self)
-      base.private_class_method :new
+    module Singleton
+      def self.included(base)
+        base.instance_variable_set("@instance", base.new)
+        base.extend(self)
+        base.private_class_method :new
+      end
+    
+      def instance
+        instance_variable_get("@instance")
+      end
     end
-  
-    def instance
-      instance_variable_get("@instance")
+    
+    class Test
+      include Singleton
+      def say(val)
+        puts val
+      end
     end
-  end
-  
-  class Test
-    include Singleton
-    def say(val)
-      puts val
-    end
-  end
-  
-  
-  a = Test.instance 
-  b = Test.instance
-  puts a.object_id
-  puts b.object_id
-  #=> 23304264
-  #=> 23304264
+    
+    
+    a = Test.instance 
+    b = Test.instance
+    puts a.object_id
+    puts b.object_id
+    #=> 23304264
+    #=> 23304264
 
 ###单例的缺点
 
