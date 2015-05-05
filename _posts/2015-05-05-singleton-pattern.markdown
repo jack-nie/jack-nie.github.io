@@ -81,3 +81,4 @@ Ruby的标准库实现了singleton模块，可以用来实现单例模式。
 扩展阅读：
 
 - [Ruby and the singleton pattern don't get along](https://practicingruby.com/articles/ruby-and-the-singleton-pattern-dont-get-along "Ruby and the singleton pattern don't get along")
+- [Implementing and Testing the Singleton Pattern in Ruby](http://blog.8thlight.com/josh-cheek/2012/10/20/implementing-and-testing-the-singleton-pattern-in-ruby.html "Implementing and Testing the Singleton Pattern in Ruby")
