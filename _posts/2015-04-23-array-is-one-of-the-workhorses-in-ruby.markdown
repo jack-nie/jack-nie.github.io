@@ -165,7 +165,18 @@ tags: ["Ruby"]
 		2.1.2 :003 > a[0...-3]
 		=> [1, 2]
 		{% endhighlight %}
+<<, +, 操作符和concat
+        {% highlight ruby%}
+ Ruby code:
+	    [1] << [2,3]
+	    [1].concat([2,3])
+	    [1] + [2,3]
 
+        #=> [1, [2, 3]]
+        #=> [1, 2, 3]
+        #=> [1, 2, 3]
+        {% endhighlight %}
+        
 参考资料：
 
 - [http://blog.diatomenterprises.com/arrays-are-the-workhorse-of-ruby/](http://blog.diatomenterprises.com/arrays-are-the-workhorse-of-ruby/)        

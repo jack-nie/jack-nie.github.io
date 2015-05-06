@@ -5,7 +5,7 @@ date:   2015-05-05
 keywords: ["ruby"]
 description: "Ruby GIL"
 category: "ruby"
-tags: ["ruby"]
+tags: ["Ruby"]
 ---
 {% include JB/setup %}
 许多脚本语言都都使用GIL来简化其解释器的内部设计，那么GIL到底是什么呢？全局解释锁（GIL），有时候也叫做全局VM锁（GVL）。每一个Ruby线程需要在运行之前请求GIL。Ruby的GIL是个虚拟机层面的互斥机制即一个线程只有在活动状态下才能执行Ruby代码。这个很有必要，因为C扩展以及很多Ruby组件并不是线程安全的（包括集合和哈希表！）持有GIL,我们便能确保正在执行的Ruby代码是同时刻唯一的运行线程；这就避免了并发问题。
