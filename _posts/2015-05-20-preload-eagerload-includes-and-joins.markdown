@@ -130,3 +130,12 @@ Rails提供了四种不同的方式来加载关联数据，本文将详细解析
   end
   {% endhighlight %}
 需要指出的一点是使用`joins`意味着如果你使用`user.posts`将会产生另外的一条SQL查询。
+
+原文：
+
+- [Preload, Eagerload, Includes and Joins](http://blog.bigbinary.com/2013/07/01/preload-vs-eager-load-vs-joins-vs-includes.html "Preload, Eagerload, Includes and Joins")
+
+扩展阅读：
+
+
+- [3 ways to do eager loading (preloading) in Rails 3 & 4](http://blog.arkency.com/2013/12/rails4-preloading/ "3 ways to do eager loading (preloading) in Rails 3 & 4")
