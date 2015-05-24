@@ -4,7 +4,7 @@ title:  "Ruby中的GIL初探"
 date:   2015-05-05
 keywords: ["ruby"]
 description: "Ruby GIL"
-category: "ruby"
+category: "Ruby"
 tags: ["Ruby"]
 ---
 {% include JB/setup %}
