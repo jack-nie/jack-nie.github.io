@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  " Jenkins CI服务器搭建"
-date:   2015-08-02
+date:   2015-08-08
 keywords: ["Server"]
 description: "Jenkins CI服务器搭建"
 category: "Server"
@@ -95,8 +95,7 @@ Rails Asset Pipeline要求Javascript Runtime， 这里通过安装NodeJS来提�
             proxy_set_header Host $host:$server_port; 
             proxy_redirect off; 
             proxy_pass http://localhost:8080; 
-            #下面这行代码很重要,将8080端口转发至80端口
-            proxy_redirect http://ci.everants.com:8080/ http://ci.everants.com/; 
+            proxy_redirect http://example.com:8080/ http://example.com/; 
             port_in_redirect off; 
         }
     }
@@ -118,7 +117,7 @@ Rails Asset Pipeline要求Javascript Runtime， 这里通过安装NodeJS来提�
 
 ###手动安装Rails环境
 
-安装Jenkins的时候，已经自动帮我们添加了jenkins用户，其Home目录位于/var/lib/jenkins/。但是不能登录。先修改用户属性让jenkins用户可登录，用bash作为默认shell.
+安装Jenkins的时候，已经自动帮我们添加了jenkins用户，其Home目录位于`/var/lib/jenkins/`。但是不能登录。先修改用户属性让jenkins用户可登录，用bash作为默认shell.
 
     {% highlight ruby%}
     sudo usermod -s /bin/bash jenkins
@@ -201,7 +200,7 @@ Jenkins刚安装完，是允许所有访问Jenkins的人进行所有操作的，
     *  Module name：留空
     *  Token：这就是在Jenkins的项目里，你自己填入随机字串的那个Authentication Token
     *  Project name：Jenkins上的工程名字
-    *  Endpoint：http://[Jenkins User]:[API Token]@[hostname]/，如：http://admin:xxxxxxxxxxx@ci.everants.com/
+    *  Endpoint：http://[Jenkins User]:[API Token]@[hostname]/，如：http://admin:xxxxxxxxxxx@example.com/
 
 这样一来，每次你push代码到Bitbucket，它都会通知Jenkins去做你要让它帮你做的事情！
 *确保Authentication Token与API Token都跟你在Jenkins上的一致。*
