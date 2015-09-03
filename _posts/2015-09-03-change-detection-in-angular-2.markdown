@@ -1,7 +1,7 @@
 ---
 layout: post
-title:  "Angular2 变更检测"
-date:   2015-08-08
+title:  "【翻译】Angular2 变更检测"
+date:   2015-08-24
 keywords: ["angular2", "javascript"]
 description: "Angular2 core concepts"
 category: "Javascript"
@@ -13,9 +13,9 @@ tags: ["Javascript"]
 ###概览
 
 一个Angular2的应用是由组件组成的树。
-![Alt "angular2"](/_assets/images/tumblr_njb2puhhEa1qc0howo1_1280.png)
+![Alt "angular2"](/assets/images/tumblr_njb2puhhEa1qc0howo1_1280.png)
 一个Angular2应用是一个反应式的系统，变更检测是其核心。
-![Alt "angular2"](/_assets/images/tumblr_njb2puhhEa1qc0howo2_1280.png)
+![Alt "angular2"](/assets/images/tumblr_njb2puhhEa1qc0howo2_1280.png)
 每一个组件都有一个变更检测器，用来检测在末班中定义的绑定。一个绑定的例子：｀{{todo.text}}｀和｀[todo]='t'｀。变更检测器使用深度优先策略遍历绑定。在Angular2中并没有一个通用的机制来实现双向绑定（但是你仍然可以实现双向绑定和｀ng-model｀，你可以通过阅读["这篇"](http://victorsavkin.com/post/119943127151/angular-2-template-syntax)文章了解更多)。这也是为什么变更检测是没有环的树，这使得该系统拥有更好的性能。更重要的是Angular2能够保证更好的预测系统的行为和更容易推理。
 
 Angular2到底有多快？
@@ -26,10 +26,10 @@ Angular2到底有多快？
 ###不可变对象
 如果一个组件仅仅依赖与其绑定，并且绑定是不可变的，那么该组件只有在其中的一个绑定发生了变化时才变化。因此，我们可以跳过变更探测树的子树直到该事件发生。当事件发生时，我们只用检测子树一次，然后就关闭它直到下一次变化发生。
 
-![Alt "angular2"](/_assets/images/tumblr_njb2puhhEa1qc0howo3_1280.png)
+![Alt "angular2"](/assets/images/tumblr_njb2puhhEa1qc0howo3_1280.png)
 
 如果我们非常激进的处理不可变对象，大多数时间变更检测树的很大一部分都可以被关闭。
-![Alt "angular2"](/_assets/images/tumblr_njb2puhhEa1qc0howo4_1280.png)
+![Alt "angular2"](/assets/images/tumblr_njb2puhhEa1qc0howo4_1280.png)
 实现这一功能，只需要将变更检测的策略设置为｀ON_PUSH｀。
 
     @Component({changeDetection:ON_PUSH})
@@ -60,26 +60,26 @@ Angular2到底有多快？
 
  ObservableTodoCmp:
 
-  @Component({selector:’todo’})
-    class ObservableTodoCmp {
-      todo:ObservableTodo;
-      //...
-    }
+    @Component({selector:’todo’})
+      class ObservableTodoCmp {
+        todo:ObservableTodo;
+        //...
+      }
 
 如你所见，Todos组件只用有一个对由todos数组组成的可观察对象的引用，所以它检测不到单个todos组件的变化。
 
 处理的方式是在可观察对象todo触发一个事件时，检查从根到该变化的todo组件的路径。变更检测系统能够确保这种事情的发生。
 
 假设我们的系统仅仅使用可观察对象，当系统启动时，Angular2将会检测检测所有的对象。
-![Alt "angular2"](/_assets/images/tumblr_njb2puhhEa1qc0howo5_1280.png)
+![Alt "angular2"](/assets/images/tumblr_njb2puhhEa1qc0howo5_1280.png)
 所以经过了第一步之后，状态将会变成如下所示的样子。
-![Alt "angular2"](/_assets/images/tumblr_njb2puhhEa1qc0howo6_1280.png)
+![Alt "angular2"](/assets/images/tumblr_njb2puhhEa1qc0howo6_1280.png)
 
 让我们假设todo可观测对象触发了一个事件，那么系统状态装回转变成如下所示的样子。
-![Alt "angular2"](/_assets/images/tumblr_njb2puhhEa1qc0howo7_1280.png)
+![Alt "angular2"](/assets/images/tumblr_njb2puhhEa1qc0howo7_1280.png)
 
 当检测完了App_ChangeDetector, Todos_ChangeDetector和Todo_ChangeDetector之后，将会回到如下所示的状态。
-![Alt "angular2"](/_assets/images/tumblr_njb2puhhEa1qc0howo6_1280.png)
+![Alt "angular2"](/assets/images/tumblr_njb2puhhEa1qc0howo6_1280.png)
 
 假设这些变化极少发生，组件组成一颗平衡树，那么使用可观测对象将会使变更检测的复杂度由O(N)变为O(logN)，其中N是系统中绑定对象的数量。
 
