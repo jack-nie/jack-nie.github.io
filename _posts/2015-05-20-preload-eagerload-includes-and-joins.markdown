@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Preload, includes, eagerload and joins"
+title:  "【翻译】Preload, includes, eagerload and joins"
 date:   2015-05-20
 keywords: ["Ruby"]
 description: "Preload, includes, eagerload and joins"

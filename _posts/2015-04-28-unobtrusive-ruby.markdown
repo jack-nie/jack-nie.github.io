@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "不唐突的Ruby"
+title:  "【翻译】不唐突的Ruby"
 date:   2015-04-28
 keywords: ["Ruby"]
 description: "不唐突的Ruby"

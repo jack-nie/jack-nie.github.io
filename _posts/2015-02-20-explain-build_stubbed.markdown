@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "build_stubbed详解--Factory Girl"
+title:  "【翻译】build_stubbed详解--Factory Girl"
 date:   2015-02-20
 keywords: ["Rspec", "Rails", "测试"]
 description: "build_stubbed详解"

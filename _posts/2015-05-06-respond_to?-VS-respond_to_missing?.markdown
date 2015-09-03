@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "respond_to? VS respond_to_missing?"
+title:  "【翻译】respond_to? VS respond_to_missing?"
 date:   2015-05-06
 keywords: ["Ruby"]
 description: "respond_to? VS respond_to_missing?"

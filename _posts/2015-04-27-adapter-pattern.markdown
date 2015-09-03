@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "适配器模式"
+title:  "【转载】适配器模式"
 date:   2015-04-27
 keywords: ["Ruby","设计模式"]
 description: "适配器模式"

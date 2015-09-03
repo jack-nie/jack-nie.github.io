@@ -64,6 +64,11 @@ tags: ["weixin"]
     $client = WeinAuthrize::Client.new(ENV['appId'], ENV['appSecret'])
     {% endhighlight  %}
 
+###从微信端下载图片到本地
+
+这一步的关键是要获取到上传到微信服务器的`serverId`，这个参数可以在微信的上传接口`uploadImage`中获取，然后
+通过`carrierWave`插件的`remote_xxx_url`方法下载到本地。其中xxx代表的是通过`carrierWave`插件mount过的字段。
+
 ###微信配置项
 这里主要讲一下jsApiList这个选项，这里是你接下来在该页面中将要用到的微信接口。
 本例中主要用到`chooseImage`和`uploadImage`两个接口。

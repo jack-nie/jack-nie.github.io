@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "CSS居中完全指导手册"
+title:  "【翻译】CSS居中完全指导手册"
 date:   2015-03-14
 keywords: ["CSS","居中"]
 description: "CSS居中完全指导手册"

@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Ruby’s case statement – advanced techniques"
+title:  "【翻译】Ruby’s case statement – advanced techniques"
 date:   2015-08-02
 keywords: ["Ruby"]
 description: "Ruby’s case statement – advanced techniques"
