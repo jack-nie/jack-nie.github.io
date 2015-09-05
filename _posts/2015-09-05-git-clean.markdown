@@ -24,9 +24,10 @@ tags: ["Git"]
 
 为了避免再次发生这样的事情，应该先运行一下如下命令，看对文件会造成什么影响。
 　　
-　　git clean -dfx --dry-run
-　　#-n, --dry-run 不会删除任何文件，只是告诉你会发生什么
-　　#-q 只报告错误，不会报告被成功删除的文件
-　　#-e<pattern> 会忽略`.gitignore`文件中定义的文件，同时包括`$GIT_DIR/info/exclude`。还有自定义的忽略规则。
-　　#-X 移除git忽略的文件，但会保存已经创建的文件。
+    git clean -dfx --dry-run
+
+* #-n, --dry-run 不会删除任何文件，只是告诉你会发生什么
+* #-q 只报告错误，不会报告被成功删除的文件
+* #-e<pattern> 会忽略`.gitignore`文件中定义的文件，同时包括`$GIT_DIR/info/exclude`。还有自定义的忽略规则。
+* #-X 移除git忽略的文件，但会保存已经创建的文件。
   
