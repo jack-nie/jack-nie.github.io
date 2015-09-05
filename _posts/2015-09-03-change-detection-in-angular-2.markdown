@@ -16,7 +16,7 @@ tags: ["Javascript"]
 ![Alt "angular2"](/assets/images/tumblr_njb2puhhEa1qc0howo1_1280.png)
 一个Angular2应用是一个反应式的系统，变更检测是其核心。
 ![Alt "angular2"](/assets/images/tumblr_njb2puhhEa1qc0howo2_1280.png)
-每一个组件都有一个变更检测器，用来检测在末班中定义的绑定。一个绑定的例子：｀{{todo.text}}｀和｀[todo]='t'｀。变更检测器使用深度优先策略遍历绑定。在Angular2中并没有一个通用的机制来实现双向绑定（但是你仍然可以实现双向绑定和｀ng-model｀，你可以通过阅读["这篇"](http://victorsavkin.com/post/119943127151/angular-2-template-syntax)文章了解更多)。这也是为什么变更检测是没有环的树，这使得该系统拥有更好的性能。更重要的是Angular2能够保证更好的预测系统的行为和更容易推理。
+每一个组件都有一个变更检测器，用来检测在末班中定义的绑定。一个绑定的例子：`{{todo.text}}`和`[todo]='t'`。变更检测器使用深度优先策略遍历绑定。在Angular2中并没有一个通用的机制来实现双向绑定（但是你仍然可以实现双向绑定和`ng-model`，你可以通过阅读["这篇"](http://victorsavkin.com/post/119943127151/angular-2-template-syntax)文章了解更多)。这也是为什么变更检测是没有环的树，这使得该系统拥有更好的性能。更重要的是Angular2能够保证更好的预测系统的行为和更容易推理。
 
 Angular2到底有多快？
 变更检测器默认遍历树的每一个节点以检测其是否变化，这种行为会在每一个浏览器事件发生时被触发。虽然看起来性能非常的低，但是实际上Angular2能够在几毫秒的时间内进行成百上千的简单检测（具体的数量依赖于不同的浏览器平台）。怎么实现这一令人印象深刻的结果是另一篇文章将要探讨的内容。
@@ -30,7 +30,7 @@ Angular2到底有多快？
 
 如果我们非常激进的处理不可变对象，大多数时间变更检测树的很大一部分都可以被关闭。
 ![Alt "angular2"](/assets/images/tumblr_njb2puhhEa1qc0howo4_1280.png)
-实现这一功能，只需要将变更检测的策略设置为｀ON_PUSH｀。
+实现这一功能，只需要将变更检测的策略设置为`ON_PUSH`。
 
     @Component({changeDetection:ON_PUSH})
     class ImmutableTodoCmp {
