@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "抽象工厂模式"
-date:   2015-09-１７
+date:   2015-09-17
 keywords: ["abstract factory"]
 description: "abstract factory"
 category: "design-pattern"
