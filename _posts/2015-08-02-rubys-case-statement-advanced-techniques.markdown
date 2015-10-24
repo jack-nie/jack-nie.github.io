@@ -130,7 +130,7 @@ tags: ["Ruby"]
       puts "You can't even use a computer!"
     end
     {% endhighlight %}
-什么时候不该用case/when语句
+###什么时候不该用case/when语句
 　　当你只有一些简单的1:1映射关系的时候，不该使用该方法。
 
     {% highlight ruby  %}
@@ -143,14 +143,15 @@ tags: ["Ruby"]
       end
     {% endhighlight %}
 
+
     下面是比较好的写法：
+
 
     {% highlight ruby  %}
     Ruby code:
        SITES = {
-           "europe"  => "http://eu.example.com",
-             "america" => "http://us.example.com"
-
+         "europe"  => "http://eu.example.com",
+         "america" => "http://us.example.com"
        }
        SITES[country]
     {% endhighlight %}
