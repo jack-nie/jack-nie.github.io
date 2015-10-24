@@ -50,12 +50,23 @@ tags: ["Git"]
 没有被注释掉的部分是前两次的提交记录，可以选择保留，也可以选择删掉重写，然后退出就可以了。
 之后就可以通过`git log --oneline --decorate`查看提交记录，发现前几次的提交已经合并掉了。
 
+另外一种合并的方式：
+
+    {% highlight ruby%}
+    code:
+    $ git reset HEAD~5
+    $ git add .
+    $ git commit -am "Here's the bug fix that closes #28"
+    $ git push --force
+    {% endhighlight %}
+
 如果你想修复之前的提交，又不想有多次记录，那么可以在修复的这次提交中使用：
 
     {% highlight ruby %}
     Code:
     git commit --fixup bbb2222
-    git rebase --interactive --autosquash master
+    git rebase --interactive --autosquash bbb1111
+    #bbb1111为你需要修复的提交的前一次提交
     {% endhighlight %}
 
 
