@@ -74,6 +74,20 @@ tags: ["Ruby"]
     # outputs "lambdas"
     {% endhighlight %}
 
+另外的写法：
+
+　　{% highlight ruby %}
+     odd  = proc(&:odd?)
+     even = proc(&:even?)
+      
+      case number
+      when odd
+        puts "Odd number"
+      when even
+        puts "Even number"
+      end
+    {% endhighlight %}
+
 ###编写你自己的匹配类
 
 就像我上文提到的那样，在你自己的类中增加一个自定义的case行为就和你定义一个===方法一样简单。使用这项技术能够讲一系列复杂的条件逻辑拆分成多个较小的类。
@@ -116,8 +130,35 @@ tags: ["Ruby"]
       puts "You can't even use a computer!"
     end
     {% endhighlight %}
+什么时候不该用case/when语句
+　　当你只有一些简单的1:1映射关系的时候，不该使用该方法。
+
+    {% highlight ruby  %}
+      case country
+      when "europe"
+        "http://eu.example.com"
+      when "america"
+        "http://us.example.com"
+      end
+    {% endhighlight %}
+
+    下面是比较好的写法：
+
+    {% highlight ruby  %}
+       SITES = {
+           "europe"  => "http://eu.example.com",
+             "america" => "http://us.example.com"
+
+       }
+       SITES[country]
+    {% endhighlight %}
+
+    
   
 原文：
 
 - [Ruby’s case statement – advanced techniques](http://blog.honeybadger.io/rubys-case-statement-advanced-techniques "Ruby’s case statement – advanced techniques")
 
+参考：
+
+- [The Many Uses Of Ruby Case Statements](http://www.blackbytes.info/2015/10/ruby-case/?utm_source=rubyweekly&utm_medium=email "The Many Uses Of Ruby Case Statements")
