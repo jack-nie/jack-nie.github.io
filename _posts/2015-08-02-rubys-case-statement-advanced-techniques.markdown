@@ -76,10 +76,10 @@ tags: ["Ruby"]
 
 另外的写法：
 
-　　{% highlight ruby %}
+    {% highlight ruby %}
+    Ruby Code:
      odd  = proc(&:odd?)
      even = proc(&:even?)
-      
       case number
       when odd
         puts "Odd number"
@@ -134,6 +134,7 @@ tags: ["Ruby"]
 　　当你只有一些简单的1:1映射关系的时候，不该使用该方法。
 
     {% highlight ruby  %}
+    Ruby code:
       case country
       when "europe"
         "http://eu.example.com"
@@ -145,6 +146,7 @@ tags: ["Ruby"]
     下面是比较好的写法：
 
     {% highlight ruby  %}
+    Ruby code:
        SITES = {
            "europe"  => "http://eu.example.com",
              "america" => "http://us.example.com"
