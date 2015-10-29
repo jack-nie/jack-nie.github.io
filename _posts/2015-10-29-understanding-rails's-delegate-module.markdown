@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "理解Rails中的delegate模块"
-date:   2015-10-24
+date:   2015-10-29
 keywords: ["rails","delegate"]
 description: "rails delegate"
 category: "ruby"
@@ -11,6 +11,7 @@ tags: ["Ruby","Rails"]
 Rails中有一个非常炫酷的`associations`特性能够帮助我们很方便的创建链式方法，它看起来像是这样子的：
 
     {% highlight ruby%}
+    Ruby code:
     product.provider.name  
     provider.address.city
     company.building.city
@@ -19,6 +20,7 @@ Rails中有一个非常炫酷的`associations`特性能够帮助我们很方便�
 但是，这破坏了["得墨忒耳"](http://jack-nie.github.io/best-practices/understanding-the-law-of-demeter.html "得墨忒耳")法则，我们更希望通过如下方式进行调用：
 
     {% highlight ruby %}
+    Ruby code:
     product.provider_name
     provider.address_city #or provider.city 
     company.city
@@ -27,6 +29,7 @@ Rails中有一个非常炫酷的`associations`特性能够帮助我们很方便�
 为了实现这样的调用方式，通常我们需要在对应的`model`中定义一些方法：
 　　
     {% highlight ruby %}
+    Ruby code:
     class Product < ActiveRecord::Base
       belongs_to :provider
 
@@ -47,8 +50,9 @@ Rails中有一个非常炫酷的`associations`特性能够帮助我们很方便�
 这是一个很好的解决方案，但是当我们有许多的属性时，就要定义更多的方法，这会增加代码的体积，也会更容易的引入bug。更进一步的我们可以引入ruby的动态特性。
 
     {% highlight ruby%}
+    Ruby code:
     %w[name age address].each do |attr|
-      define_method "provider_{attr}" do
+      define_method "provider_#{attr}" do
         provider.send("#{attr}")
       end
     end
