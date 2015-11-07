@@ -5,7 +5,7 @@ date:   2015-08-24
 keywords: ["angular2", "javascript"]
 description: "Angular2 core concepts"
 category: "Javascript"
-tags: ["Javascript"]
+tags: ["JavaScript"]
 ---
 {% include JB/setup %}
 本文讲深入探讨Angular2中的变更检测系统。
