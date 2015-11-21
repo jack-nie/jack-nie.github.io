@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "理解Rails中的try方法"
-date:   2015-11-07由于
+date:   "2015-11-21"
 keywords: ["rails","try"]
 description: "understanding try method"
 category: "Rails"
