@@ -29,4 +29,5 @@
       {% capture IMAGE_PATH %}{{ BASE_PATH }}/images{% endcapture %}
     {% endif %}
   {% endif %}
+  {% capture ASSET_PATH %}{{ BASE_PATH }}/assets/themes/twitter{% endcapture %}
 {% endcapture %}{% assign jbcache = nil %}
