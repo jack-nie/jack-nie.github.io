@@ -9,7 +9,7 @@ tags: ["C"]
 ---
 {% include JB/setup %}
 首先我们通过一道例题来认识一下指向二维数组的指针。
-    {% highlight javascript %}
+    {% highlight c %}
     Code:
     #include <iostream>
     using namespace std;
@@ -30,7 +30,7 @@ tags: ["C"]
 
 #### 输入i,j;输出a[i][j];
 
-    {% highlight javascript %}
+    {% highlight c %}
     Code:
     #include <iostream>
     using namespace std;
@@ -52,3 +52,7 @@ tags: ["C"]
 
 * `*(*(p+i)+j)`
   p指向一个包涵4个int型元素的一维数组，`p+i`是第`i＋1`个包涵4个int型元素的一维数组的地址，所以`p+i`等价于`&a[i]`。那么很明显的`*(p+i)`等价于`a[i]`，`*(p+i)+j`等价于`a[i]+j`，因为`a[i]+j`等价于`&a[i][j]`，所以`*(*(p+i)+j)`等价于`a[i][j]`。
+
+####  指针变量的`++`操作
+
+当我们对一个指向整型的指针变量进行`++`操作的时候，指针变量的值会增加4，也就是指针变量的基类型的大小。
