@@ -14,12 +14,10 @@ tags: ["TCP/IP"]
 ### TCP概览
 
 TCP数据报被封装在一个IP数据报中，如图［1］所示。
-![Alt "TCP数据在IP数据报中的封装"](/assets/images/438E3D81-ADF4-473C-BFED-163687225A04.png)
+![Alt "TCP包首部"](/assets/images/2BE3318E-3915-4602-9E18-5ED74CFCD274.png)
 
 图[2]展示的是TCP首部的数据格式，如果不计任选字段，它将会是20个字节。
-
-![Alt "TCP包首部"](/assets/images/AE8C5FD0-1307-45BF-9F1B-2E62984EE37F.png)
-图[2] TCP包首部
+![Alt "TCP数据在IP数据报中的封装"](/assets/images/438E3D81-ADF4-473C-BFED-163687225A04.png)
 
 由图[2]可以清楚的看到TCP数据报的头部包含一个16位的源端口地址和一个16位的目的端口地址，用于寻找发送端和接收端的应用程序。这两个端口号和IP首部中的发送端IP地址和接收端IP地址结合起来就能够唯一确定一个TCP连接。
 
