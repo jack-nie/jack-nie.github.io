@@ -15,15 +15,16 @@ tags: ["TCP/IP"]
 
 TCP数据报被封装在一个IP数据报中，如图［1］所示。
 
-图（2）展示的是TCP首部的数据格式，如果不计任选字段，它将会是20个字节。
-
-由图（2）可以清楚的看到TCP数据报的头部包含一个16位的源端口地址和一个16位的目的端口地址，用于寻找发送端和接收端的应用程序。这两个端口号和IP首部中的发送端IP地址和接收端IP地址结合起来就能够唯一确定一个TCP连接。
+图[2]展示的是TCP首部的数据格式，如果不计任选字段，它将会是20个字节。
 
 ![Alt "TCP包首部"](/assets/images/D1DEF2E2-02AF-4915-BDF0-4D0D05A15B9C.png)
+          图[2] TCP包首部
+
+由图[2]可以清楚的看到TCP数据报的头部包含一个16位的源端口地址和一个16位的目的端口地址，用于寻找发送端和接收端的应用程序。这两个端口号和IP首部中的发送端IP地址和接收端IP地址结合起来就能够唯一确定一个TCP连接。
 
 ### TCP连接的建立
 
-接下来讲解TCP是如何建立连接的，也就是通常所说的三次握手的过程。为了简便起见，我直接使用rails new blog创建一个app，然后运行rails s启动服务，然后本机运行`telnet localhost 3000`。再开一个窗口运行`sudo tcpdump -i lo0 port 3000`，得到如下输出。
+接下来讲解TCP是如何建立连接的，也就是通常所说的三次握手的过程。为了简便起见，我直接使用`rails new blog`创建一个app，然后运行`rails s`启动服务，然后本机运行`telnet localhost 3000`。再开一个窗口运行`sudo tcpdump -i lo0 port 3000`，得到如下输出。
 
     16:44:23.751241 IP6 localhost.59405 > localhost.hbci: Flags [S], seq 396289691, win 65535, options [mss 16324,nop,wscale 5,nop,nop,TS val 896927289 ecr 0,sackOK,eol], length 0
     16:44:23.751315 IP6 localhost.hbci > localhost.59405: Flags [S.], seq 588037038, ack 396289692, win 65535, options [mss 16324,nop,wscale 5,nop,nop,TS val 896927289 ecr 896927289,sackOK,eol], length 0
