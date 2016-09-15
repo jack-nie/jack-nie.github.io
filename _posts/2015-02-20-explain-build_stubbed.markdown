@@ -4,7 +4,7 @@ title:  "【翻译】build_stubbed详解--Factory Girl"
 date:   2015-02-20
 keywords: ["Rspec", "Rails", "测试"]
 description: "build_stubbed详解"
-category: "test"
+category: "Test"
 tags: ["Rspec", "Rails", "测试"]
 ---
 {% include JB/setup %}
@@ -16,7 +16,7 @@ build_stubbed是在FactoryGirl中引入的一个方法，build_stubbed和build�
     Ruby Code:
 	assoiation :store
 	assoiation :area
-	
+
 	FactoryGirl.build_stubbed(:store, company: fg_company, area: nil)
     {% endhighlight %}
 通过这种方式就不会额外的创建被关联的数据了。如果创建时有很多依赖，但是你忘记了将其中的一个
@@ -40,7 +40,7 @@ build_stubbed是在FactoryGirl中引入的一个方法，build_stubbed和build�
 	  after(:build) {|p| p.comments ||= create_list(:comment, 5, post: p) }
 	  after(:stub) {|p| p.comments ||= build_stubbed_list(:comment, 5, post: p}
 	end
-	
+
 	create(:post) # with auto comments
 	create(:post, comments: some_other_comments) # with comments for a specific test
 	build_stubbed(:post) # with auto comments and no DB

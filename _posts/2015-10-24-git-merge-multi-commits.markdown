@@ -4,7 +4,7 @@ title:  "Git合并多次提交"
 date:   2015-10-24
 keywords: ["git","rebase"]
 description: "git rebase"
-category: "git"
+category: "Git"
 tags: ["Git"]
 ---
 {% include JB/setup %}

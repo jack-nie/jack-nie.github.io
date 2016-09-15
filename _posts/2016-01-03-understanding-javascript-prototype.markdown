@@ -2,10 +2,10 @@
 layout: post
 title:  "理解JavaScript中的原型继承"
 date:   "2016-01-03"
-keywords: ["javascript", "prototype"]
-description: "javascript prototype"
-category: "javascript"
-tags: ["javascript"]
+keywords: ["JavaScript", "prototype"]
+description: "JavaScript prototype"
+category: "JavaScript"
+tags: ["JavaScript"]
 ---
 {% include JB/setup %}
 原型是JavaScript的核心概念之一，理解JavaScript的原型就显得尤为重要。在JavaScript中，类的所有对象都从同一个原型对象上继承属性,因此，原型对象是类的核心。
@@ -22,7 +22,7 @@ tags: ["javascript"]
       function Parent(name, job) {
         this.name = name;
         this.job  = job;
-      } 
+      }
 
       Parent.prototype.getName = function() {
         return this.name;

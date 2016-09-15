@@ -4,7 +4,7 @@ title:  "【翻译】利用Nginx加速Rails下载"
 date:   2015-10-24
 keywords: ["nginx","rails"]
 description: "Accelerated Rails Downloads with NGINX"
-category: "ruby"
+category: "Ruby"
 tags: ["Rails"]
 ---
 {% include JB/setup %}
@@ -39,7 +39,7 @@ Rails有一个选项可以用来启用`X-Accel-Redirect`，但是这并不是全
     {% highlight ruby%}
     config.action_dispatch.x_sendfile_header = "X-Accel-Redirect" # for NGINX
     {% endhighlight %}
-    
+
 ###设置Nginx路径来伺服文件
 
 如果不做配置，Nginx并不能伺服文件系统中的任何文件，我们需要设置`document root`和一个URI来访问到将要传送的文件。为了防止和Rails的路由产生冲突，我选择使用`__send_file_accel`作为URI。
@@ -64,7 +64,7 @@ Rails有一个选项可以用来启用`X-Accel-Redirect`，但是这并不是全
     {% highlight ruby %}
     /home/deployer/apps/my_app/releases/20151003173639/tmp/file.zip
     {% endhighlight %}
-   
+
 这意味者Nginx将会收到以下头部：
 
     {% highlight ruby %}

@@ -4,7 +4,7 @@ title:  "理解Rails中的delegate模块"
 date:   2015-10-29
 keywords: ["rails","delegate"]
 description: "rails delegate"
-category: "ruby"
+category: "Ruby"
 tags: ["Ruby","Rails"]
 ---
 {% include JB/setup %}
@@ -12,7 +12,7 @@ Rails中有一个非常炫酷的`associations`特性能够帮助我们很方便�
 
     {% highlight ruby%}
     Ruby code:
-    product.provider.name  
+    product.provider.name
     provider.address.city
     company.building.city
     {% endhighlight %}
@@ -22,7 +22,7 @@ Rails中有一个非常炫酷的`associations`特性能够帮助我们很方便�
     {% highlight ruby %}
     Ruby code:
     product.provider_name
-    provider.address_city #or provider.city 
+    provider.address_city #or provider.city
     company.city
     {% endhighlight %}
 

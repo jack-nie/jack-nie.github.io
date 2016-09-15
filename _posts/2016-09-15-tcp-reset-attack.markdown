@@ -4,7 +4,7 @@ title:  "TCP复位攻击"
 date:   "2016-09-15"
 keywords: ["tcp", "复位攻击", "rst"]
 description: "tcp rst 复位攻击"
-category: "TCP/IP attack series"
+category: "TCP/IP"
 tags: ["TCP/IP"]
 ---
 {% include JB/setup %}

@@ -2,9 +2,9 @@
 layout: post
 title:  "【翻译】Angular2 变更检测"
 date:   2015-08-24
-keywords: ["angular2", "javascript"]
+keywords: ["angular2", "JavaScript"]
 description: "Angular2 core concepts"
-category: "Javascript"
+category: "JavaScript"
 tags: ["JavaScript"]
 ---
 {% include JB/setup %}
@@ -34,7 +34,7 @@ Angular2到底有多快？
 
     @Component({changeDetection:ON_PUSH})
     class ImmutableTodoCmp {
-      todo:Todo; 
+      todo:Todo;
     }
 
 ###可观察对象
