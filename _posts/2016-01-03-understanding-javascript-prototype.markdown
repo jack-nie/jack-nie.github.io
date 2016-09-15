@@ -55,7 +55,7 @@ tags: ["JavaScript"]
       Parent.apply(this, arguments);
     }
     {% endhighlight %}
-###利用create函数
+### 利用create函数
 
 这是来自JavaScript大师Douglas Crockford的方法，具体做法是给Object对象增加一个create方法，创建一个使用原对象作为原型的新对象。
 

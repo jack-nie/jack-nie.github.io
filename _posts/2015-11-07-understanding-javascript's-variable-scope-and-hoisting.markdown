@@ -11,7 +11,7 @@ tags: ["JavaScript"]
    在编程语言中，作用域控制着变量及参数的可见性与生命周期,能够减少名称冲突以及提供必要的自动内存管理。如果想要更好的理解及运用JavaScript,那么理解其作用域就显得很有必要，本文将深入探讨这一主题。
    变量的作用域定义了在该变量的上下文中对于该变量的可见性,JavaScript中的变量有全局变量和局部变量之分。
 
-###局部变量
+### 局部变量
 
    大多数语言都有块级作用域，在一个代码块中在所定义的代码块之外是不可见的，在代码块中定义的变量在代码块执行结束之后就会被释放掉。但是实际上JavaScript并不支持块级作用域，这常常会造成混淆。对于JavaScript来说，它拥有函数级的作用域，函数内部的变量只在其内部及内部定义的函数可见。
    {% highlight javascript%}
@@ -25,7 +25,7 @@ tags: ["JavaScript"]
    console.log(greet);//"Hello world!"
    {% endhighlight %}
 
-####JavaScript没有块级作用域
+### #JavaScript没有块级作用域
 
   让我们来看下面的一个例子：
 
@@ -40,7 +40,7 @@ tags: ["JavaScript"]
    {% endhighlight %}
    我们可以看到代码块外部定义的变量的值已经被改变。
 
-####全局变量
+### #全局变量
 
   所有在函数外部定义的变量都是全局变量，对整个应用可见，如果在函数体内定义变量，但是没有使用`var`关键字，那么它也将成为全局变量。
 
@@ -57,7 +57,7 @@ tags: ["JavaScript"]
      console.log(greet);//"Hello inner!"
    {% endhighlight %}
 
-####`setTimeout`中的变量实在全局作用域中执行的
+### #`setTimeout`中的变量实在全局作用域中执行的
 
    需要注意的是`setTimeout`中的所有函数都是在全局作用域中执行的。
 
@@ -78,7 +78,7 @@ tags: ["JavaScript"]
    myObj.calculateIt(); // 400
    {% endhighlight %}
 
-###声明提前
+### 声明提前
 
   JavaScript的函数作用域是指在函数体内声明的所有变量在函数体内始终可见，也就是说，在函数体内变量在声明之前已经可以使用，JavaScript的这个特性被称为声明提前。JavaScript中的所有变量声明都被提升至函数体的顶部，但是不包括赋值。声明提前的这一步操作是在JavaScript引擎预编译时进行的，是在代码开始执行之前。
 

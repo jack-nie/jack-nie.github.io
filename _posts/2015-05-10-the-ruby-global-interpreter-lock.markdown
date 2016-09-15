@@ -17,7 +17,7 @@ Ruby MRI全局解释锁（GIL）经常被人误解。程序员听到"Global"或�
 
 但是除了Ruby操作，还有其他的什么工作呢？在一个典型的Web应用中，当你查询数据库、磁盘或者Memcached，Ruby并没有参与其中，这意味着你并没有调用GIL。让我们来看看这个简单的例子。
 
-###I/O Operations
+### I/O Operations
 
 	{% highlight ruby %}
 	Ruby code：
@@ -48,7 +48,7 @@ Ruby MRI全局解释锁（GIL）经常被人误解。程序员听到"Global"或�
 
 在这个例子中，Ruby将SQL查询传递给一个等待数据库响应的C程序。因为GIL并没有进行任何工作，所以在这段时间内，Ruby释放了GIL。查询数据库是一个I/O操作，GIL并不影响I/O操作。这意味着Ruby解释器在同一时间内能够执行多个线程。为了理解这些区别，让我们来看下一个例子。
 
-###Ruby Operations
+### Ruby Operations
     
     {% highlight ruby %}
 	Ruby code：
@@ -74,7 +74,7 @@ Ruby MRI全局解释锁（GIL）经常被人误解。程序员听到"Global"或�
 
 在这个例子中，Ruby需要执行运算并且修改数据，因为GIL被激活，所以多线程并没有带来任何好处。实际上，尝试将计算并行化将会产生两个线程的开销。
 
-###总结
+### 总结
 
 Ruby GIL仅仅应用于非I/O操作，当移除GIL时，最后一个例子将能够充分的利用原生线程，Ruby的线程并不是一个不存在的状态。Ruby的线程是能够工作的，仅仅是还没有达到其他语言的级别。
 

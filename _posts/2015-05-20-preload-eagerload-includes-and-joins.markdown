@@ -10,7 +10,7 @@ tags: ["Ruby"]
 {% include JB/setup %}
 Rails提供了四种不同的方式来加载关联数据，本文将详细解析这四种方式的异同。
 
-###Preload
+### Preload
 
 方法`preload`通过两条sql查询来加载关联数据。
 
@@ -45,7 +45,7 @@ Rails提供了四种不同的方式来加载关联数据，本文将详细解析
     SELECT "posts".* FROM "posts"  WHERE "posts"."user_id" IN (3)
     {% endhighlight %}
 
-###Includes
+### Includes
 
 方法`includes`通过分离的sql查询加载关联数据时和`preload`的表现形式是一样的。但是`includes`比`preload`更加的智能，通过上面的例子可以看出通过`User.preload(:posts).where("posts.desc='ruby is awesome'")`查询语句使用`preload`产生了一个错误。下面来看一下使用`includes`的情况。
 
@@ -75,7 +75,7 @@ Rails提供了四种不同的方式来加载关联数据，本文将详细解析
     {% endhighlight %}
 
 上面的例子中，只产生了一条sql查询。
-###Eager load
+### Eager load
 
 立即加载使用`LEFT OUTER JOIN`产生一条sql语句来加载所有的关联数据。
 
@@ -91,7 +91,7 @@ Rails提供了四种不同的方式来加载关联数据，本文将详细解析
 
 当在`where`或者`order`子句中使用了来自表`posts`中的属性时，includes会强制只使用一条sql语句。
 
-###Joins
+### Joins
 
 方法`joins`使用`inner join`来加载关联数据。
 

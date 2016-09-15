@@ -9,8 +9,8 @@ tags: ["CSS"]
 ---
 {% include JB/setup %}
 前端开发中，CSS居中一直是一个令人头痛的问题。为什么CSS居中这么困难呢？其实实现CSS居中并不难，难的是如何从众多的CSS居中方法中选择一个合适的解决方案，通常你并不知道那种解决方案适合当前的情形。所以，让我们来整理一个决策树，希望能够帮助大家更容易的解决CSS居中的问题。
-###  一.水平居中
-####  1.是否是 inline或者inline-*元素
+###   一.水平居中
+### #  1.是否是 inline或者inline-*元素
   将inline元素放置在block父元素中，然后给父元素加上`text-align: center;`
 
         {% highlight html %}
@@ -48,7 +48,7 @@ CSS:
       padding: 3px 8px;
     }
     {% endhighlight %}
-####  2.是否是block元素
+### #  2.是否是block元素
   可以利用`margin:0 auto;`来实现水平居中，利用这种技术的前提是该元素拥有一个固定的宽度。
     {% highlight html %}
 HTML:
@@ -78,7 +78,7 @@ CSS:
       color: white;
     }
         {% endhighlight %}
-####  3.是否有多个block元素需要居中
+### #  3.是否有多个block元素需要居中
   如果你有多种block级别的元素需要在一行中水平居中，那么你最好赋予这些元素的display属性不同的值。
 
     {% highlight html %}
@@ -140,9 +140,9 @@ CSS:
       justify-content: center;
     }
         {% endhighlight%}
-###二.垂直居中
+### 二.垂直居中
 相对而言，CSS垂直居中的实现更加的复杂一点。
-####1.是否是inline或者inline-*元素
+### #1.是否是inline或者inline-*元素
 
 - 需要居中的元素是否只有一行?
   有时候赋予元素相等的上下内边距就可以实现元素的垂直居中。
@@ -347,7 +347,7 @@ CSS:
           background: black;
         }
         {% endhighlight %}
-####2.是否是block元素
+### #2.是否是block元素
  
 
 - 元素高度已知
@@ -434,7 +434,7 @@ CSS:
           overflow: auto;
         }
         {% endhighlight %}
-#### 3.是否可以使用flex-box
+### # 3.是否可以使用flex-box
     {% highlight html %}
 HTML:
         <main>
@@ -473,9 +473,9 @@ CSS:
           overflow: auto;
         }
         {% endhighlight %}       
-### 三.水平居中和垂直居中
+###  三.水平居中和垂直居中
  可以组合前文提到的方案来实现元素的水平和垂直居中，下面给出三种比较常见的组合。
-#### 1.元素的宽度和高度固定
+### # 1.元素的宽度和高度固定
  使用负边距来定位，左右负边距设置为宽度的一半，上下负边距设定为高度的一半，这种方案的兼容性很好。
 
     {% highlight html %}
@@ -519,7 +519,7 @@ CSS:
           padding: 20px;
         }
         {% endhighlight %}
-####2.元素的宽度和高度未知。
+### #2.元素的宽度和高度未知。
  如果元素的高度和宽度未知，那么可以利用transform属性来实现。
 
     {% highlight html %}
@@ -564,7 +564,7 @@ CSS:
           overflow: auto;
         }
         {% endhighlight %}        
-#### 3.是否可以使用flex-box
+### # 3.是否可以使用flex-box
 
     {% highlight html %}
 HTML:

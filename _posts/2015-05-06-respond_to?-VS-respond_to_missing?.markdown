@@ -62,7 +62,7 @@ tags: ["Ruby"]
 	#=> #<Method: Order#user_name>
 现在，是我们期望的结果了。
 
-###总结
+### 总结
 
 - 通过`method_missing?`机制添加新的方法时总是应该覆写`respond_to_missing?`方法，可以帮助Ruby解释器更好的理解新方法的存在。
 

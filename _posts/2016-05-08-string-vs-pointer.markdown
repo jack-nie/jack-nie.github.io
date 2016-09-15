@@ -27,7 +27,7 @@ tags: ["C"]
 
 这里的`cout<<c<<endl; cout<<pc<<endl`实际上是打印出整个字符串数组，而不是该字符串数组的地址，原因是`cout`对字符串的输出做了特殊的处理，如果我们要打印出该字符串数组的首地址，应该采用`cout<<static_cast<void*>(c)<<endl; cout<<static_cast<void*>(pc)<<endl`。
 
-#### 字符串指针举例;
+### # 字符串指针举例;
 
     {% highlight c %}
     Code:

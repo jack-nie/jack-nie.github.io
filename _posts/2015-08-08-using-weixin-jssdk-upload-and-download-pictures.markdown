@@ -14,13 +14,13 @@ tags: ["weixin"]
 基于该api，开发人员可以限定用户上传图片的方式是基于手机的拍照功能还是直接上传手机中原有的图片，
 这项功能对于那些保证上传的图片的真实性有一定的帮助。
 
-###JS-SDK引入
+### JS-SDK引入
 要使用该工具包，需要在用到weixin API的页面引入js-sdk，引入的方式如下：
 
     {% highlight ruby %}
     <script  type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js" ></script>
     {% endhighlight  %}
-###微信appId和微信appSecret
+### 微信appId和微信appSecret
 
 关于如何获取微信appId和Secret，微信js-sdk官方文档有比较详细的说明，这里就不赘述了。
 微信appId和appSecret的引入可以直接在需要用到的地方直接引入，也可以写入ENV变量中，
@@ -50,7 +50,7 @@ tags: ["weixin"]
     end
     {% endhighlight  %}
 
-###appToken的获取
+### appToken的获取
 
 这里appToken的获取需要用到第三方的Gem--weixin_authorize,在gem中加入:
 
@@ -64,12 +64,12 @@ tags: ["weixin"]
     $client = WeinAuthrize::Client.new(ENV['appId'], ENV['appSecret'])
     {% endhighlight  %}
 
-###从微信端下载图片到本地
+### 从微信端下载图片到本地
 
 这一步的关键是要获取到上传到微信服务器的`serverId`，这个参数可以在微信的上传接口`uploadImage`中获取，然后
 通过`carrierWave`插件的`remote_xxx_url`方法下载到本地。其中xxx代表的是通过`carrierWave`插件mount过的字段。
 
-###微信配置项
+### 微信配置项
 这里主要讲一下jsApiList这个选项，这里是你接下来在该页面中将要用到的微信接口。
 本例中主要用到`chooseImage`和`uploadImage`两个接口。
 
@@ -89,7 +89,7 @@ tags: ["weixin"]
     });
     {% endhighlight %}
 
-###主要代码
+### 主要代码
 
     {% highlight ruby%}
     Ruby Code:

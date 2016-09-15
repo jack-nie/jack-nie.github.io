@@ -10,7 +10,7 @@ tags: ["TCP/IP"]
 {% include JB/setup %}
 虽然TCP/IP是一个可靠的面向连接的协议，但是仍然有许多的漏洞。本文将要讲解其中的一种: rst复位攻击, 在这之前让我们先回顾一下TCP的基础知识。
 
-### TCP概览
+###  TCP概览
 
 TCP数据报被封装在一个IP数据报中，如图［1］所示。
 ![Alt "TCP包首部"](/assets/images/2BE3318E-3915-4602-9E18-5ED74CFCD274.png)
@@ -20,7 +20,7 @@ TCP数据报被封装在一个IP数据报中，如图［1］所示。
 
 由图[2]可以清楚的看到TCP数据报的头部包含一个16位的源端口地址和一个16位的目的端口地址，用于寻找发送端和接收端的应用程序。这两个端口号和IP首部中的发送端IP地址和接收端IP地址结合起来就能够唯一确定一个TCP连接。
 
-### TCP连接的建立
+###  TCP连接的建立
 
 接下来讲解TCP是如何建立连接的，也就是通常所说的三次握手的过程。为了简便起见，我直接使用`rails new blog`创建一个app，然后运行`rails s`启动服务，然后本机运行`telnet localhost 3000`。再开一个窗口运行`sudo tcpdump -i lo0 port 3000`，得到如下输出。
 
@@ -50,11 +50,11 @@ TCP数据报被封装在一个IP数据报中，如图［1］所示。
 * 服务器发回包含服务器的初始序号的SYN(seq 2325301428)（报文段2）, 同时设置确认序号客户端初始序号ISN ＋ 1， ACK ＝ ISN ＋ 1(ack 608092821), 对客户端发送的SYN进行确认。
 * 客户端设置确认序号为服务端初始序号ISN ＋ 1,  ACK ＝ ISN ＋ 1(ack 2325301429), 对服务端的SYN报文段进行确认。
 
-### RST复位标志
+###  RST复位标志
 
 TCP首部中的RST比特是用于"复位"的，发送RST包关闭连接时，不必等缓冲区的包都发出去，直接就丢弃缓存区的包发送RST包。而接收端收到RST包后，也不必发送ACK包来确认。
 
-### TCP Reset Attacks
+###  TCP Reset Attacks
 
 * 首先攻击者需要劫持TCP session。
 * 攻击者发送RST标志位置1的包到主机A和主机B，或者二者之一。
@@ -71,7 +71,7 @@ TCP首部中的RST比特是用于"复位"的，发送RST包关闭连接时，不
 * 主机A不知道这个包是假冒的，仍然认为该包来自主机B。
 * 攻击者可以利用这个包做出各种神奇的攻击。
 
-### 参考文献
+###  参考文献
 
 - [TCP Attacks: TCP Sequence Number Prediction and TCP Reset Attacks](http://www.thegeekstuff.com/2012/01/tcp-sequence-number-attacks/)
 - [TCP/IP详解卷1: 协议](http://item.jd.com/10057317.html)

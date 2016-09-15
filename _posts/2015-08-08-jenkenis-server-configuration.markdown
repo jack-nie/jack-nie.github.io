@@ -9,7 +9,7 @@ tags: ["Server"]
 ---
 {% include JB/setup %}
 
-###Java环境配置
+### Java环境配置
 
 首先检查服务器上安装的Java的版本,如果低于1.7,需要将旧版本的Java移除,然后安装新的版本.
 
@@ -28,7 +28,7 @@ tags: ["Server"]
      OpenJDK 64-Bit Server VM (build 24.79-b02, mixed mode)
      {% endhighlight %}
 
-###Jenkins 安装
+### Jenkins 安装
 
     {% highlight ruby%}
     Ruby Code:
@@ -51,7 +51,7 @@ tags: ["Server"]
     curl -Xget http://localhost:8080
     {% endhighlight %}
 
-###NodeJs安装
+### NodeJs安装
 
 Rails Asset Pipeline要求Javascript Runtime， 这里通过安装NodeJS来提供
 
@@ -65,7 +65,7 @@ Rails Asset Pipeline要求Javascript Runtime， 这里通过安装NodeJS来提�
     sudo make install
     {% endhighlight %}
 
-###Nginx代理配置
+### Nginx代理配置
 
 这一步主要是为了可以通过80端口访问Jenkins.
 
@@ -115,7 +115,7 @@ Rails Asset Pipeline要求Javascript Runtime， 这里通过安装NodeJS来提�
     sudo service nginx reload
     {% endhighlight %}
 
-###手动安装Rails环境
+### 手动安装Rails环境
 
 安装Jenkins的时候，已经自动帮我们添加了jenkins用户，其Home目录位于`/var/lib/jenkins/`。但是不能登录。先修改用户属性让jenkins用户可登录，用bash作为默认shell.
 
@@ -159,7 +159,7 @@ Rails Asset Pipeline要求Javascript Runtime， 这里通过安装NodeJS来提�
 
 注意: 如果系统中已经安装了rvm和Ruby On Rails环境,则不需要再安装rvm.
 
-###Bitbucket设置
+### Bitbucket设置
 
 为jenkins用户生成ssh key:
 
@@ -177,7 +177,7 @@ Rails Asset Pipeline要求Javascript Runtime， 这里通过安装NodeJS来提�
 
 如果没有错误信息,则表明配置正确.
 
-###Jenkins安全设置
+### Jenkins安全设置
 
 Jenkins刚安装完，是允许所有访问Jenkins的人进行所有操作的，这样当然不安全，不过Jenkins提供了相当全面的权限控制，稍微设置下即可。
 
@@ -186,7 +186,7 @@ Jenkins刚安装完，是允许所有访问Jenkins的人进行所有操作的，
 *  注册完成后再进入设置，把那个Allow users to sign up取消掉，不再让其他人注册
 *  进入这个用户的设置界面，会有API Token，点Show API Token，记下这个token，在Bitbucket的设置上会用到
 
-###Jenkins项目设置
+### Jenkins项目设置
 
 进行这步之前,请确保已经为Jenkins安装了git插件, 插件的安装可通过Manage Jenkins → Manage Plugins 安装.
 
@@ -194,7 +194,7 @@ Jenkins刚安装完，是允许所有访问Jenkins的人进行所有操作的，
 *  SCM那里选Git，在Repository URL里填上Bitbucket上这个工程的地址。
 *  Build Triggers那里选Trigger builds remotely，在Authentication Token填入随机字串，这个token待会在Bitbucket设置的时候会用到，记下。
 
-###Bitbucket项目设置
+### Bitbucket项目设置
 
 *  进入工程的admin，选Services，在Service下拉框中选Jenkins，按以下填入：
     *  Module name：留空

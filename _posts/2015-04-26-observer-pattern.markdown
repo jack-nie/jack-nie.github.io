@@ -9,7 +9,7 @@ tags: ["Ruby","设计模式"]
 ---
 {% include JB/setup %}
 观察者模式（有时又被称为发布/订阅模式）是软件设计模式的一种。在此种模式中，一个目标对象管理所有相依于它的观察者对象，并且在它本身的状态改变时主动发出通知。这通常透过呼叫各观察者所提供的方法来实现。此种模式通常被用来实作事件处理系统。在Ruby标准库中，观察者模式得到了很好的支持，开箱即用，但是为了更好的说明解释观察者模式，我们首先看一个不利用Ruby的Observer机制的例子。
-###Observable
+### Observable
 首先为被观察对象创建一个`Observable`模块，该模块的职能是在其状态发生改变时通知一个或多个观察者。
 	{% highlight ruby%}
 	Ruby Code:
@@ -46,7 +46,7 @@ tags: ["Ruby","设计模式"]
 	end
 	{% endhighlight %}
 当被观察对象的状态发生了改变，就需要通知其观察了该对象的观察者。首先，我们覆写了有方法`attr_accssor`默认创建的修改器，在这个例子中是`state=`。在给state赋一个新的值后，调用所有观察者的`update`方法。
-###Observer
+### Observer
 下面是Observer模块的实现：
     {% highlight ruby%}
     Ruby Code:
@@ -59,7 +59,7 @@ tags: ["Ruby","设计模式"]
 	end
 	{% endhighlight %}
 在该模块中，将`update`的具体功能留给包含它的类来实现，通过这种方式，`Observer`模块的行为就像是一个需要被其包含者实现的抽象类。
-###蚁群
+### 蚁群
 作为一个简单的例子，首先定义我们的主体，也就是被观察者--蚂蚁女王。
     {% highlight ruby%}
     Ruby Code:
@@ -96,7 +96,7 @@ tags: ["Ruby","设计模式"]
 	{% endhighlight %}
 当蚂蚁女王的状态发生了改变，实例`worker1`、`worker2`会收到通知，并针对性的做出响应，实例`worker3`并没有并加入观察者列中，所以它不会受到通知。
 
-###Obserever机制
+### Obserever机制
 通过Ruby的Observer机制来实现观察者模式是很便捷的，只需要将`observer`模块混入被观察者对象就可以。
     {% highlight ruby%}
     Ruby Code:
@@ -161,7 +161,7 @@ tags: ["Ruby","设计模式"]
 - 让所有需要的观察者和被观察者关联。
 - 每个观察者必须实现`update`方法。
 
-###总结
+### 总结
 观察者模式和<a href="https://jack-nie.github.io/blog/pattern-to-pattern-template-method-and-strategy/">策略模式</a>之间有一些相似之处,二者都是用一个对象（观察者模式的被观察者对象和策略模式的上下文对象）调用另一个对象（观察者模式的观察者和策略模式的策略）。二者的区别在于目的和适用情形的不同，观察者模式通过观察主题的不同状态来做出响应，策略模式则依赖于具体的策略来实现。
 
 参考资料：

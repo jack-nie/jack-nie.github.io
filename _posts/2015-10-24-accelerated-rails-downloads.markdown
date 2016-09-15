@@ -10,7 +10,7 @@ tags: ["Rails"]
 {% include JB/setup %}
 Rails有一个选项可以用来启用`X-Accel-Redirect`，但是这并不是全部。为了能够使其工作，还需要对Nginx进行一些配置，这稍微有点繁琐。下面说一下我是怎么做的。
 
-###问题：高效的传送文件
+### 问题：高效的传送文件
 
 扩展Rails应用全部都是有关与减少请求数，使得等待的时间越短越好。将耗费时间的请求使用异步的方式在后台运行，分发静态资源请求到CDN,使用缓存降低响应时间。
 
@@ -18,7 +18,7 @@ Rails有一个选项可以用来启用`X-Accel-Redirect`，但是这并不是全
 
 那么如何才能传送大文件的过程中不阻塞Rails应用呢？
 
-###Nginx和`SEND_FILE`是如何工作的？
+### Nginx和`SEND_FILE`是如何工作的？
 
 如果你正在使用Nginx,那么解决方案就是使用`X-Accel-Redirect`,它是这样工作的。
 
@@ -30,7 +30,7 @@ Rails有一个选项可以用来启用`X-Accel-Redirect`，但是这并不是全
 
 如你所见，一个简单的`sned_file`只有在一系列的步骤都设置正确才会成功，下面是让其正确工作的步骤。
 
-###设置Rails
+### 设置Rails
 
 首先，Rails需要被告知使用`X-Accel-Redirect`特性。否则Rails自身将会使用一个更加基础也更加慢的方式来处理I/O流。
 
@@ -40,7 +40,7 @@ Rails有一个选项可以用来启用`X-Accel-Redirect`，但是这并不是全
     config.action_dispatch.x_sendfile_header = "X-Accel-Redirect" # for NGINX
     {% endhighlight %}
 
-###设置Nginx路径来伺服文件
+### 设置Nginx路径来伺服文件
 
 如果不做配置，Nginx并不能伺服文件系统中的任何文件，我们需要设置`document root`和一个URI来访问到将要传送的文件。为了防止和Rails的路由产生冲突，我选择使用`__send_file_accel`作为URI。
 
@@ -56,7 +56,7 @@ Rails有一个选项可以用来启用`X-Accel-Redirect`，但是这并不是全
     }
     {% endhighlight %}
 
-###发送`X-Accel-Mapping`头
+### 发送`X-Accel-Mapping`头
 
 假设我们有以下的文件将要传送：
 
@@ -79,7 +79,7 @@ Rails(更精确地将Rack)需要直到怎么进行转换，下面是通过Nginx�
     proxy_set_header X-Accel-Mapping /home/deployer/apps/my_app/releases/=/__send_file_accel/;
     {% endhighlight %}
 
-###测试
+### 测试
 
 下面是一个通过Rails控制器传送文件的小例子：
 

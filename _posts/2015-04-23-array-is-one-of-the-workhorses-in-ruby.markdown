@@ -9,7 +9,7 @@ tags: ["Ruby"]
 ---
 {% include JB/setup %}
 在这篇文章中，我将深入探讨`Arrays`。数组中有很多方法我们每天都用，但是也有一部分方法我们甚至不知道他们的存在。
-###基础
+### 基础
 关于数组有一个非常无聊的定义，但是我们必须记住：数组的下标是从0开始的。一个负数下标表明从数组的最后开始计数--也就是说-1代表数组的最后一个数，-2代表倒数第2个数，以此类推。
 
 那么问题来了,我们要怎样去创建一个数组呢？
@@ -46,7 +46,7 @@ tags: ["Ruby"]
 		 => [true, true, true]
 		 {% endhighlight %}
 就像我们所熟知的，Ruby是一个完全的面向对象的语言，所以arrays也表现为对象。
-###探索的越深就越有趣
+### 探索的越深就越有趣
 让我们从用的最多的迭代方法`#each`开始。这是一个我们过去见到过很多次并且在将来也会遇到很多次的方法。`Array`和`Range`类都有`#each`方法，通常`#each`会遍历每一个对象，并将其作为参数传入到block中，返回值为原始的集合。
         {% highlight ruby%}
  Ruby code:
@@ -121,7 +121,7 @@ tags: ["Ruby"]
 	      "keara_mueller@your_site.com", "suzanne_schuppe@your_site.com", 
 	      "trisha_batz@your_site.com"]
 	      {% endhighlight %}
-###鲜为人知的方法###
+### 鲜为人知的方法### 
 请记住`#uniq`和`#uniq`这两个方法之间的区别。`#uniq`返回一个去掉了重复元素的新数组，但是`#uniq！`会直接从原数组中删除重复的元素。
         {% highlight ruby%}
  Ruby code:
