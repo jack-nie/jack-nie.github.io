@@ -3,7 +3,7 @@ layout: post
 title:  "TCP复位攻击"
 date:   "2016-09-15"
 keywords: ["tcp", "复位攻击", "rst"]
-description: "tcp rst 复位攻击"
+description: "tcp 复位攻击"
 category: "TCP/IP"
 tags: ["TCP/IP"]
 ---
@@ -50,3 +50,30 @@ TCP数据报被封装在一个IP数据报中，如图［1］所示。
 * 客户端首先发送一个SYN段表明其打算连接的服务端的端口以及初始序号ISN（seq 608092820), 此为报文段1。
 * 服务器发回包含服务器的初始序号的SYN(seq 2325301428)（报文段2）, 同时设置确认序号客户端初始序号ISN ＋ 1， ACK ＝ ISN ＋ 1(ack 608092821), 对客户端发送的SYN进行确认。
 * 客户端设置确认序号为服务端初始序号ISN ＋ 1,  ACK ＝ ISN ＋ 1(ack 2325301429), 对服务端的SYN报文段进行确认。
+
+### RST复位标志
+
+TCP首部中的RST比特是用于"复位"的，发送RST包关闭连接时，不必等缓冲区的包都发出去，直接就丢弃缓存区的包发送RST包。而接收端收到RST包后，也不必发送ACK包来确认。
+
+### TCP Reset Attacks
+
+* 首先攻击者需要劫持TCP session。
+* 攻击者发送RST标志位置1的包到主机A和主机B，或者二者之一。
+* 因为主机A和主机B并不知道这些包是由攻击者发出的，所以A，B正常的处理这些包。
+* 因为这些包包含RST为1的标志位，所以A和B之间的连接就关闭了。
+
+下面我们来讲一下攻击者如何劫持TCP session。
+
+假设主机A和主机B之间已经建立了TCP连接，那么一个攻击者能够监控主机A和主机B之间的数据包, 那么劫持TCP session就可以采用如下步骤：
+
+* 攻击者使用Dos攻击主机B，中断主机B和主机A之间的通信。
+* 现在攻击者就能够预测主机A期望主机B发送的包所包含的序列号。
+* 攻击者准备一个这样的包发送给主机A。
+* 主机A不知道这个包是假冒的，仍然认为该包来自主机B。
+* 攻击者可以利用这个包做出各种神奇的攻击。
+
+### 参考文献
+
+- [TCP Attacks: TCP Sequence Number Prediction and TCP Reset Attacks](http://www.thegeekstuff.com/2012/01/tcp-sequence-number-attacks/)
+- [TCP/IP详解卷1: 协议](http://item.jd.com/10057317.html)
+
