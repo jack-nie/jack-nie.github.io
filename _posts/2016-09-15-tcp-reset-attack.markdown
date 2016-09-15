@@ -35,7 +35,9 @@ TCP数据报被封装在一个IP数据报中，如图［1］所示。
     16:44:53.758188 IP6 localhost.59405 > localhost.hbci: Flags [F.], seq 1, ack 2, win 12743, options [nop,nop,TS val 896957275 ecr 896957275], length 0
     16:44:53.758260 IP6 localhost.hbci > localhost.59405: Flags [.], ack 2, win 12743, options [nop,nop,TS val 896957275 ecr 896957275], length 0
 
-查看第三条可看出客户端的确认序号与描述不符，可能是mac os telnet程序采用了不同的实现？（待确认）。
+查看第三条可看出客户端的确认序号与描述不符，查阅资料发现正确的telnet命令应该是'sudo tcpdump -i lo0 port 3000 -s'。
+
+> the ack sequence number is a small integer (1). The first time tcpdump sees a tcp 'conversation', it prints the sequence number from the packet. On subsequent packets of the conversation, the difference between the current packet's sequence number and this initial sequence number is printed. This means that sequence numbers after the first can be interpreted as relative byte positions in the conversation's data stream (with the first data byte each direction being '1'). '-S' will override this feature, causing the original sequence numbers to be output.
 
 改用浏览器直接请求，为避免不必要的干扰仅截取一部分进行说明：
 
