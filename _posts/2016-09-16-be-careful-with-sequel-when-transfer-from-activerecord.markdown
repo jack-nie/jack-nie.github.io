@@ -18,6 +18,17 @@ Post.where(:title => 'Hello world').first.class #=> Post
 Post.eager(:author).first.class #=> Post
 Post.eager_graph(:author).first.class #=> Hash
 ```
+#### 没有pluck方法，可用select_map
+
+```
+Post.select_map([:id, :title])
+```
+
+### 没有attribute_names方法
+
+```
+album.keys.map{|x| x.to_s}.sort
+```
 
 ###  参考文献
 
