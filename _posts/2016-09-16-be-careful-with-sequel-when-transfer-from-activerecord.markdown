@@ -31,5 +31,11 @@ Post.select_map([:id, :title])
 album.keys.map{|x| x.to_s}.sort
 ```
 
+#### 打印sql语句
+
+```
+items.where{price * 2 < 50}.sql
+```
+
 ###  参考文献
 
