@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Ruby 2.4.0 preview3"
-date:   "2016-09-16"
+date:   "2016-11-14"
 keywords: ["Ruby"]
 description: "Ruby"
 category: "Ruby"
