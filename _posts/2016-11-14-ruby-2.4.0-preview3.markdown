@@ -11,7 +11,7 @@ tags: ["Ruby"]
 
 ### Binding#irb: Start a REPL session like binding.pry
 
-通常大家在调试的时候会选择使用p打印出变量的值或者使用pry,现在，我们又多了一种方法，通过引入binding.irb,可以启动一个类似如pry的REPL
+通常大家在调试的时候会选择使用p打印出变量的值或者使用pry,现在,我们又多了一种方法,通过引入binding.irb,可以启动一个类似如pry的REPL
 session:
 
     '''
@@ -39,10 +39,10 @@ session:
     #2.4.0-preview3 :002 >
     '''
 
-### Add non-ASCII case conversion to String#upcase/downcase/swapcase/capitalize
+### Add non-ASCII case conversion to String
 
 字符串增加对非ASCII的操作.
 
 ### Unify Fixnum and Bignum into Integer
 
-CRuby有两种类型的整数类,分别是Integer和Bignum,现在两者合并,所以在Sequel中,应该使用symbol版本的Bignum
+CRuby有两种类型的整数类,分别是Integer和Bignum,现在两者合并,所以在Sequel中,应该使用symbol版本的Bignum.
