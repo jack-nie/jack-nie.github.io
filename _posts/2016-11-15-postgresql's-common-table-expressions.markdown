@@ -15,31 +15,31 @@ WITH语句指定临时命名的结果集，这些结果集称为公用表表达�
 
 CTE只要被引用一次就会被物化，以后再引用的话就不会重复进行额外的计算。如果一个CTE节点没有被任何地方引用,那么他将不会执行,下面的语句将会正常的输出而不会报错:
 
-    ```
+
     WITH not_executed AS (SELECT 1/0),
         executed AS (SELECT 1)
     SELECT * FROM executed;
 
-    ```
+
 
 但是这条查询会给出一个`ERROR: division by zero`的错误。
 
-    ```
+
     WITH a AS (SELECT 1/0),
     b AS (SELECT * FROM a),
     executed AS (SELECT 1)
     SELECT * FROM executed;
 
-    ```
+
 
 
 目前看来，使用了`order by`的CTE总是输出排序后的记录,但是不能完全依赖这种特性，可能再未来的某个时候，这项特性会被改掉。而且，如果在外部查询也使用了`order by`，那么postgresql可能不能正确的排序。
 
-    ```
+
     WITH a AS (SELECT x, y FROM big_table ORDER BY x)
     SELECT *
     FROM a ;
-    ```
+
 
 ### CTE没有自动的谓词下推(prediction pushdown)
 
@@ -51,7 +51,7 @@ CTE只要被引用一次就会被物化，以后再引用的话就不会重复�
 
 原始的查询语句：
 
-    ```
+
     CREATE OR REPLACE FUNCTION suggest_movies(IN query text, IN result_limit integer DEFAULT 5)
       RETURNS TABLE(movie_id integer, title text) AS
     $BODY$
@@ -85,12 +85,12 @@ CTE只要被引用一次就会被物化，以后再引用的话就不会重复�
     LIMIT result_limit;
     $BODY$
     LANGUAGE sql;
-    ```
+
 
 
 将查询过滤的条件移到CTE语句内部：
 
-    ```
+
     CREATE OR REPLACE FUNCTION suggest_movies(IN query text, IN result_limit integer DEFAULT 5)
       RETURNS TABLE(movie_id integer, title text) AS
     $BODY$
@@ -125,7 +125,7 @@ CTE只要被引用一次就会被物化，以后再引用的话就不会重复�
     LIMIT result_limit;
     $BODY$
     LANGUAGE sql;
-    ```
+
 
 第一个查询语句会通过两次查询将数据库中相关的表的数据全部查询出来然后组合成一张表，然后再进行过滤。可以看到通过这种方式，数据库返回了很多不必要的数据，更糟糕的是组合的新表由于无法利用索引导致查询的效率更低下。优化后的语句由于将过滤的条件移动到了CTE中，所以会提早的进行过滤处理，从而提高查询的效率。
 
@@ -134,7 +134,7 @@ CTE只要被引用一次就会被物化，以后再引用的话就不会重复�
 postgresql能够很好的针对子查询语句进行谓词下推的优化，通过这一特性，我们能够编写出效率一样而且更加的易于维护的查询语句。
 首先准备需要的表结构和数据：
 
-    ```
+
     CREATE TABLE a (c INT);
 
     CREATE TABLE b (c INT);
@@ -148,11 +148,11 @@ postgresql能够很好的针对子查询语句进行谓词下推的优化，通�
     INSERT INTO b SELECT 2 FROM a;
 
     INSERT INTO a SELECT 3;
-    ```
+
 
 使用CTE进行查询：
 
-    ```
+
     EXPLAIN ANALYZE
     WITH cte AS (
       SELECT c FROM a
@@ -160,11 +160,11 @@ postgresql能够很好的针对子查询语句进行谓词下推的优化，通�
       SELECT c FROM b
     )
     SELECT c FROM cte WHERE c = 3;
-    ```
+
 
 查询计划如下：
 
-    ```
+
       QUERY PLAN
     ---------------------------------------------------------------------------------------------------------------------------
      CTE Scan on cte (cost=28850.00..73850.00 rows=10000 width=4) (actual time=607.968..1138.062 rows=1 loops=1)
@@ -177,11 +177,11 @@ postgresql能够很好的针对子查询语句进行谓词下推的优化，通�
      Planning time: 0.284 ms
      Execution time: 1144.234 ms
     (9 rows)
-    ```
+
 
 使用子查询：
 
-    ```
+
     EXPLAIN ANALYZE
     SELECT c
     FROM (
@@ -190,11 +190,11 @@ postgresql能够很好的针对子查询语句进行谓词下推的优化，通�
       SELECT c FROM b
     ) AS subquery
     WHERE c = 3;
-    ```
+
 
 查询计划如下：
 
-    ```
+
       QUERY PLAN
     ------------------------------------------------------------------------------------------------------------------
      Append (cost=0.42..8.88 rows=2 width=4) (actual time=0.045..0.055 rows=1 loops=1)
@@ -208,7 +208,7 @@ postgresql能够很好的针对子查询语句进行谓词下推的优化，通�
      Execution time: 0.097 ms
     (9 rows)
 
-    ```
+
 
 ###  参考文献
 
