@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "postgresql's common table expressions"
-date:   "2016-11-14"
+date:   "2016-11-15"
 keywords: ["postgresql"]
 description: "postgresql"
 category: "postgresql"
