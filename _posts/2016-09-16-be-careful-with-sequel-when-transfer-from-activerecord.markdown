@@ -54,5 +54,20 @@ DB.extension(:connection_expiration)
 DB.pool.connection_expiration_timeout = 10
 ```
 
+### Read-Only Slaves/Writable Master
+
+需要注意的是事物和存储过程均不能运行在slave机器上，若需要使用，则需要指定master机器。如果想指定某一条查询使用特定的数据库择可以采用这种方式：
+
+```
+DB[:users].server(:default).all
+```
+
+数据库使用单个主库单个丛库的配置如下：
+
+```
+DB=Sequel.connect('postgres://master_server/database',    :servers=>{:read_only=>{:host=>'slave_server'}})
+```
+这条配置会让select查询语句运行在slave机器上，其它的查询运行在master机器上。
+
 ###  参考文献
 
