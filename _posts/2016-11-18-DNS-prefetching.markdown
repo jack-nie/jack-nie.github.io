@@ -39,10 +39,11 @@ network.dns.disablePrefetchFromHTTPS = false
 ```
 
 还可以通过link的`rel`属性来精确的控制某一特定域名的DNS预读取：
+
 ```
 <link rel="dns-prefetch" href="http://www.example.com">
 ```
-###  参考文献
+### 参考文献
 
 - [dns-prefetching](http://dev.chromium.org/developers/design-documents/dns-prefetching)
 - [Controlling DNS prefetching](https://developer.mozilla.org/zh-CN/docs/Controlling_DNS_prefetching)
