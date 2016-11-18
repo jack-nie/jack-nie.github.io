@@ -43,6 +43,7 @@ network.dns.disablePrefetchFromHTTPS = false
 ```
 <link rel="dns-prefetch" href="http://www.example.com">
 ```
+
 ### 参考文献
 
 - [dns-prefetching](http://dev.chromium.org/developers/design-documents/dns-prefetching)
