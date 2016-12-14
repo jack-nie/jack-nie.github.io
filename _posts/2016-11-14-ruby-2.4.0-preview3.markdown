@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Ruby 2.4.0 preview3"
+title:  "Ruby 2.4.0 概览"
 date:   "2016-11-14"
 keywords: ["Ruby"]
 description: "Ruby"
@@ -46,3 +46,16 @@ session:
 ### Unify Fixnum and Bignum into Integer
 
 CRuby有两种类型的整数类,分别是Integer和Bignum,现在两者合并,所以在Sequel中,应该使用symbol版本的Bignum.
+### Float#round with keyword
+
+Float#round现在支持可选的参数，默认的行为是向最近的偶数取整
+
+```
+# ruby 2.3
+(2.5).round
+3
+
+# ruby 2.4
+(2.5).round
+2
+```
