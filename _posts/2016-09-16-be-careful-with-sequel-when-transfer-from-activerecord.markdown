@@ -74,10 +74,13 @@ DB=Sequel.connect('postgres://master_server/database',    :servers=>{:read_only=
 由于sequel的设计理念，即使是在transaction块中，select语句和非select语句会在不同的shard中执行。要保证transaction块中的所有语句都在同一个数据库中执行则需要显示的指定server。
 或者更方便的复写DB.transaction, 主要是利用server_block这个extendion。
 
+```
 DB.extensions :server_block
 def DB.transaction(opts={}, &block)
   with_server opts[:server] ||:default, &block
 end
+
+```
 
 ###  参考文献
 
