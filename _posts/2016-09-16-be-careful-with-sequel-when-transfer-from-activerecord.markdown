@@ -76,8 +76,10 @@ DB=Sequel.connect('postgres://master_server/database',    :servers=>{:read_only=
 
 ```
 DB.extensions :server_block
-def DB.transaction(opts={}, &block)
-  with_server opts[:server] ||:default, &block
+DB.transaction  do
+  DB.with_server(:default) do
+    -----
+  end
 end
 
 ```
