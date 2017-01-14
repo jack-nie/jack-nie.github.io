@@ -2,16 +2,16 @@
 layout: post
 title:  "Statement completion values"
 date:   "2017-01-14"
-keywords: ["Javascript"]
-description: "javascript, statement completion value"
-category: "Javascript"
-tags: ["Javascript"]
+keywords: ["JavaScript"]
+description: "javaScript, statement completion value"
+category: "JavaScript"
+tags: ["JavaScript"]
 ---
 {% include JB/setup %}
 
-最近在Paul Irish在Twitter上提了一个Javascript的小问题，觉得很有趣，所以写篇文章来记录一下。
+最近在Paul Irish在Twitter上提了一个JavaScript的小问题，觉得很有趣，所以写篇文章来记录一下。
 
-在浏览器的console中运行如下的Javascript片段：
+在浏览器的console中运行如下的JavaScript片段：
 
 ```
 'omg'; var x = 4;
@@ -59,7 +59,7 @@ console.log(y, y === undefined); 'omg'; var y = 4;
 
 需要指出的是并不是所有的表达式都有`completion value`, 例如`for(var x = 42;false;);`。
 
-那么Javascript又是如何处理`statement lists`的呢？[ECMA规范](http://www.ecma-international.org/ecma-262/6.0/#sec-block-runtime-semantics-evaluation)有下面一段话：
+那么JavaScript又是如何处理`statement lists`的呢？[ECMA规范](http://www.ecma-international.org/ecma-262/6.0/#sec-block-runtime-semantics-evaluation)有下面一段话：
 
 >The value of a StatementList is the value of the last value producing item in the StatementList.
 
@@ -71,7 +71,6 @@ eval("1;{}")
 eval("1;var a;")
 ```
 依此可以得到结论：一个`statement lists`总是返回最后一个非空表达式的值。所以就能够很好的解释本文开头提出的问题了。
-
 `omg;`的`completion value`是`omg`, `var x = 4`的`completion value`是`undefined`,他们组合到一起就返回`omg`
 
 ES7已经有提案要支持`statement completion value`的捕获了，具体的语法是：
