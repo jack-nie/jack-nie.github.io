@@ -1,0 +1,14 @@
+---
+layout: post
+title:  "runtime.Gosched()解析"
+date:   "2016-12-06"
+keywords: ["go"]
+description: "go"
+category: "GO"
+tags: ["Go"]
+---
+{% include JB/setup %}
+
+### 参考文献
+
+- [package runtime](https://golang.org/pkg/runtime/)
