@@ -29,6 +29,7 @@ console.log(y, y === undefined); 'omg'; var y = 4;
 ```
 结果输出`undefined true`，返回`omg`，事实证明只有`var y`被提升了。
 最后Javascript的创建者Brendan Eich回答了这个问题：
+
 > It's not a return value, rather a statement completion value.
 
 但是什么是`statement completion value`，和`return value`又有什么区别呢？
