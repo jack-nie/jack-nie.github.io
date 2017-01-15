@@ -58,20 +58,20 @@ console.log(y, y === undefined); 'omg'; var y = 4;
 <undefined
 ```
 
-需要指出的是并不是所有的表达式都有`completion value`, 例如`for(var x = 42;false;);`。
+需要指出的是并不是所有的语句都有`completion value`, 例如`for(var x = 42;false;);`。
 
 那么JavaScript又是如何处理`statement lists`的呢？[ECMA规范](http://www.ecma-international.org/ecma-262/6.0/#sec-block-runtime-semantics-evaluation)有下面一段话：
 
 >The value of a StatementList is the value of the last value producing item in the StatementList.
 
-依据上面的规范，下面的列表都会返回 1:
+依据上面的规范，下面的语句列表都会返回 1:
 
 ```
 eval("1;;;;;")
 eval("1;{}")
 eval("1;var a;")
 ```
-依此可以得到结论：一个`statement lists`总是返回最后一个非空表达式的值。所以就能够很好的解释本文开头提出的问题了。
+依此可以得到结论：一个`statement lists`总是返回最后一个非空语句的值。所以就能够很好的解释本文开头提出的问题了。
 `omg;`的`completion value`是`omg`, `var x = 4`的`completion value`是`undefined`,他们组合到一起就返回`omg`。
 
 ES7已经有提案要支持`statement completion value`的捕获了，具体的语法是：
