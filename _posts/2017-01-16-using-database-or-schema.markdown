@@ -2,10 +2,10 @@
 layout: post
 title:  "Postgres's database VS schema"
 date:   "2017-01-14"
-keywords: ["Postgresql"]
+keywords: ["postgresql"]
 description: "postgresql, database, schema"
-category: "Postgresql"
-tags: ["Postgresql"]
+category: "postgresql"
+tags: ["postgresql"]
 ---
 {% include JB/setup %}
 
