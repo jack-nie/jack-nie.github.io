@@ -27,3 +27,4 @@ handleName: function(newName) {
 
 - [What is the difference between state and props in React?](https://stackoverflow.com/questions/27991366/what-is-the-difference-between-state-and-props-in-react)
 - [Thinking in react](https://facebook.github.io/react/docs/thinking-in-react.html#step-4-identify-where-your-state-should-live)
+- [props vs state](https://github.com/uberVU/react-guide/blob/master/props-vs-state.md)
