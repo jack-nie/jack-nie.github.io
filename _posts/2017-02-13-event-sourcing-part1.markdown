@@ -31,7 +31,10 @@ tags: ["DDD"]
 * 修复错误。 你可能发现造成计算数据不准确的编码错误。你可以通过修复代码并且重放事件流而不是通过人工冒险修复已经存在的数据。
 * 测试。聚合中的所有的状态的变迁都会被存储为事件，因此可以很容易的测试聚合中的一条命令是否符合期望。
 
+事件溯源并不是一个顶层的架构，它应该被应用于正确的地方，例如交易系统等。如果一整个系统都应用事件溯源，就变成了反模式。
+
 ### 参考文献
 
 - [Event Sourcing Pattern](http://msdn.microsoft.com/en-us/library/dn589792.aspx)
 - [Why use event sourcing](http://blog.arkency.com/2015/03/why-use-event-sourcing/)
+- [Event Sourcing anti-pattern](https://www.infoq.com/news/2016/04/event-sourcing-anti-pattern)
