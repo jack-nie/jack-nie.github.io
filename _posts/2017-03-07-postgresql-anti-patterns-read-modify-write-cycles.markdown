@@ -50,13 +50,15 @@ UPDATE accounts SET balance = ? WHERE user_id =1;
 
 加了事务之后，执行的过程和上面是一样的：
 
-Session 1Session 2
-BEGIN;BEGIN;
-SELECT balance FR   OM accounts WHERE user_id = 1; (returns 300)
-  SELECT balance FROM ac  counts WHERE user_id = 1; (also returns 300)
-  UPDATE balance SET balance = 200 WHERE user_id = 1; (300 – 100 = 200)
-    UPDATE balance SET balance =  200 WHERE user_id = 1; (300 – 100 = 200)
-    COMMIT;COMMIT;
+|Session1                                                              |Session 2                                                              |
+|:---------------------------------------------------------------------|:----------------------------------------------------------------------|
+|BEGIN;                                                                | BEGIN;                                                                |
+|SELECT balance FROM accounts WHERE user_id = 1; (returns 300)         |                                                                       |
+|                                                                      | SELECT balance FROM ac  counts WHERE user_id = 1; (also returns 300)  |
+|UPDATE balance SET balance = 200 WHERE user_id = 1; (300 – 100 = 200) |                                                                       |
+|                                                                      | UPDATE balance SET balance =  200 WHERE user_id = 1; (300 – 100 = 200)|
+|COMMIT;                                                               | COMMIT;                                                               |
+|                                                                      |                                                                       |
 
 ### 解决方案
 
@@ -71,9 +73,10 @@ SELECT balance FR   OM accounts WHERE user_id = 1; (returns 300)
 
 最好的方式就是使用sql来解决，彻底解决read-modify-write-cycle。
 
-Session 1Session 2
-UPDATE accounts SET balance = balance - 100   WHERE user_id = 1; (sets balance=200)
-  UPDATE accounts SET balance =  balance - 100 WHERE user_id = 1; (sets balance=100)
+|Session1                                                                            | Session 2                                                                         |
+|:-----------------------------------------------------------------------------------|:----------------------------------------------------------------------------------|
+|UPDATE accounts SET balance = balance - 100   WHERE user_id = 1; (sets balance=200) |                                                                                   |
+|                                                                                    | UPDATE accounts SET balance =  balance - 100 WHERE user_id = 1; (sets balance=100)|
 
 上面的代码在并发的事务中也是可以工作的，因为第一个获取行锁之后，第二个就开始等待，知道第一个完成提交或者回滚。 transaction isolation文档的READ COMMITED部分有详细的解释。
 
@@ -91,17 +94,18 @@ UPDATE accounts SET balance = balance - 100   WHERE user_id = 1; (sets balance=2
 
 
 
-Session 1Session 2
-BEGIN;BEGIN;
-SELECT balance FROM accounts WHERE user_id = 1 F    OR UPDATE; (returns 300)
-  SELECT balance FROM accounts WHERE user_id   = 1 FOR UPDATE; (gets stuck and waits for transaction 1)
-  UPDATE balance SET balance = 200 WHERE user_id = 1; (300 – 100 = 200)
-  COMMIT;
-    (second trans   action’s SELECT returns 200)
-      UPDATE balance SET balance = 100 WHERE user_id = 1; (200 – 100 = 100)
-        COMMIT
+|Session1                                                                       |      Session 2                                                                                           |
+|:------------------------------------------------------------------------------|:---------------------------------------------------------------------------------------------------------|
+|BEGIN;                                                                         |      BEGIN;                                                                                              |
+|SELECT balance FROM accounts WHERE user_id = 1 FOR UPDATE; (returns 300)       |                                                                                                          |
+|                                                                               |      SELECT balance FROM accounts WHERE user_id  = 1 FOR UPDATE; (gets stuck and waits for transaction 1)|
+|UPDATE balance SET balance = 200 WHERE user_id = 1; (300 – 100 = 200)          |                                                                                                          |
+|COMMIT;                                                                        |                                                                                                          |
+|                                                                               |      (second transaction’s SELECT returns 200)                                                           |
+|                                                                               |      UPDATE balance SET balance = 100 WHERE user_id = 1; (200 – 100 = 100)                               |
+|                                                                               |      COMMIT                                                                                              |
 
-PostgreSQL官方文档中关于(explicit lock)[https://www.postgresql.org/docs/current/static/explicit-locking.html]的部分有详细的解释。
+PostgreSQL官方文档中关于[explicit lock]("https://www.postgresql.org/docs/current/static/explicit-locking.html")的部分有详细的解释。
 
 需要注意的是上面的方法只有在read-modify-write在一个事务中才有用，因为锁只存在于事务的生命周期中。
 
@@ -111,16 +115,16 @@ PostgreSQL官方文档中关于(explicit lock)[https://www.postgresql.org/docs/c
 
 在这种情况下，所有的`select`和`update`语句将会正常的执行。第一个事务将会COMMIT，然后当你COMMIT第二个事务的时候，将会退出并且抛出一个`serialization error`。你将需要从头开始执行失败的事务。
 
-
-Session 1Session 2
-BEGIN ISOLATION LEVEL SERIALIZABLE;BEGIN ISOLATION    LEVEL SERIALIZABLE;
-SELECT balance FROM accounts WHERE user_id = 1; (returns 300)
-  SELECT balance FROM accounts WHERE user_id = 1; (also returns  300)
-  UPDATE accounts SET balance = 200 WHERE user_id = 1; (300 – 100 = 200)
-    UPDATE accounts SET balance = 200 WHERE user_id = 1; (gets stuck on session1’s   lock and doesn’t proceed)
-    COMMIT – succeeds, setting balance=200
-      (UPDATE continues, but sees that the row has been changed and aborts with a could not serialize access due to concurrent update error)
-        COMMIT converted into forced ROLLBACK, leaving balance unchanged
+|Session1                                                                |  Session 2                                                                                                                              |
+|:-----------------------------------------------------------------------|:----------------------------------------------------------------------------------------------------------------------------------------|
+|BEGIN ISOLATION LEVEL SERIALIZABLE;                                     |  BEGIN ISOLATION LEVEL SERIALIZABLE;                                                                                                    |
+|SELECT balance FROM accounts WHERE user_id = 1; (returns 300)           |                                                                                                                                         |
+|                                                                        |  SELECT balance FROM accounts WHERE user_id = 1; (also returns  300)                                                                    |
+|UPDATE accounts SET balance = 200 WHERE user_id = 1; (300 – 100 = 200)  |                                                                                                                                         |
+|                                                                        |  UPDATE accounts SET balance = 200 WHERE user_id = 1; (gets stuck on session1’s   lock and doesn’t proceed)                             |
+|COMMIT – succeeds, setting balance=200                                  |                                                                                                                                         |
+|                                                                        |  (UPDATE continues, but sees that the row has been changed and aborts with a could not serialize access due to concurrent update error) |
+|                                                                        |  COMMIT converted into forced ROLLBACK, leaving balance unchanged                                                                       |
 
 SERIALIZABLE隔离级别在一个大的事务退出或者有冲突的时候将会强制应用重复很多工作。这对于在尝试使用行级锁可能会造成死锁的复杂情况下，将会很有用。
 
@@ -128,7 +132,7 @@ PostgreSQL官方文档中关于并发控制和事务隔离级别的描述是关�
 
 ### 乐观并发控制
 
-(乐观并发控制)["http://en.wikipedia.org/wiki/Optimistic_concurrency_control"]通常是在应用端来实现的处理并发的功能，比如hibernate一类的ORM工具。
+[乐观并发控制]("http://en.wikipedia.org/wiki/Optimistic_concurrency_control")通常是在应用端来实现的处理并发的功能，比如hibernate一类的ORM工具。
 
 在这个模式下，所有的表都会一个版本号或者最近更新的事件戳，并且所有的`update`语句都有一个额外的where语句来保证自该行被读之后就没有被更新。应用程序将会检查是否有被`update`影响到的行，如果没有，将会被视为一个错误并且放弃事务。
 
@@ -137,19 +141,21 @@ PostgreSQL官方文档中关于并发控制和事务隔离级别的描述是关�
 ```
 ALTER TABLE accounts ADD COLUMN version integer NOT NULL DEFAULT 1;
 ```
+
 然后这个例子就变成了：
 
-Session 1Session 2
-BEGIN;BEGIN;
-SELECT balance, version FRO   M accounts WHERE user_id = 1; (returns 1, 300)
-  SELECT version, bala  nce FROM accounts WHERE user_id = 1; (also returns 1, 300)
-  COMMIT;COMM IT;
-  BEGIN;BEGIN;
-  UPDATE accounts SET balance = 200, version = 2 WHERE  user_id = 1 AND version = 1;  (300 – 100 = 200. Succeeds, reporting 1 row changed.)
-    UPDATE accounts SET balance = 200, version = 2 WHERE user_id = 1 AND ve rsion = 1; (300 – 100 = 200). Blocks on session 1’s lock.
-    COMMIT;
-      (UPDATE returns, matching zero rows because it sees version=2 in the WHERE clause)
-        ROLLBACK; because of error detected
+|Session1                                                                                                                                       |Session 2                                                                                                                       |
+|:----------------------------------------------------------------------------------------------------------------------------------------------|:-------------------------------------------------------------------------------------------------------------------------------|
+|BEGIN;                                                                                                                                         |BEGIN;                                                                                                                          |
+|SELECT balance, version FRO   M accounts WHERE user_id = 1; (returns 1, 300)                                                                   |                                                                                                                                |
+|                                                                                                                                               |SELECT version, bala  nce FROM accounts WHERE user_id = 1; (also returns 1, 300)                                                |
+|COMMIT;                                                                                                                                        |COMMIT;                                                                                                                         |
+|BEGIN;                                                                                                                                         |BEGIN;                                                                                                                          |
+|UPDATE accounts SET balance = 200, version = 2 WHERE  user_id = 1 AND version = 1;  (300 – 100 = 200. Succeeds, reporting 1 row changed.)      |                                                                                                                                |
+|                                                                                                                                               |UPDATE accounts SET balance = 200, version = 2 WHERE user_id = 1 AND ve rsion = 1; (300 – 100 = 200). Blocks on session 1’s lock|
+|COMMIT;                                                                                                                                        |                                                                                                                                |
+|                                                                                                                                               |(UPDATE returns, matching zero rows because it sees version=2 in the WHERE clause)                                              |
+|                                                                                                                                               |ROLLBACK; because of error detected                                                                                             |
 
 因为实现这个功能非常的繁琐，所以乐观并发控制通常是通过ORM或者查询构造器来使用。
 和SERIALIZABLE隔离级别不同的是，它在自动提交模式或者语句在不同的事务中也是有效的。基于这个原因，这通常在给用户很长思考时间的web应用或者用户在交易中途就退出。因为它不需要可能造成性能问题的长时事务。
