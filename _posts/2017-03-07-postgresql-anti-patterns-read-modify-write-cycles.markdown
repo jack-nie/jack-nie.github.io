@@ -69,6 +69,7 @@ UPDATE accounts SET balance = ? WHERE user_id =1;
 * 使用行级锁`select ... for update`
 * 使用序列化的事务
 * 乐观并发控制，也就是使用乐观锁
+
 ### 避免read-modify-write
 
 最好的方式就是使用sql来解决，彻底解决read-modify-write-cycle。
