@@ -33,7 +33,7 @@ fmt.Println("sl3:", l)
 
 根据[append](https://golang.org/pkg/builtin/#append "append")的官方定义，该方法的作用是用于将元素追加到slice的末尾。如果slice有足够的容量，那么将直接追加, 返回新的slice。如果没有足够的容量，将重新分配一片用于存放数组的内存，返回新的slice。所以官方建议的做法是将返回的slice重新赋值给原来的变量。
     
-    ```
+```
 slice = append(slice, elem1, elem2)
 slice = append(slice, anotherSlice...)
 ```
@@ -64,11 +64,11 @@ func main() {
 
  
 ```    
-	addr: 0xc0420401d0, cap: 1, sliceAddr: 0xc042046400
-	addr: 0xc042040200, cap: 2, sliceAddr: 0xc042046400 
-	addr: 0xc042046460, cap: 4, sliceAddr: 0xc042046400
-	Saddr: 0xc042046460, Xaddr: 0xc042046460, cap: 4, lenS: 3, sliceAddr: 0xc042046480
-	Saddr: 0xc042046460, Yaddr: 0xc042046460, cap: 4, lenS: 3, sliceAddr: 0xc0420464a0
+addr: 0xc0420401d0, cap: 1, sliceAddr: 0xc042046400
+addr: 0xc042040200, cap: 2, sliceAddr: 0xc042046400 
+addr: 0xc042046460, cap: 4, sliceAddr: 0xc042046400
+Saddr: 0xc042046460, Xaddr: 0xc042046460, cap: 4, lenS: 3, sliceAddr: 0xc042046480
+Saddr: 0xc042046460, Yaddr: 0xc042046460, cap: 4, lenS: 3, sliceAddr: 0xc0420464a0
  
 ```
 
