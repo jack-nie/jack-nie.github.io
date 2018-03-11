@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Golang中goroutine的管理1 "
+title:  "Golang中goroutine的管理 "
 date:   "2018-03-11"
 keywords: ["golang", "goroutine", "management"]
 description: "goroutines管理"
