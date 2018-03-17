@@ -111,6 +111,5 @@ func init() {
 
 参考资料：
 
-- [http://blog.csdn.net/yongjian_lian/article/details/42058893](http://blog.csdn.net/yongjian_lian/article/details/42058893 "go语言的官方包sync.Pool的实现原理和适用场景
-")
-- [https://golang.org/src/sync/pool.go](https://golang.org/src/sync/pool.go "sync.Pool源码")
+- [go语言的官方包sync.Pool的实现原理和适用场景](http://blog.csdn.net/yongjian_lian/article/details/42058893 "go语言的官方包sync.Pool的实现原理和适用场景")
+- [sync.Pool源码](https://golang.org/src/sync/pool.go "sync.Pool源码")
