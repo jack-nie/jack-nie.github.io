@@ -16,8 +16,30 @@ sync.Pool是可伸缩的，并发安全的。其大小仅受限于内存的大�
 
 任何存放区其中的值可以在任何时候被删除而不通知，在高负载下可以动态的扩容，在不活跃时对象池会收缩。
 
+sync.Pool首先声明了两个结构体
+
+```
+// Local per-P Pool appendix.
+type poolLocalInternal struct {
+	private interface{}   // Can be used only by the respective P.
+	shared  []interface{} // Can be used by any P.
+	Mutex                 // Protects shared.
+}
+
+type poolLocal struct {
+	poolLocalInternal
+
+	// Prevents false sharing on widespread platforms with
+	// 128 mod (cache line size) = 0 .
+	pad [128 - unsafe.Sizeof(poolLocalInternal{})%128]byte
+}
+```
+
 为了使得在多个goroutine中高效的使用goroutine，sync.Pool为每个P(对应CPU)都分配一个本地池，当执行Get或者Put操作的时候，会先将goroutine和某个P的子池关联，再对该子池进行操作。
 每个P的子池分为私有对象和共享列表对象，私有对象只能被特定的P访问，共享列表对象可以被任何P访问。因为同一时刻一个P只能执行一个goroutine，所以无需加锁，但是对共享列表对象进行操作时，因为可能有多个goroutine同时操作，所以需要加锁。
+
+值得注意的是poolLocal结构体中有个pad成员，目的是为了防止false sharing。cache使用中常见的一个问题是false sharing。当不同的线程同时读写同一cache line上不同数据时就可能发生false sharing。false sharing会导致多核处理器上严重的系统性能下降。具体的可以参考[伪共享(False Sharing)](http://ifeve.com/falsesharing/ "http://ifeve.com/falsesharing/")。
+
 类型sync.Pool有两个公开的方法，一个是Get，一个是Put, 我们先来看一下Put的源码。
 
 ```
