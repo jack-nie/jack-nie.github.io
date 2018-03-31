@@ -21,9 +21,9 @@ http.HandleFunc("/bar", func(w http.ResponseWriter, r *http.Request) {
 log.Fatal(http.ListenAndServe(":8080", nil))
 ```
 
-handle和handleFunc都接收两个参数，第一个都是将要访问的路由，是一个string类型，不同的是第二个参数，前者接受一个实现了Handlerinterface的type，后者是一个handler的方法。
-之所以要有handle是为了当逻辑比较复杂时可以在请求的过程中加入一些状态，一个实现了Handler类型的type可以很容易的做到这一点。
-当然对于简单的场景，使用handleFunc开发效率更高一些。
+Handle和HandleFunc都接收两个参数，第一个都是将要访问的路由，是一个string类型。不同的是第二个参数，前者接受一个实现了Handler interface的type，后者是一个Handler的方法。
+之所以要有Handle是为了当逻辑比较复杂时可以在请求的过程中加入一些状态，一个实现了Handler类型的type可以很容易的做到这一点。但是这样做是很繁琐的，首先要定义一个类型，然后实现Handler接口，也就是编写
+ServeHttp方法，试想以下，每次都要这样做要做很多额外的工作。所以golang标准库做了一层封装，也就是HandleFunc方法, 对于简单的场景，使用handleFunc开发效率更高一些。
 
 在server.go的源码中可以看到handlerFunc的具体实现：
 
