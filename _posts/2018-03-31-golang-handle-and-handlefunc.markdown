@@ -1,8 +1,8 @@
 ---
 layout: post
-title:  "Golang中的handle和handleFunc"
+title:  "Golang中的Handle和HandleFunc"
 date:   "2018-03-31"
-keywords: ["golang", "handle", "handleFunc", "net/http"]
+keywords: ["golang", "Handle", "HandleFunc", "net/http"]
 description: "golang中handle和handleFunc的分析"
 category: "Go"
 tags: ["Go"]
