@@ -48,6 +48,10 @@ func main() {
 2. 较长的路径匹配的优先级会高于较短的路径，如果同时注册了两个路由"/images/"和"/images/avatar",请求的url是"http://localhost:8080/images/avatar/",那么会优先匹配后一条路由而不管这两条路由注册的先后顺序。
 3. 任何路径中包含"."或".."元素的请求重定向到等价的没有这两种元素的URL。
 
+go自带的路由实现了一些基本的功能，但是并不完善：
+
+1. 没法处理query paramter如"/user/:id"
+2. 没法限定请求的http方法， 如"/user", 用get，post，put，delete等都可以匹配到
 #### ServeMux源码
 
 ```
