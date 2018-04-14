@@ -11,7 +11,7 @@ tags: ["Go"]
 
 本文是学习go-kit的开篇，主要参考资料是官方文档。
 
-在前面的一一篇文章中，已经介绍了基于go开发api服务需要哪些步骤，那么我们将来实践这些步骤。
+在前面的一篇文章中，已经介绍了基于go开发api服务需要哪些步骤，那么我们将来实践这些步骤。
 
 首先创建一个interface，
 
@@ -22,7 +22,7 @@ tags: ["Go"]
             Count(context.Context, string) int
     }
 
-然后编写代码实现这个interface
+然后编写代码实现这个interface。
 
     import (
             "context"
@@ -64,7 +64,7 @@ tags: ["Go"]
             V int `json:"v"`
     }
 
-接下来就到了endpoint相关的逻辑了，在go-kit中，一个endpoint对应月刚刚定义的interface中的方法，这里将要做的就是实现适配器将stringService中对应的方法转换成endpint.Endpoint类型
+接下来就到了endpoint相关的逻辑了，在go-kit中，一个endpoint对应刚刚定义的interface中的方法，这里将要做的就是实现适配器将stringService中对应的方法转换成endpint.Endpoint类型。
 
     import (
             "context"
@@ -90,7 +90,7 @@ tags: ["Go"]
             }
     }
 
-接下来就到了transport层，这里我们需要将服务暴露出去，以便提供给外部调用，底层协议可以根据需要选择，这里采用http和json
+接下来就到了transport层，这里我们需要将服务暴露出去，以便提供给外部调用，底层协议可以根据需要选择，这里采用http和json。
 
     import (
             "context"
