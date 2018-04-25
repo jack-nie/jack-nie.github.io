@@ -1,0 +1,32 @@
+---
+layout: post
+title:  "Git Clean"
+date:   2015-09-05
+keywords: ["git clean"]
+description: "git clean"
+category: "Git"
+tags: ["Git"]
+---
+
+今天从版本库pull一个项目，然后出现了如下错误
+
+    error: The following untracked working tree files would be overwritten by merge:
+经过一番google之后，找到了如下解决方案：
+
+    git clean  -d  -fx ""
+
+在运行了上面的命令之后，造成了更严重的后果，所有的未被追踪的文件和被忽略的文件全部都被删除了。。。查阅文档之后在发现这条命令干了以下的事情：
+
+* -x 被忽略的文件和没有加入到git版本库的文件都会被删除
+* -d 删除没有被追踪的文件和文件夹
+* -f 强制执行
+
+为了避免再次发生这样的事情，应该先运行一下如下命令，看对文件会造成什么影响。
+    
+    git clean -dfx --dry-run
+
+* #-n, --dry-run 不会删除任何文件，只是告诉你会发生什么
+* #-q 只报告错误，不会报告被成功删除的文件
+* #-e<pattern> 会忽略`.gitignore`文件中定义的文件，同时包括`$GIT_DIR/info/exclude`。还有自定义的忽略规则。
+* #-X 移除git忽略的文件，但会保存已经创建的文件。
+  
