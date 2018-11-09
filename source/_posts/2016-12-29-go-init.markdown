@@ -1,0 +1,43 @@
+---
+layout: post
+title:  "go init()解析"
+date:   "2016-12-29"
+keywords: ["go"]
+description: "go"
+category: "Go"
+tags: ["Go"]
+---
+
+每一个go文件都可以定义自己的`init()`函数来设置自己的状态，实际上一个go文件可以有多个`init()`方法，
+这些`init()`方法按照定义的先后顺序依次执行。`init()`方法的调用在所有被导入的包中的变量被初始化之后再开始被调用,在`main()`方法之前。
+
+下面用一段代码来进行说明
+
+```
+package main
+
+import "fmt"
+
+var Name = getName()
+
+func getName() string {
+  return "jack"
+}
+
+func init() {
+  Name += "Nie"
+}
+
+func main() {
+  fmt.Println("Hello", Name)
+}
+```
+
+运行以上程序，将会输出`Hello Jack Nie`
+首先初始化`Name`变量，然后执行`init()`函数，最后执行`main()`函数。
+
+
+### 参考文献
+
+- [Effective Go](https://golang.org/doc/effective_go.html#init)
+- [When is the init() function in Go (Golang) run?](https://stackoverflow.com/questions/24790175/when-is-the-init-function-in-go-golang-run)
