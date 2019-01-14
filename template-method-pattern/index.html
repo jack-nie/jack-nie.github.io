@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>模板方法模式 | Jack&#39;s Programming Notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="模板方法模式">
+<meta name="keywords" content="Ruby,设计模式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="模板方法模式">
+<meta property="og:url" content="http://jack-nie.github.io/template-method-pattern/index.html">
+<meta property="og:site_name" content="Jack&#39;s Programming Notes">
+<meta property="og:description" content="模板方法模式">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-11-09T09:04:23.002Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="模板方法模式">
+<meta name="twitter:description" content="模板方法模式">
+  
+    <link rel="alternate" href="/atom.xml" title="Jack&#39;s Programming Notes" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Jack&#39;s Programming Notes</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">Feel the world!</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://jack-nie.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-template-method-pattern" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/template-method-pattern/" class="article-date">
+  <time datetime="2015-04-24T16:00:00.000Z" itemprop="datePublished">2015-04-25</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/design-pattern/">design-pattern</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      模板方法模式
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>作为一个软件工程师，拥有一些设计模式的知识总是会受欢迎的。如果你没有听过设计模式，他们基本上是开发者遇到的一些通用问题的可复用的解决方案。设计模式的列表很长，了解全部的设计模式是都非常困难的。好吧，困难或许不是一个很准确的词，但是要掌握全部的设计模式需要很多的实践。让我们来看看设计模式中最简单的一个——模板方法，并且用Ruby来实现它。</p>
+<h3 id="模板方法模式"><a href="#模板方法模式" class="headerlink" title="模板方法模式"></a>模板方法模式</h3><p>模板方法模式定义了一个操作中算法的框架，而将一些步骤延迟到子类中。模板方法模式使得子类可以不改变一个算法的结构即可重定义该算法的某些特定步骤。模板方法是一种基于继承的代码复用技术，他是一种类行为模式。<br>模板方法模式是结构最简单的行为型设计模式，在其结构中只存在父类与子类之间的继承关系。通过使用模板方法模式，可以将一些复杂流程的实现步骤封装在一系列基本方法中，在抽象父类中提供一个称之为模板方法的方法来定义这些基本方法的执行次序，而通过其子类来覆盖某些步骤，从而使得相同的算法框架可以有不同的执行结果。模板方法模式提供了一个模板方法来定义算法框架，而某些具体步骤的实现可以在其子类中完成。</p>
+<h3 id="简单既是美"><a href="#简单既是美" class="headerlink" title="简单既是美"></a>简单既是美</h3><p>模板方法的优美之处在于它的简单性，但是关于它的定义却很冗长，导致你昏昏欲睡。通过将一系列的过程封装进不同的方法中来实现其行为的可配置性，使得子类可以覆写这些方法。下面是一个简单的例子：<br>    Ruby Code:<br>    class MagicCutter<br>      def initialize vegetable<br>        @vegetable = vegetable<br>      end</p>
+<pre><code>  def give_me_the_vegetable_cutted_off
+    prepapre_the_blade
+    cut_the_vegetable
+  end
+
+  def prepapre_the_blade
+    raise &apos;Called abstract method: prepapre_the_blade&apos;
+  end
+
+  def cut_the_vegetable
+    raise &apos;Called abstract method: cut_the_vegetable&apos;
+  end
+
+end
+</code></pre><p>框架方法是<code>give_me_the_vegetable_cutted_off</code>，它调用了一些列的方法，可以在子类中覆写这些方法使其拥有不同的行为。子类仅仅定义了那些将要改变的行为，覆写定义在框架类中的方法，但是<code>give_me_the_vegetable_cutted_off</code>不会被改变。让我们来看一下子类是如何实现的：<br>    Ruby Code:<br>    require_relative ‘magic_cutter’</p>
+<pre><code>class AubergineCutter &lt; MagicCutter
+
+  def prepapre_the_blade
+    puts &quot;Hey! that&apos;s a #{@vegetable}&quot;
+    puts &quot;i need a very sharp knife&quot;
+  end
+
+  def cut_the_vegetable
+    puts &quot;I slice the #{@vegetable}  in long thumbsized pieces, ready to be grilled&quot;
+  end
+
+end
+
+class PotatoCutter &lt; MagicCutter
+
+  def prepapre_the_blade
+    puts &quot;Hey! that&apos;s a #{@vegetable}&quot;
+    puts &quot;i take a professional potato cutter for my french fries&quot;
+  end
+
+  def cut_the_vegetable
+    puts &quot;put the #{@vegetable} in the cutter an press it&quot;
+  end
+
+end
+</code></pre><p>继承、方法覆写……这些看起来很熟悉，但是结果却令人满意。<br>    Ruby Code:<br>    au = AubergineCutter.new(“Aubergine”)<br>    po = PotatoCutter.new(“Potato”)<br>    au.give_me_the_vegetable_cutted_off<br>    po.give_me_the_vegetable_cutted_off</p>
+<h3 id="钩子方法"><a href="#钩子方法" class="headerlink" title="钩子方法"></a>钩子方法</h3><p>通过观察上面的两个子类，可以发现<code>puts “Hey! that’s a #{@vegetable}”</code>被重复了两次，并且从来不会被改变。更进一步，可以发现<code>PotatoCutter</code>并没有定义对蔬菜进行剥皮的操作，这正是引入钩子方法的时刻。钩子方法允许在子类覆写框架的实现并且定义一些新的东西，或者继承其默认的实现。让我们通过一个例子来看一下如何实现钩子方法<code>truly_excitement</code>和<code>prepare_the_vegetable</code>。<br>    Ruby Code:<br>    class MagicCutter<br>      def initialize vegetable<br>        @vegetable = vegetable<br>      end</p>
+<pre><code>  def give_me_the_vegetable_cutted_off
+    truly_excitement
+    prepapre_the_vegetable
+    prepapre_the_blade
+    cut_the_vegetable
+  end
+
+  def truly_excitement
+    puts &quot;Hey! that&apos;s a #{@vegetable}&quot;
+  end
+
+  def prepapre_the_vegetable
+  end
+
+  def prepapre_the_blade
+    raise &apos;Called abstract method: prepapre_the_blade&apos;
+  end
+
+  def cut_the_vegetable
+    raise &apos;Called abstract method: cut_the_vegetable&apos;
+  end
+
+end
+
+class PotatoCutter &lt; MagicCutter
+
+  def prepapre_the_vegetable
+    puts &quot;skin the potato&quot;
+  end
+
+  def prepapre_the_blade
+    puts &quot;i take a professional potato cutter for my french fries&quot;
+  end
+
+  def cut_the_vegetable
+    puts &quot;put the potato in the cutter an press it&quot;
+  end
+
+end
+
+c = PotatoCutter.new(&quot;Potato&quot;)
+c.give_me_the_vegetable_cutted_off
+
+class AubergineCutter &lt; MagicCutter
+
+  def prepapre_the_blade
+    puts &quot;i need a very sharp knife&quot;
+  end
+
+  def cut_the_vegetable
+    puts &quot;I slice the #{@vegetable}  in long thumbsized pieces, ready to be grilled&quot;
+  end
+
+end
+
+c = AubergineCutter.new(&quot;Aubergine&quot;)
+c.give_me_the_vegetable_cutted_off
+</code></pre><p>这些钩子方法的默认实现通常是空的，他们的存在仅仅是为了告诉子类将要发生什么，但是不需要子类覆写不必要的方法。上面的例子中<code>prepare_vegetable</code>是一个空的方法，将留给子类来决定如何实现它。</p>
+<h3 id="一些需要注意的地方"><a href="#一些需要注意的地方" class="headerlink" title="一些需要注意的地方"></a>一些需要注意的地方</h3><p>模板方法越简单越好。<br>要避免写一个充满了方法的模板类，但是没有子类覆写这些方法，这会提高维护成本。<br>要避免提供过少的钩子，在某些时候，这就迫使子类不得不覆写整个方法。</p>
+<p>参考资料：</p>
+<ul>
+<li><a href="http://reefpoints.dockyard.com/ruby/2013/07/10/design-patterns-template-pattern.html" title="Design Patterns: The Template Method Pattern" target="_blank" rel="noopener">http://reefpoints.dockyard.com/ruby/2013/07/10/design-patterns-template-pattern.html</a></li>
+<li><a href="http://edapx.com/2013/10/27/template-pattern/" title="#1 template pattern" target="_blank" rel="noopener">http://edapx.com/2013/10/27/template-pattern/</a></li>
+<li><a href="http://tammersaleh.com/posts/the-template-pattern-is-underused/" title="The Template Pattern is underused" target="_blank" rel="noopener">http://tammersaleh.com/posts/the-template-pattern-is-underused/</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://jack-nie.github.io/template-method-pattern/" data-id="cjqvr5iek0009ka6xfh7x3wmc" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Ruby/">Ruby</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/设计模式/">设计模式</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/observer-pattern/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          观察者模式
+        
+      </div>
+    </a>
+  
+  
+    <a href="/pattern-to-pattern-template-method-and-strategy/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">【翻译】模板方法模式和策略模式的比较</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/CSS/">CSS</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/DDD/">DDD</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Git/">Git</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Go/">Go</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/HTTP/">HTTP</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/JavaScript/">JavaScript</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Learning-C/">Learning C</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Rails/">Rails</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Ruby/">Ruby</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Server/">Server</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/TCP-IP/">TCP/IP</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Test/">Test</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/best-practices/">best-practices</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/design-pattern/">design-pattern</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/postgresql/">postgresql</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/weixin/">weixin</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/分布式/">分布式</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/">C</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSS/">CSS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DDD/">DDD</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Go/">Go</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP/">HTTP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/">JavaScript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Rails/">Rails</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Rspec/">Rspec</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Ruby/">Ruby</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Server/">Server</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCP-IP/">TCP/IP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/postgresql/">postgresql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/weixin/">weixin</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式/">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/测试/">测试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/C/" style="font-size: 12.86px;">C</a> <a href="/tags/CSS/" style="font-size: 10px;">CSS</a> <a href="/tags/DDD/" style="font-size: 10px;">DDD</a> <a href="/tags/Git/" style="font-size: 11.43px;">Git</a> <a href="/tags/Go/" style="font-size: 18.57px;">Go</a> <a href="/tags/HTTP/" style="font-size: 10px;">HTTP</a> <a href="/tags/JavaScript/" style="font-size: 17.14px;">JavaScript</a> <a href="/tags/Rails/" style="font-size: 14.29px;">Rails</a> <a href="/tags/Rspec/" style="font-size: 10px;">Rspec</a> <a href="/tags/Ruby/" style="font-size: 20px;">Ruby</a> <a href="/tags/Server/" style="font-size: 10px;">Server</a> <a href="/tags/TCP-IP/" style="font-size: 10px;">TCP/IP</a> <a href="/tags/postgresql/" style="font-size: 12.86px;">postgresql</a> <a href="/tags/react/" style="font-size: 10px;">react</a> <a href="/tags/weixin/" style="font-size: 11.43px;">weixin</a> <a href="/tags/分布式/" style="font-size: 10px;">分布式</a> <a href="/tags/测试/" style="font-size: 10px;">测试</a> <a href="/tags/设计模式/" style="font-size: 15.71px;">设计模式</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/gokit-learning-one/">go-kit学习笔记(一)</a>
+          </li>
+        
+          <li>
+            <a href="/gokit-introduction/">go-kit简介</a>
+          </li>
+        
+          <li>
+            <a href="/golang-context/">golang中context包详解</a>
+          </li>
+        
+          <li>
+            <a href="/golang-handle-and-handlefunc/">Golang中的Handle和HandleFunc</a>
+          </li>
+        
+          <li>
+            <a href="/golang-http-router/">Golang中的router</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 Jack Nie<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

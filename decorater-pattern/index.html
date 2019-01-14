@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>【翻译】装饰器模式 | Jack&#39;s Programming Notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="装饰器模式">
+<meta name="keywords" content="设计模式,Rails,Ruby">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【翻译】装饰器模式">
+<meta property="og:url" content="http://jack-nie.github.io/decorater-pattern/index.html">
+<meta property="og:site_name" content="Jack&#39;s Programming Notes">
+<meta property="og:description" content="装饰器模式">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-11-09T09:04:23.202Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="【翻译】装饰器模式">
+<meta name="twitter:description" content="装饰器模式">
+  
+    <link rel="alternate" href="/atom.xml" title="Jack&#39;s Programming Notes" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Jack&#39;s Programming Notes</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">Feel the world!</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://jack-nie.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-decorater-pattern" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/decorater-pattern/" class="article-date">
+  <time datetime="2015-04-27T16:00:00.000Z" itemprop="datePublished">2015-04-28</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/design-pattern/">design-pattern</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      【翻译】装饰器模式
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>装饰器是一种设计模式，它的目的正如Gang of Four所描述的：</p>
+<blockquote>
+<p>装饰器模式，是面向对象编程领域中，一种动态地往一个类中添加新的行为的设计模式。就功能而言，装饰器模式相比生成子类更为灵活，这样可以给某个对象而不是整个类添加一些功能。</p>
+</blockquote>
+<p>通过使用修饰模式，可以在运行时扩充一个类的功能。原理是：增加一个修饰类包裹原来的类，包裹的方式一般是通过在将原来的对象作为修饰类的构造函数的参数。装饰类实现新的功能，但是，在不需要用到新功能的地方，它可以直接调用原来的类中的方法。修饰类必须和原来的类有相同的接口。修饰模式是类继承的另外一种选择。类继承在编译时候增加行为，而装饰模式是在运行时增加行为。</p>
+<h3 id="使用装饰器模式来代替继承"><a href="#使用装饰器模式来代替继承" class="headerlink" title="使用装饰器模式来代替继承"></a>使用装饰器模式来代替继承</h3><p>一个经常被用来说明装饰器模式的例子是“coffee with milk and sugar” ，下面是利用类继承来实现这个例子的代码。<br>    Ruby Code:<br>    class CoffeeWithSugar &lt; Coffee<br>      def cost<br>        super + 0.2<br>      end<br>    end</p>
+<pre><code>class CoffeeWithMilkAndSugar &lt; Coffee
+  def cost
+    super + 0.4 + 0.2
+  end
+end
+</code></pre><p>利用继承有如下缺点：</p>
+<ul>
+<li>做出的选择是固化的。</li>
+<li>客户端无法控制怎样和什么时候装饰一个组件。</li>
+<li>紧耦合。</li>
+<li>改变父类的接口意味着所有的子类也必须要改变。</li>
+</ul>
+<p>在Ruby中，include一个模块在某种意义上来说也是继承关系。<br>    Ruby Code:<br>    module Milk<br>      def cost_of_milk<br>        0.4 if milk?<br>      end<br>    end</p>
+<pre><code>class Coffee
+  include Milk
+  include Sugar
+
+  def cost
+    2 + cost_of_milk + cost_of_sugar
+  end
+end
+</code></pre><h3 id="装饰器是如何工作的"><a href="#装饰器是如何工作的" class="headerlink" title="装饰器是如何工作的"></a>装饰器是如何工作的</h3><p>用 Gang of Four的话来说，一个装饰器就是一个用来包裹一个组件的对象，它还有如下功能：</p>
+<ul>
+<li>符合组件的接口，所以它的存在对客户端是透明的。</li>
+<li>将请求转发（代理）给该组件。</li>
+<li>在请求转发之前或者之后执行一些额外的操作。</li>
+</ul>
+<p>这种方法比类继承更加的灵活，因为你可以有多种组合混合和匹配职责因为它的透明性，你可以递归的嵌套装饰器，所以它允许添加无限数量的职责。</p>
+<h3 id="Ruby中的替代实现"><a href="#Ruby中的替代实现" class="headerlink" title="Ruby中的替代实现"></a>Ruby中的替代实现</h3><p>我通过研究在Ruby中发现了4个常用的实现：</p>
+<ul>
+<li>Module + Extend + Super 装饰器</li>
+<li>Plain Old Ruby Object 装饰器</li>
+<li>Class + Method Missing 装饰器</li>
+<li>SimpleDelegator + Super + Getobj 装饰器</li>
+</ul>
+<p>可能还有其他的实现，但是这4个是最常见的。</p>
+<h3 id="Module-Extend-Super装饰器"><a href="#Module-Extend-Super装饰器" class="headerlink" title="Module + Extend + Super装饰器"></a>Module + Extend + Super装饰器</h3><p>在Design Patterns in Ruby一书中描述了此种实现，我认为这是值得提倡的。它由<code>module</code>、<code>super</code>和<code>extend</code>组成。</p>
+<p>为了保持一致性，让我们继续回到“coffee with milk and sugar”这个例子，它被实现成这样：<br>    Ruby Code:<br>    class Coffee<br>      def cost<br>        2<br>      end<br>    end</p>
+<pre><code>module Milk
+  def cost
+    super + 0.4
+  end
+end
+
+module Sugar
+  def cost
+    super + 0.2
+  end
+end
+
+coffee = Coffee.new
+coffee.extend(Milk)
+coffee.extend(Sugar)
+coffee.cost   # 2.6
+</code></pre><p>此种实现的好处是：</p>
+<ul>
+<li>它通过所有的装饰器代理。</li>
+<li>它具有所有的原始接口，因为它是原始的对象。</li>
+</ul>
+<p>此种实现的缺点是：</p>
+<ul>
+<li>不能对同一个对象多次使用同样的装饰器。</li>
+<li>很难分辨出是哪一个装饰器增加的功能。</li>
+</ul>
+<h3 id="PORO装饰器"><a href="#PORO装饰器" class="headerlink" title="PORO装饰器"></a>PORO装饰器</h3><p>我建议在Ruby程序中从此种形式的装饰器开始，包括Rails应用，直到这种形式失败了才寻求其他的方式。<br>    Ruby Code:<br>    class Coffee<br>      def cost<br>        2<br>      end</p>
+<pre><code>  def origin
+    &quot;Colombia&quot;
+  end
+end
+
+class Milk
+  def initialize(component)
+    @component = component
+  end
+
+  def cost
+    @component.cost + 0.4
+  end
+end
+
+coffee = Coffee.new
+Sugar.new(Milk.new(coffee)).cost  # 2.6
+Sugar.new(Sugar.new(coffee)).cost # 2.4
+Sugar.new(Milk.new(coffee)).class # Sugar
+Milk.new(coffee).origin           # NoMethodError
+</code></pre><p>该实现的优点如下：</p>
+<ul>
+<li>可以通过Ruby的实例化无限的包装。</li>
+<li>通过所有的装饰器代理。</li>
+<li>可以多次对一个组件使用同样的装饰器。</li>
+</ul>
+<p>该实现的缺点如下：</p>
+<ul>
+<li>不能以透明的方式使用组件的原始接口，这个缺点也意味着按照Gang of<br>Four的定义，它并不是一个真的装饰器。我主张仍然称它为装饰器，因为它看起来并且它的行为绝对像是一个装饰器。</li>
+</ul>
+<p>这是一个相当有粘性的观点，然而，还是让我们详细的讨论Gang of Four的“透明接口”吧。</p>
+<h3 id="我们在乎“透明接口”的需求吗"><a href="#我们在乎“透明接口”的需求吗" class="headerlink" title="我们在乎“透明接口”的需求吗"></a>我们在乎“透明接口”的需求吗</h3><p>假定我们关心装饰器的透明接口是因为成本，如果是这样，我们不需要同时只支持原始方法。因此，PORO装饰器满足我们的实际需求。通过将接口的范围重新定义为该对象的整个接口的一个子集，我们就符合Gang of Four的定义，这算是一种作弊手段么？我说不，请考虑在Ruby 1.9.3中有多少方法是在<code>Obeject</code>上：<br>    Ruby Code:<br>    &gt; Object.new.methods.size<br>    =&gt; 56<br>Rails中的<code>Object</code>中的方法是Ruby种方法的两倍：<br>    Ruby Code:<br>    &gt; Object.new.methods.size<br>    =&gt; 118<br>一个<code>ActiveRecord</code>对象上甚至有更多的方法：<br>    Ruby Code:<br>    &gt; User.new.methods.size<br>    =&gt; 366<br>我们并不在每一个对象上使用上百种中方法，尤其是在Rails View的典型应用中。</p>
+<p>然而，如果我们在Rails应用中使用PORO装饰器来装饰<code>ActiveRecord</code>对象，我们可能通过接近300个方法减少了接口。这可能是，也可能不是一个问题，取决于我们在该应用中如何使用该对象。在实际应用中，当使用TDD开发一个新功能，我并没有发现这是一个问题，这就是我为什么要说从这个装饰器开始。如果这不是一个问题，那么很好，你的测试套件将会告诉你。你可能会决定增加一个或者两个方法来做非常清晰的代理。<br>    Ruby Code:<br>    def comments<br>      @component.comments<br>    end</p>
+<pre><code>def any?
+  @component.any?
+end
+</code></pre><p>然而，你可能会觉得这很冗长或者重复，所以让我们在晚些时候来假设我们很关心透明接口。</p>
+<p>这经常通过Ruby的<code>method_missing</code>来完成，或者通过Ruby的<code>delegate</code>库，如 <code>Delegator</code>、 <code>SimpleDelegator</code>、 <code>DelegateClass</code>、<code>Forwardable</code>。</p>
+<h3 id="“Method-Missing”装饰器"><a href="#“Method-Missing”装饰器" class="headerlink" title="“Method Missing”装饰器"></a>“Method Missing”装饰器</h3><p>下面的例子通过<code>method_missing</code>来实现一个Ruby装饰器：<br>    Ruby Code:<br>    module Decorator<br>      def initialize(component)<br>        @component = component<br>      end</p>
+<pre><code>  def method_missing(meth, *args)
+    if @component.respond_to?(meth)
+      @component.send(meth, *args)
+    else
+      super
+    end
+  end
+
+  def respond_to?(meth)
+    @component.respond_to?(meth)
+  end
+end
+
+class Coffee
+  def cost
+    2
+  end
+
+  def origin
+    &quot;Colombia&quot;
+  end
+end
+
+class Milk
+  include Decorator
+
+  def cost
+    @component.cost + 0.4
+  end
+end
+
+coffee = Coffee.new
+Sugar.new(Milk.new(coffee)).cost   # 2.6
+Sugar.new(Sugar.new(coffee)).cost  # 2.4
+Sugar.new(Milk.new(coffee)).origin # Colombia
+Sugar.new(Milk.new(coffee)).class  # Sugar
+</code></pre><p>此种实现的优点如下：</p>
+<ul>
+<li>可以通过Ruby实例化无限的包装。</li>
+<li>通过所有的装饰器代理。</li>
+<li>可以对同一个组件多次使用同一个装饰器。</li>
+<li>透明的利用组件的原始接口。</li>
+</ul>
+<p>此种实现的缺点如下：</p>
+<ul>
+<li>使用了<code>method_missing</code>。</li>
+<li>被装饰的对象的类是该装饰器。</li>
+</ul>
+<h3 id="我们关心类是装饰器吗"><a href="#我们关心类是装饰器吗" class="headerlink" title="我们关心类是装饰器吗"></a>我们关心类是装饰器吗</h3><p>我们不应该，这是Ruby，鸭子类型的大陆。</p>
+<p>然而，Ruby在多态关系，form_for以及其他的地方的反射机制(<code>object.class.name</code>)，当我尝试将Rails view帮助方法转换为装饰器的时候，测试执行时，这在ActiveRecord的错误形式中确实是一个问题。</p>
+<blockquote>
+<p>我刚刚发现了一个问题，Rails在检查一个对象的<code>to_patial_path</code>的属性之前，会调用<code>to_model</code>方法，所以当你准备使用装饰器来设置<code>to_partial_path</code>,你必须覆写<code>to_model</code>方法来阻止它返回没有被装饰的对象。—— Andrew Meyer</p>
+</blockquote>
+<p>在一些情境中，这暴露了一个更深的问题。通过对model代码进行重构，我能够使用PORO装饰器并且使整个代码库变得更加干净。在另外的情况下，我仅仅认为使类表现为组件的类是一项耗时少的工作，所以我继续下去。</p>
+<h3 id="“SimpleDelegator-Super-Getobj”-装饰器"><a href="#“SimpleDelegator-Super-Getobj”-装饰器" class="headerlink" title="“SimpleDelegator + Super + Getobj” 装饰器"></a>“SimpleDelegator + Super + Getobj” 装饰器</h3><p>所以，在Rails中的一个让步是使用这种实现，我把它作为最后的解决方案。<br>    Ruby Code:<br>    class Coffee<br>      def cost<br>        2<br>      end</p>
+<pre><code>  def origin
+    &quot;Colombia&quot;
+  end
+end
+
+require &apos;delegate&apos;
+
+class Decorator &lt; SimpleDelegator
+  def class
+    __getobj__.class
+  end
+end
+
+class Milk &lt; Decorator
+  def cost
+    super + 0.4
+  end
+end
+
+coffee = Coffee.new
+Sugar.new(Milk.new(coffee)).cost   # 2.6
+Sugar.new(Sugar.new(coffee)).cost  # 2.4
+Milk.new(coffee).origin            # Colombia
+Sugar.new(Milk.new(coffee)).class  # Coffee
+</code></pre><p>此种实现的优点如下：</p>
+<ul>
+<li>可以通过Ruby实例化无限的包装。</li>
+<li>通过所有的装饰器代理。</li>
+<li>可以对同一个组件多次使用同一个装饰器。</li>
+<li>透明的利用组件的原始接口。</li>
+<li>类既是组件。</li>
+</ul>
+<p>此种实现的缺点如下：</p>
+<p>-它重新定义了类。</p>
+<p>我真的不不是很清楚什么样的问题会导致使用<code>method_missing</code>或者重新定义一个类，但我想他们会在一个耗时的调试过程中得到清晰地展现。</p>
+<h3 id="行动计划"><a href="#行动计划" class="headerlink" title="行动计划"></a>行动计划</h3><p>我认为我现在理解不同的Ruby实现的好处和坏处，并且有一个如何使用它们的计划：</p>
+<ul>
+<li>以PORO开始。</li>
+<li>假如我需要透明接口或者被装饰的对象的类会在Rails中引发问题，使用<code>SimpleDelegator</code></li>
+</ul>
+<p>原文：</p>
+<ul>
+<li><a href="https://robots.thoughtbot.com/evaluating-alternative-decorator-implementations-in" title="Evaluating Alternative Decorator Implementations In Ruby" target="_blank" rel="noopener">https://robots.thoughtbot.com/evaluating-alternative-decorator-implementations-in</a></li>
+</ul>
+<p>深入阅读：</p>
+<ul>
+<li><a href="http://codebrahma.com/design/patterns/2014/04/28/ruby-decorators.html" title="ruby-decorators" target="_blank" rel="noopener">http://codebrahma.com/design/patterns/2014/04/28/ruby-decorators.html</a></li>
+<li><a href="https://sourcemaking.com/design_patterns/decorator" title="decorator" target="_blank" rel="noopener">https://sourcemaking.com/design_patterns/decorator</a></li>
+<li><a href="https://robots.thoughtbot.com/tidy-views-and-beyond-with-decorators" title="tidy-views-and-beyond-with-decorators" target="_blank" rel="noopener">https://robots.thoughtbot.com/tidy-views-and-beyond-with-decorators</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://jack-nie.github.io/decorater-pattern/" data-id="cjqvr5iep000fka6xk6a8v105" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/设计模式/">设计模式</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/unobtrusive-ruby/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          【翻译】不唐突的Ruby
+        
+      </div>
+    </a>
+  
+  
+    <a href="/adapter-pattern/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">【转载】适配器模式</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/CSS/">CSS</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/DDD/">DDD</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Git/">Git</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Go/">Go</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/HTTP/">HTTP</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/JavaScript/">JavaScript</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Learning-C/">Learning C</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Rails/">Rails</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Ruby/">Ruby</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Server/">Server</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/TCP-IP/">TCP/IP</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Test/">Test</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/best-practices/">best-practices</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/design-pattern/">design-pattern</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/postgresql/">postgresql</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/weixin/">weixin</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/分布式/">分布式</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/">C</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSS/">CSS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DDD/">DDD</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Go/">Go</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP/">HTTP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/">JavaScript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Rails/">Rails</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Rspec/">Rspec</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Ruby/">Ruby</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Server/">Server</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCP-IP/">TCP/IP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/postgresql/">postgresql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/weixin/">weixin</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式/">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/测试/">测试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/C/" style="font-size: 12.86px;">C</a> <a href="/tags/CSS/" style="font-size: 10px;">CSS</a> <a href="/tags/DDD/" style="font-size: 10px;">DDD</a> <a href="/tags/Git/" style="font-size: 11.43px;">Git</a> <a href="/tags/Go/" style="font-size: 18.57px;">Go</a> <a href="/tags/HTTP/" style="font-size: 10px;">HTTP</a> <a href="/tags/JavaScript/" style="font-size: 17.14px;">JavaScript</a> <a href="/tags/Rails/" style="font-size: 14.29px;">Rails</a> <a href="/tags/Rspec/" style="font-size: 10px;">Rspec</a> <a href="/tags/Ruby/" style="font-size: 20px;">Ruby</a> <a href="/tags/Server/" style="font-size: 10px;">Server</a> <a href="/tags/TCP-IP/" style="font-size: 10px;">TCP/IP</a> <a href="/tags/postgresql/" style="font-size: 12.86px;">postgresql</a> <a href="/tags/react/" style="font-size: 10px;">react</a> <a href="/tags/weixin/" style="font-size: 11.43px;">weixin</a> <a href="/tags/分布式/" style="font-size: 10px;">分布式</a> <a href="/tags/测试/" style="font-size: 10px;">测试</a> <a href="/tags/设计模式/" style="font-size: 15.71px;">设计模式</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/gokit-learning-one/">go-kit学习笔记(一)</a>
+          </li>
+        
+          <li>
+            <a href="/gokit-introduction/">go-kit简介</a>
+          </li>
+        
+          <li>
+            <a href="/golang-context/">golang中context包详解</a>
+          </li>
+        
+          <li>
+            <a href="/golang-handle-and-handlefunc/">Golang中的Handle和HandleFunc</a>
+          </li>
+        
+          <li>
+            <a href="/golang-http-router/">Golang中的router</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 Jack Nie<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

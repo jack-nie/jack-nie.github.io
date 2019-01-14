@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>Golang中channels详解 | Jack&#39;s Programming Notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="golang channels详解">
+<meta name="keywords" content="golang,channels,详解">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Golang中channels详解">
+<meta property="og:url" content="http://jack-nie.github.io/golang-channels/index.html">
+<meta property="og:site_name" content="Jack&#39;s Programming Notes">
+<meta property="og:description" content="golang channels详解">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-11-09T09:04:31.703Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Golang中channels详解">
+<meta name="twitter:description" content="golang channels详解">
+  
+    <link rel="alternate" href="/atom.xml" title="Jack&#39;s Programming Notes" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Jack&#39;s Programming Notes</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">Feel the world!</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://jack-nie.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-golang-channels" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/golang-channels/" class="article-date">
+  <time datetime="2018-03-13T00:00:00.000Z" itemprop="datePublished">2018-03-13</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Go/">Go</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Golang中channels详解
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="什么是channel"><a href="#什么是channel" class="headerlink" title="什么是channel"></a>什么是channel</h3><p>GO语言并发编程模型参考了了CSP理论，也就是所谓的通过传递消息来共享内容，而不是共享内存。你可以把channel想像成一根水管，发送者将消息从水管的一端发进去，接受者从水管的另一端取出来。<br>channel是有类型的，一端定义了channel的类型，那么发送者将只能发送特定类型的数据到该channel。<br>例如定义<code>chan T</code>，那么该chan将只能接受类型为T的数据。</p>
+<h3 id="发送和接收"><a href="#发送和接收" class="headerlink" title="发送和接收"></a>发送和接收</h3><p>channel的发送和读取的语法如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">data := &lt;- a //从channel中读取数据</span><br><span class="line">a &lt;- data //将数据发送到channel</span><br></pre></td></tr></table></figure>
+<p>需要注意的是，声明一个channel变量并不能直接使用，因为该变量的值是nil，无论是向nil的channel发送数据还是从nil的channel接收数据都将引发一个panic。</p>
+<p>channel的读取和发送都是阻塞的，除非有另外的goroutine向channel的一端发送数据，或者从channel中读取数据。channel的这种特性能够帮助开发者不显示的使用锁来完成同步操作。</p>
+<h3 id="bufferd-channel-VS-unbuffers-channel"><a href="#bufferd-channel-VS-unbuffers-channel" class="headerlink" title="bufferd channel VS unbuffers channel"></a>bufferd channel VS unbuffers channel</h3><p>channel可以有两种初始化的方式，分别是初始化成带缓冲的和不带缓冲的。下面将介绍这两种方式的差异。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">var a chan int</span><br><span class="line">var b chan int</span><br><span class="line">a = make(chan int) // 不带缓冲的chan</span><br><span class="line">b = make(chan int, 3) //带缓冲的chan</span><br></pre></td></tr></table></figure>
+<p>对于带缓冲的channel，只要channel未满，我们可以一直往里面写数据，但是无缓冲的channel则不行，下面的一段程序可以验证上面的结论。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">import &quot;fmt&quot;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">  a := make(chan int)</span><br><span class="line">  b := make(chan int, 3)</span><br><span class="line">  b &lt;- 1</span><br><span class="line">  b &lt;- 2</span><br><span class="line">  b &lt;- 3</span><br><span class="line">  fmt.Println(&lt;-b)</span><br><span class="line">  fmt.Println(&lt;-b)</span><br><span class="line">  fmt.Println(&lt;-b)</span><br><span class="line">  go func() &#123;</span><br><span class="line">    fmt.Println(&lt;-a)</span><br><span class="line">  &#125;</span><br><span class="line">  a &lt;- 1</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="channel-with-select"><a href="#channel-with-select" class="headerlink" title="channel with select"></a>channel with select</h3><p>可以通过select模式来实现多个chan的收发操作，还可以定义一个timer来实现超时的逻辑处理。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">select &#123;</span><br><span class="line">case x := &lt;- a:</span><br><span class="line">  //do something</span><br><span class="line">case y, ok := &lt;- b:</span><br><span class="line">  //do something</span><br><span class="line">case c &lt;- z:</span><br><span class="line">  //do something</span><br><span class="line">case &lt;- time.After(....):</span><br><span class="line">  //do something</span><br><span class="line">default:</span><br><span class="line">  //do something</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="for-range-chan-和-close"><a href="#for-range-chan-和-close" class="headerlink" title="for..range chan 和 close"></a>for..range chan 和 close</h3><p>channel也可以像slice一样通过for range来遍历，只要没关闭channel，for语句将一直阻塞。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">for c, ok := range b &#123;</span><br><span class="line">  ....</span><br><span class="line">  //do something</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面代码中的ok可以用来标示channel是否已经关闭。我们偶尔也会见到下面的用法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">for range b &#123;</span><br><span class="line">  ....</span><br><span class="line">  //do something</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里只要b不关闭，并且有数据发送到b，就可以一直执行for loop中的逻辑。<br>当一个带缓冲的channel被关闭后，我们仍然可以接收已经发送到该channel的数据直到完全取出所有的数据 ，<br>取完所有的数据之后再进行读取，将会得到声明的channel的类型的零值。<br>关闭一个不带缓冲的channel后，也可以从该channel读取数据，读取的是声明的channel的类型的零值。<br>无论是带缓冲的还是不带缓冲的channel，一旦关闭之后，就不能再向其发送数据了。<br>我们可以通过：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">if c, ok := &lt;-b; ok &#123;</span><br><span class="line">  //do something</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>来判断channel是否关闭。</p>
+<h3 id="directional-channel-VS-undirectional-channel"><a href="#directional-channel-VS-undirectional-channel" class="headerlink" title="directional channel VS undirectional channel"></a>directional channel VS undirectional channel</h3><p>通常我们使用时不会声明一个带方向的chan，因为只能接收或者只能发送的channel并没有实际的用处。<br>带方向的chan一般是用在方法的签名中，更多的时候是做一个约定，在代码review的时候可以更容易的看出该chan是用来读取还是用来接收。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://jack-nie.github.io/golang-channels/" data-id="cjqvr5ih7004lka6x4qrsg4s0" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Go/">Go</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/golang-sync-pool/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Golang中sync.Pool详解
+        
+      </div>
+    </a>
+  
+  
+    <a href="/manage-goroutines/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Golang中goroutine的管理 </div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/CSS/">CSS</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/DDD/">DDD</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Git/">Git</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Go/">Go</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/HTTP/">HTTP</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/JavaScript/">JavaScript</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Learning-C/">Learning C</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Rails/">Rails</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Ruby/">Ruby</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Server/">Server</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/TCP-IP/">TCP/IP</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Test/">Test</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/best-practices/">best-practices</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/design-pattern/">design-pattern</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/postgresql/">postgresql</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/weixin/">weixin</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/分布式/">分布式</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/">C</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSS/">CSS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DDD/">DDD</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Go/">Go</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP/">HTTP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/">JavaScript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Rails/">Rails</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Rspec/">Rspec</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Ruby/">Ruby</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Server/">Server</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCP-IP/">TCP/IP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/postgresql/">postgresql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/weixin/">weixin</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式/">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/测试/">测试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/C/" style="font-size: 12.86px;">C</a> <a href="/tags/CSS/" style="font-size: 10px;">CSS</a> <a href="/tags/DDD/" style="font-size: 10px;">DDD</a> <a href="/tags/Git/" style="font-size: 11.43px;">Git</a> <a href="/tags/Go/" style="font-size: 18.57px;">Go</a> <a href="/tags/HTTP/" style="font-size: 10px;">HTTP</a> <a href="/tags/JavaScript/" style="font-size: 17.14px;">JavaScript</a> <a href="/tags/Rails/" style="font-size: 14.29px;">Rails</a> <a href="/tags/Rspec/" style="font-size: 10px;">Rspec</a> <a href="/tags/Ruby/" style="font-size: 20px;">Ruby</a> <a href="/tags/Server/" style="font-size: 10px;">Server</a> <a href="/tags/TCP-IP/" style="font-size: 10px;">TCP/IP</a> <a href="/tags/postgresql/" style="font-size: 12.86px;">postgresql</a> <a href="/tags/react/" style="font-size: 10px;">react</a> <a href="/tags/weixin/" style="font-size: 11.43px;">weixin</a> <a href="/tags/分布式/" style="font-size: 10px;">分布式</a> <a href="/tags/测试/" style="font-size: 10px;">测试</a> <a href="/tags/设计模式/" style="font-size: 15.71px;">设计模式</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/gokit-learning-one/">go-kit学习笔记(一)</a>
+          </li>
+        
+          <li>
+            <a href="/gokit-introduction/">go-kit简介</a>
+          </li>
+        
+          <li>
+            <a href="/golang-context/">golang中context包详解</a>
+          </li>
+        
+          <li>
+            <a href="/golang-handle-and-handlefunc/">Golang中的Handle和HandleFunc</a>
+          </li>
+        
+          <li>
+            <a href="/golang-http-router/">Golang中的router</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 Jack Nie<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

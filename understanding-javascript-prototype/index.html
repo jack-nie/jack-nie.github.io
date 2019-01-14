@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>理解JavaScript中的原型继承 | Jack&#39;s Programming Notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="JavaScript prototype">
+<meta name="keywords" content="JavaScript,prototype">
+<meta property="og:type" content="article">
+<meta property="og:title" content="理解JavaScript中的原型继承">
+<meta property="og:url" content="http://jack-nie.github.io/understanding-javascript-prototype/index.html">
+<meta property="og:site_name" content="Jack&#39;s Programming Notes">
+<meta property="og:description" content="JavaScript prototype">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-11-09T09:04:30.243Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="理解JavaScript中的原型继承">
+<meta name="twitter:description" content="JavaScript prototype">
+  
+    <link rel="alternate" href="/atom.xml" title="Jack&#39;s Programming Notes" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Jack&#39;s Programming Notes</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">Feel the world!</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://jack-nie.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-understanding-javascript-prototype" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/understanding-javascript-prototype/" class="article-date">
+  <time datetime="2016-01-03T00:00:00.000Z" itemprop="datePublished">2016-01-03</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/JavaScript/">JavaScript</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      理解JavaScript中的原型继承
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>原型是JavaScript的核心概念之一，理解JavaScript的原型就显得尤为重要。在JavaScript中，类的所有对象都从同一个原型对象上继承属性,因此，原型对象是类的核心。</p>
+<p>除了null对象之外，每一个JavaScript对象都和另一个对象关联，”另一个”对象就是原型。<br>根据创建对象的方式的不同，对象的原型也不同。举例来讲，通过对象直接创建的对象拥有同一个原型，可以通过Object.prototype来获得对原型对象的引用。通过关键字new和构造函数调用创建的对象就是构造函数的prototype的值。</p>
+<p>这里需要指出的一点就是并不是每一个JavaScript对象都有原型，数量虽然不多，但是确实存在，Object.prototype就是其中的一个。</p>
+<p>下面让我们用实际的例子来看一下，原型继承到底是如何工作的</p>
+<pre><code>Code:
+  function Parent(name, job) {
+    this.name = name;
+    this.job  = job;
+  }
+
+  Parent.prototype.getName = function() {
+    return this.name;
+  }
+
+  Parent.prototype.getJob = function() {
+    return this.job;
+  }
+
+  var parent = new Parent(&quot;Jack&quot;, &quot;developer&quot;);
+  console.log(parent.getName()); //Jack
+  console.log(parent.getJob()); //developer
+
+  function Child(name, job) {
+    this.name = name;
+    this.job  = job;
+  }
+  Child.prototype = new Parent();
+
+  var child = new Child(&quot;Jones&quot;, &quot;manager&quot;);
+  console.log(child.getName());//Jones
+  console.log(child.getJob());//manager
+</code></pre><p>基本的原型继承是相当简单的，但是这也有一个明显的问题，就是会重复构造函数中的初始化操作,这显然不是我们想看到的。<br>为了简化操作，我们可以在子类的构造函数上做文章。</p>
+<pre><code>Code:
+function Child(name. job) {
+  Parent.apply(this, arguments);
+}
+</code></pre><h3 id="利用create函数"><a href="#利用create函数" class="headerlink" title="利用create函数"></a>利用create函数</h3><p>这是来自JavaScript大师Douglas Crockford的方法，具体做法是给Object对象增加一个create方法，创建一个使用原对象作为原型的新对象。</p>
+<pre><code>Code:
+Object.create = function(o) {
+  var F = function () {};
+  F.prototype = o;
+  return new F();
+}
+</code></pre><p>原型关系是一种动态的关系，如果我们给一个原型添加新的属性，那么新创建的属性会对所有的基于该原型创建的对象可见。</p>
+<ul>
+<li><a href="http://www.amazon.cn/O-Reilly%25252525252525252525E7%25252525252525252525B2%25252525252525252525BE%25252525252525252525E5%2525252525252525252593%2525252525252525252581%25252525252525252525E5%252525252525252525259B%25252525252525252525BE%25252525252525252525E4%25252525252525252525B9%25252525252525252525A6%25252525252525252525E7%25252525252525252525B3%25252525252525252525BB%25252525252525252525E5%2525252525252525252588%2525252525252525252597-JavaScript%25252525252525252525E6%252525252525252525259D%2525252525252525252583%25252525252525252525E5%25252525252525252525A8%2525252525252525252581%25252525252525252525E6%252525252525252525258C%2525252525252525252587%25252525252525252525E5%252525252525252525258D%2525252525252525252597-%25252525252525252525E5%25252525252525252525BC%2525252525252525252597%25252525252525252525E5%2525252525252525252585%25252525252525252525B0%25252525252525252525E7%25252525252525252525BA%25252525252525252525B3%25252525252525252525E6%25252525252525252525A0%25252525252525252525B9/dp/B007VISQ1Y?SubscriptionId=AKIAJMGEVRIO53UGJCYQ&amp;tag=16-28-282__-23&amp;linkCode=sp1&amp;camp=2025&amp;creative=165953&amp;creativeASIN=B007VISQ1Y" title="JavaScript权威指南(第6版)" target="_blank" rel="noopener">JavaScript权威指南</a></li>
+<li><a href="http://www.amazon.cn/JavaScript%2525252525252525E8%2525252525252525AF%2525252525252525AD%2525252525252525E8%2525252525252525A8%252525252525252580%2525252525252525E7%2525252525252525B2%2525252525252525BE%2525252525252525E7%2525252525252525B2%2525252525252525B9-%2525252525252525E9%252525252525252581%252525252525252593%2525252525252525E6%2525252525252525A0%2525252525252525BC%2525252525252525E6%25252525252525258B%252525252525252589%2525252525252525E6%252525252525252596%2525252525252525AF%2525252525252525E2%252525252525252580%2525252525252525A2%2525252525252525E5%252525252525252585%25252525252525258B%2525252525252525E7%2525252525252525BD%252525252525252597%2525252525252525E5%252525252525252585%25252525252525258B%2525252525252525E7%2525252525252525A6%25252525252525258F%2525252525252525E5%2525252525252525BE%2525252525252525B7/dp/B0097CON2S?SubscriptionId=AKIAJMGEVRIO53UGJCYQ&amp;tag=16-28-282__-23&amp;linkCode=sp1&amp;camp=2025&amp;creative=165953&amp;creativeASIN=B0097CON2S" title="JavaScript语言精粹(修订版)" target="_blank" rel="noopener">JavaScript语言精粹</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://jack-nie.github.io/understanding-javascript-prototype/" data-id="cjqvr5ifz002lka6xqsd3lo25" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JavaScript/">JavaScript</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/string-vs-pointer/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          字符串与指针
+        
+      </div>
+    </a>
+  
+  
+    <a href="/using-jssdk-implements-payment/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">使用JSSDK实现微信支付</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/CSS/">CSS</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/DDD/">DDD</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Git/">Git</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Go/">Go</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/HTTP/">HTTP</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/JavaScript/">JavaScript</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Learning-C/">Learning C</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Rails/">Rails</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Ruby/">Ruby</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Server/">Server</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/TCP-IP/">TCP/IP</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Test/">Test</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/best-practices/">best-practices</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/design-pattern/">design-pattern</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/postgresql/">postgresql</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/weixin/">weixin</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/分布式/">分布式</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/">C</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSS/">CSS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DDD/">DDD</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Go/">Go</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP/">HTTP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/">JavaScript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Rails/">Rails</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Rspec/">Rspec</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Ruby/">Ruby</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Server/">Server</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCP-IP/">TCP/IP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/postgresql/">postgresql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/weixin/">weixin</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式/">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/测试/">测试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/C/" style="font-size: 12.86px;">C</a> <a href="/tags/CSS/" style="font-size: 10px;">CSS</a> <a href="/tags/DDD/" style="font-size: 10px;">DDD</a> <a href="/tags/Git/" style="font-size: 11.43px;">Git</a> <a href="/tags/Go/" style="font-size: 18.57px;">Go</a> <a href="/tags/HTTP/" style="font-size: 10px;">HTTP</a> <a href="/tags/JavaScript/" style="font-size: 17.14px;">JavaScript</a> <a href="/tags/Rails/" style="font-size: 14.29px;">Rails</a> <a href="/tags/Rspec/" style="font-size: 10px;">Rspec</a> <a href="/tags/Ruby/" style="font-size: 20px;">Ruby</a> <a href="/tags/Server/" style="font-size: 10px;">Server</a> <a href="/tags/TCP-IP/" style="font-size: 10px;">TCP/IP</a> <a href="/tags/postgresql/" style="font-size: 12.86px;">postgresql</a> <a href="/tags/react/" style="font-size: 10px;">react</a> <a href="/tags/weixin/" style="font-size: 11.43px;">weixin</a> <a href="/tags/分布式/" style="font-size: 10px;">分布式</a> <a href="/tags/测试/" style="font-size: 10px;">测试</a> <a href="/tags/设计模式/" style="font-size: 15.71px;">设计模式</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/gokit-learning-one/">go-kit学习笔记(一)</a>
+          </li>
+        
+          <li>
+            <a href="/gokit-introduction/">go-kit简介</a>
+          </li>
+        
+          <li>
+            <a href="/golang-context/">golang中context包详解</a>
+          </li>
+        
+          <li>
+            <a href="/golang-handle-and-handlefunc/">Golang中的Handle和HandleFunc</a>
+          </li>
+        
+          <li>
+            <a href="/golang-http-router/">Golang中的router</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 Jack Nie<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

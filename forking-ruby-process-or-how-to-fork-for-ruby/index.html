@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>Ruby 进程fork初探 | Jack&#39;s Programming Notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Ruby, fork">
+<meta name="keywords" content="Ruby">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ruby 进程fork初探">
+<meta property="og:url" content="http://jack-nie.github.io/forking-ruby-process-or-how-to-fork-for-ruby/index.html">
+<meta property="og:site_name" content="Jack&#39;s Programming Notes">
+<meta property="og:description" content="Ruby, fork">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-11-09T09:04:30.975Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Ruby 进程fork初探">
+<meta name="twitter:description" content="Ruby, fork">
+  
+    <link rel="alternate" href="/atom.xml" title="Jack&#39;s Programming Notes" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Jack&#39;s Programming Notes</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">Feel the world!</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://jack-nie.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-forking-ruby-process-or-how-to-fork-for-ruby" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/forking-ruby-process-or-how-to-fork-for-ruby/" class="article-date">
+  <time datetime="2016-12-31T00:00:00.000Z" itemprop="datePublished">2016-12-31</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Ruby/">Ruby</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Ruby 进程fork初探
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>元旦放假期间，又捡起CSAPP看了下，主要是看异常处理这一段，感觉之前看的东西忘了不少，所以翻译一段关于Ruby的进程Fork的文章加深理解。(主要基于<a href="http://www.tweetegy.com/2012/04/forking-ruby-processes-or-how-to-fork-ruby/" target="_blank" rel="noopener">Forking Ruby Processes or How to fork Ruby</a>，但是不完全翻译，某些地方进行了扩展)</p>
+<p>Forking是一个进程复制的UNIX术语，意味这从父进程复制出一个子进程出来，他们有相同的地址空间，相同的本地变量值，相同的堆，相同的全局变量值以及相同的代码。<br>在很多情况下，他们共享内存，直到其中的一个进程对内存进行了修改，这被称作CoW（Copy On Write）。因为子进程和父进程都是独立的进程，所以他们都有自己独立的私有地址空间，他们对其中的变量所做的更改都是独立的，不会反应到另一个进程的存储器中。</p>
+<h3 id="简单例子"><a href="#简单例子" class="headerlink" title="简单例子"></a>简单例子</h3><p>我们知道了UNIX术语的含义，那么我们如何在Ruby中实现呢？如何使用Ruby来fork一个进程呢？</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">puts &quot;This is the first line before the fork (pid #&#123;Process.pid&#125;)&quot;</span><br><span class="line">puts fork</span><br><span class="line">puts &quot;This is the second line after the fork (pid #&#123;Process.pid&#125;)&quot;</span><br></pre></td></tr></table></figure>
+<p>output:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">This the first line before the fork (pid 2284)</span><br><span class="line">2285</span><br><span class="line">This is the second line after the fork (pid 2284)</span><br><span class="line"></span><br><span class="line">This is the second line after the fork (pid 2285)</span><br></pre></td></tr></table></figure>
+<p>让我们来看看发生了什么，首先第一行的输出是非常清晰的，那么第二行又是什么鬼？这是fork函数返回的PID值，当然是子进程的PID。接下来让我们来看一下接下来的两行：一行是父进程执行的结果，另一行是子进程执行的结果。</p>
+<h3 id="Blocks"><a href="#Blocks" class="headerlink" title="Blocks"></a>Blocks</h3><p>开发者想执行一个独立的进程通常的做法是传递一个代码块给fork函数，就像下面这样：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">puts &quot;You can also put forked code in a block pid: #&#123;Process.pid&#125;&quot;</span><br><span class="line">fork do</span><br><span class="line">  puts &quot;Hello from fork pid: #&#123;Process.pid&#125;&quot;</span><br><span class="line">end</span><br><span class="line">puts &quot;The parent process just skips over it: #&#123;Process.pid&#125;&quot;</span><br></pre></td></tr></table></figure>
+<p>上面的代码输出三行结果，在我的机子上的运行结果是这样的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">you can also put forked code in a block pid: 3465</span><br><span class="line">The parent process just skips over it: 3465</span><br><span class="line">Hello from fork pid: 3466</span><br></pre></td></tr></table></figure>
+<p>注意代码块内的PID和外面的PID是不一样的，因为代码块内的代码是通过fork函数派生出来的进程执行的。</p>
+<h3 id="多核CPU测试"><a href="#多核CPU测试" class="headerlink" title="多核CPU测试"></a>多核CPU测试</h3><p>让我们来快速的验证一下fork在多核环境下带来的一个主要的好处。让我们写一个ruby程序来呈现这一优势。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">def cpu_intensive_process</span><br><span class="line">  puts &quot;Pid: #&#123;Process.pid&#125;&quot;</span><br><span class="line">  x = 0</span><br><span class="line">  10000000.times do |i|</span><br><span class="line">    x = i + x</span><br><span class="line">  end</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">fork</span><br><span class="line">cpu_intensive_process</span><br></pre></td></tr></table></figure>
+<p>当上面的代码运行时，将会充分的利用两个CPU核，如果机器有多余两个CPU核心，那么只有两个CPU得到充分的利用。然后，额外的fork调用将会创建更多的进程，知道占满你的CPU核心数。</p>
+<h3 id="内存测试"><a href="#内存测试" class="headerlink" title="内存测试"></a>内存测试</h3><p>那么内存分配的情况又是怎么样的呢？很明显ruby1.9.3并没有CoW的特性，也就是会所每一个进程的内存分配将会是一样的。下面的程序能够一定程度上说明这一点。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"> hash = Hash.new #load up the memory a little</span><br><span class="line"></span><br><span class="line"> 1000000.times do |i|</span><br><span class="line">   hash[i] = &quot;foo&quot;</span><br><span class="line"> end</span><br><span class="line"></span><br><span class="line"> puts &quot;Hash contains #&#123;hash.keys.count&#125; keys&quot;</span><br><span class="line"></span><br><span class="line"> def show_memory_usage(whoami)</span><br><span class="line">  pid = Process.pid</span><br><span class="line"></span><br><span class="line">  mem = `pmap #&#123;pid&#125;`</span><br><span class="line"></span><br><span class="line">  puts &quot;Memory usage for #&#123;whoami&#125; pid: #&#123;pid&#125; is: #&#123;mem.lines.to_a.last&#125;&quot;</span><br><span class="line"></span><br><span class="line">  sleep #keep the process alive</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">puts &quot;Now lets fork this process and see what memory is allocated to the child&quot;</span><br><span class="line"></span><br><span class="line">puts &quot;Before...&quot;</span><br><span class="line"></span><br><span class="line">if fork</span><br><span class="line">  show_memory_usage(&quot;parent&quot;)</span><br><span class="line">else</span><br><span class="line"></span><br><span class="line">  puts &quot;After...&quot;</span><br><span class="line"></span><br><span class="line">  1000000.times do |i| #change the values in the child memory allocation</span><br><span class="line">    hash[i] = &quot;bar&quot;</span><br><span class="line">  end</span><br><span class="line"></span><br><span class="line">  show_memory_usage(&quot;child&quot;)</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<p>下面是这个测试的输出：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">Hash contains 1000000 keys</span><br><span class="line">Now lets fork this process and see what memory is allocated to the child</span><br><span class="line">Before…</span><br><span class="line">After…</span><br><span class="line">Memory usage for parent pid: 10291 is: total 62592K</span><br><span class="line">Memory usage for child pid: 10293 is: total 73164K</span><br></pre></td></tr></table></figure>
+<h3 id="孤儿进程"><a href="#孤儿进程" class="headerlink" title="孤儿进程"></a>孤儿进程</h3><p>最后让我们来测试一下孤儿进程并且看一下它们的表现，运行以下小程序看一下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">fork do</span><br><span class="line">  5.times do</span><br><span class="line">    sleep 1</span><br><span class="line">    puts &quot;I&apos;m an orphan!&quot;</span><br><span class="line">  end</span><br><span class="line">end</span><br><span class="line">abort &quot;Parent process died...&quot;</span><br></pre></td></tr></table></figure>
+<p>运行的结果像下面这样：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Parent process died...</span><br><span class="line">😈  : ~/work I&apos;m an orphan!</span><br><span class="line">I&apos;m an orphan!</span><br><span class="line">I&apos;m an orphan!</span><br><span class="line">I&apos;m an orphan!</span><br><span class="line">I&apos;m an orphan!</span><br></pre></td></tr></table></figure>
+<p>这里又发生了什么？父进程运行完毕所以在终端输出。但是我被5个子进程(孤儿进程)打断了，因为他们顺序的隔一段时间就执行代码！</p>
+<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><ul>
+<li><a href="http://www.tweetegy.com/2012/04/forking-ruby-processes-or-how-to-fork-ruby/" target="_blank" rel="noopener">Forking Ruby Processes or How to fork Ruby</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://jack-nie.github.io/forking-ruby-process-or-how-to-fork-for-ruby/" data-id="cjqvr5igl003mka6xb6kg80np" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Ruby/">Ruby</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/what-dose-static-mean-in-c-program/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          C语言static揭秘
+        
+      </div>
+    </a>
+  
+  
+    <a href="/go-init/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">go init()解析</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/CSS/">CSS</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/DDD/">DDD</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Git/">Git</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Go/">Go</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/HTTP/">HTTP</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/JavaScript/">JavaScript</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Learning-C/">Learning C</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Rails/">Rails</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Ruby/">Ruby</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Server/">Server</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/TCP-IP/">TCP/IP</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Test/">Test</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/best-practices/">best-practices</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/design-pattern/">design-pattern</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/postgresql/">postgresql</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/weixin/">weixin</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/分布式/">分布式</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/">C</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSS/">CSS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DDD/">DDD</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Go/">Go</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP/">HTTP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/">JavaScript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Rails/">Rails</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Rspec/">Rspec</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Ruby/">Ruby</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Server/">Server</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCP-IP/">TCP/IP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/postgresql/">postgresql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/weixin/">weixin</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式/">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/测试/">测试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/C/" style="font-size: 12.86px;">C</a> <a href="/tags/CSS/" style="font-size: 10px;">CSS</a> <a href="/tags/DDD/" style="font-size: 10px;">DDD</a> <a href="/tags/Git/" style="font-size: 11.43px;">Git</a> <a href="/tags/Go/" style="font-size: 18.57px;">Go</a> <a href="/tags/HTTP/" style="font-size: 10px;">HTTP</a> <a href="/tags/JavaScript/" style="font-size: 17.14px;">JavaScript</a> <a href="/tags/Rails/" style="font-size: 14.29px;">Rails</a> <a href="/tags/Rspec/" style="font-size: 10px;">Rspec</a> <a href="/tags/Ruby/" style="font-size: 20px;">Ruby</a> <a href="/tags/Server/" style="font-size: 10px;">Server</a> <a href="/tags/TCP-IP/" style="font-size: 10px;">TCP/IP</a> <a href="/tags/postgresql/" style="font-size: 12.86px;">postgresql</a> <a href="/tags/react/" style="font-size: 10px;">react</a> <a href="/tags/weixin/" style="font-size: 11.43px;">weixin</a> <a href="/tags/分布式/" style="font-size: 10px;">分布式</a> <a href="/tags/测试/" style="font-size: 10px;">测试</a> <a href="/tags/设计模式/" style="font-size: 15.71px;">设计模式</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/gokit-learning-one/">go-kit学习笔记(一)</a>
+          </li>
+        
+          <li>
+            <a href="/gokit-introduction/">go-kit简介</a>
+          </li>
+        
+          <li>
+            <a href="/golang-context/">golang中context包详解</a>
+          </li>
+        
+          <li>
+            <a href="/golang-handle-and-handlefunc/">Golang中的Handle和HandleFunc</a>
+          </li>
+        
+          <li>
+            <a href="/golang-http-router/">Golang中的router</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 Jack Nie<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

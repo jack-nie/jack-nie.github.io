@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title> Jenkins CI服务器搭建 | Jack&#39;s Programming Notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Jenkins CI服务器搭建">
+<meta name="keywords" content="Server">
+<meta property="og:type" content="article">
+<meta property="og:title" content=" Jenkins CI服务器搭建">
+<meta property="og:url" content="http://jack-nie.github.io/jenkenis-server-configuration/index.html">
+<meta property="og:site_name" content="Jack&#39;s Programming Notes">
+<meta property="og:description" content="Jenkins CI服务器搭建">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-11-09T09:04:23.758Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content=" Jenkins CI服务器搭建">
+<meta name="twitter:description" content="Jenkins CI服务器搭建">
+  
+    <link rel="alternate" href="/atom.xml" title="Jack&#39;s Programming Notes" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Jack&#39;s Programming Notes</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">Feel the world!</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://jack-nie.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-jenkenis-server-configuration" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/jenkenis-server-configuration/" class="article-date">
+  <time datetime="2015-08-07T16:00:00.000Z" itemprop="datePublished">2015-08-08</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Server/">Server</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+       Jenkins CI服务器搭建
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="Java环境配置"><a href="#Java环境配置" class="headerlink" title="Java环境配置"></a>Java环境配置</h3><p>首先检查服务器上安装的Java的版本,如果低于1.7,需要将旧版本的Java移除,然后安装新的版本.</p>
+<pre><code>Ruby Code:
+sudo yum remove java
+sudo yum install java-1.7.0-openjdk
+</code></pre><p>然后执行 java -version,如果你看到如下输出,则说明Java环境已经安装好了.</p>
+<pre><code>Ruby Code:
+java version &quot;1.7.0_79&quot;
+OpenJDK Runtime Environment (rhel-2.5.5.1.el6_6-x86_64 u79-b14)
+OpenJDK 64-Bit Server VM (build 24.79-b02, mixed mode)
+</code></pre><h3 id="Jenkins-安装"><a href="#Jenkins-安装" class="headerlink" title="Jenkins 安装"></a>Jenkins 安装</h3><pre><code>Ruby Code:
+sudo wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins-ci.org/redhat/jenkins.repo
+sudo rpm --import https://jenkins-ci.org/redhat/jenkins-ci.org.key (http://pkg.jenkins-ci.org/redhat/jenkins-ci.org.key)
+sudo yum install jenkins
+</code></pre><p>启动Jenkins服务</p>
+<pre><code>Ruby Code:
+chkconfig jenkins on
+sudo service jenkins start
+</code></pre><p>这个时候可以在服务器上通过执行一下命令,验证Jenkins服务器是否安装好了.</p>
+<pre><code>curl -Xget http://localhost:8080
+</code></pre><h3 id="NodeJs安装"><a href="#NodeJs安装" class="headerlink" title="NodeJs安装"></a>NodeJs安装</h3><p>Rails Asset Pipeline要求Javascript Runtime， 这里通过安装NodeJS来提供</p>
+<pre><code>Ruby Code:
+wget http://nodejs.org/dist/v0.8.18/node-v0.8.18.tar.gz
+tar xf node-v0.8.18.tar.gz
+cd node-v0.8.18
+./configure
+make
+sudo make install
+</code></pre><h3 id="Nginx代理配置"><a href="#Nginx代理配置" class="headerlink" title="Nginx代理配置"></a>Nginx代理配置</h3><p>这一步主要是为了可以通过80端口访问Jenkins.</p>
+<p>由于服务器上面已经安装好了Nginx,所以可以不用安装Nginx,直接对其进行配置即可.</p>
+<pre><code>Ruby Code:
+cd /etc/nginx/sites-available
+touch jenkins.conf
+</code></pre><p>用编辑器打开刚刚创建好的jenkins.conf文件,加入如下代码.</p>
+<pre><code>Ruby Code:
+upstream app_server {
+    server 127.0.0.1:8080 fail_timeout=0;
+}
+
+server {
+    listen 80;
+    server_name exapmle.com;
+
+    location / {
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $http_host;
+        proxy_set_header Host $host:$server_port;
+        proxy_redirect off;
+        proxy_pass http://localhost:8080;
+        proxy_redirect http://example.com:8080/ http://example.com/;
+        port_in_redirect off;
+    }
+}
+</code></pre><p>然后执行</p>
+<pre><code>Ruby Code:
+cd /etc/nginx/sites-enabled/
+ln -s ../sites-available/jenkins.conf
+</code></pre><p>加载该配置文件</p>
+<pre><code>sudo service nginx reload
+</code></pre><h3 id="手动安装Rails环境"><a href="#手动安装Rails环境" class="headerlink" title="手动安装Rails环境"></a>手动安装Rails环境</h3><p>安装Jenkins的时候，已经自动帮我们添加了jenkins用户，其Home目录位于<code>/var/lib/jenkins/</code>。但是不能登录。先修改用户属性让jenkins用户可登录，用bash作为默认shell.</p>
+<pre><code>sudo usermod -s /bin/bash jenkins
+</code></pre><p>以jenkins用户登录系统，安装rvm以及ruby 2.2.2</p>
+<pre><code>Ruby Code:
+sudo su - jenkins
+gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
+\curl -L https://get.rvm.io | bash -s stable
+rvm install 2.2.2
+gem install bundler
+</code></pre><p>如果在安装的过程中出现了<code>curl: (23) Failed writing body (0 != 16150)</code>的错误,则需要运行如下命令:</p>
+<pre><code>sudo chown -R jenkins:jenkins /usr/local/rvm
+</code></pre><p>或者查看磁盘空间,看是否已满!</p>
+<p>有些工程里用.rvmrc文件来指定rvm配置，比如使用哪一版本的ruby，在<code>/var/lib/jenkins/.rvmrc</code>加上以下这句，方便自动信任工程.rvmrc里的内容</p>
+<pre><code>export rvm_trust_rvmrcs_flag=1
+</code></pre><p>最后确保有以下类似内容<code>/var/lib/jenkins/.bashrc</code>，主要用来初始化rvm环境：</p>
+<pre><code>Ruby Code:
+PATH=$PATH:/usr/local/bin:$HOME/.rvm/bin # Add RVM to PATH for scripting
+if [[ -s &quot;$HOME/.rvm/scripts/rvm&quot; ]]; then . &quot;$HOME/.rvm/scripts/rvm&quot;; fi
+</code></pre><p>注意: 如果系统中已经安装了rvm和Ruby On Rails环境,则不需要再安装rvm.</p>
+<h3 id="Bitbucket设置"><a href="#Bitbucket设置" class="headerlink" title="Bitbucket设置"></a>Bitbucket设置</h3><p>为jenkins用户生成ssh key:</p>
+<pre><code>ssh-keygen -t rsa
+</code></pre><p>打开Bitbucket，找到你想运用Jenkins的repository，把刚刚生成的公钥（在<code>~/.ssh/id_rsa.pub</code>里）添加到相应repositroy的Deployment Keys。所谓Deployment Keys只有读取权限，没有push权限。<br>要添加Deployment Keys需要拥有该项目的管理员权限,进入项目主页,进入settings→Deployment Keys→ add keys即可看到如下表单,Label随便填,SSH key为刚刚生成的Key,填写完毕后点击Add key.<br>以jenkins用户运行一次以下命令，首次连接系统会问是否信任此host，回答yes将Bitbucket加入ssh信任host里。注意需要<em>将[username]和[repository]换成你Bitbucket上相应的用户及代码库。</em></p>
+<pre><code>git ls-remote -h git@bitbucket.org:[username]/[repository].git HEAD
+</code></pre><p>如果没有错误信息,则表明配置正确.</p>
+<h3 id="Jenkins安全设置"><a href="#Jenkins安全设置" class="headerlink" title="Jenkins安全设置"></a>Jenkins安全设置</h3><p>Jenkins刚安装完，是允许所有访问Jenkins的人进行所有操作的，这样当然不安全，不过Jenkins提供了相当全面的权限控制，稍微设置下即可。</p>
+<ul>
+<li>进入Manage Jenkins -&gt; Configure Global Security，选上Enable Security，在出现的选项中，再选上Jenkins’s own user database以及下面的Allow users to sign up和Logged-in users can do anything，保存</li>
+<li>返回Jenkins主页面，这时右上角会有sign up，点击进去注册一个新用户</li>
+<li>注册完成后再进入设置，把那个Allow users to sign up取消掉，不再让其他人注册</li>
+<li>进入这个用户的设置界面，会有API Token，点Show API Token，记下这个token，在Bitbucket的设置上会用到</li>
+</ul>
+<h3 id="Jenkins项目设置"><a href="#Jenkins项目设置" class="headerlink" title="Jenkins项目设置"></a>Jenkins项目设置</h3><p>进行这步之前,请确保已经为Jenkins安装了git插件, 插件的安装可通过Manage Jenkins → Manage Plugins 安装.</p>
+<ul>
+<li>点New job新建一个free style的。</li>
+<li>SCM那里选Git，在Repository URL里填上Bitbucket上这个工程的地址。</li>
+<li>Build Triggers那里选Trigger builds remotely，在Authentication Token填入随机字串，这个token待会在Bitbucket设置的时候会用到，记下。</li>
+</ul>
+<h3 id="Bitbucket项目设置"><a href="#Bitbucket项目设置" class="headerlink" title="Bitbucket项目设置"></a>Bitbucket项目设置</h3><ul>
+<li>进入工程的admin，选Services，在Service下拉框中选Jenkins，按以下填入：<ul>
+<li>Module name：留空</li>
+<li>Token：这就是在Jenkins的项目里，你自己填入随机字串的那个Authentication Token</li>
+<li>Project name：Jenkins上的工程名字</li>
+<li>Endpoint：http://[Jenkins User]:[API Token]@[hostname]/，如：<a href="http://admin:xxxxxxxxxxx@example.com/" target="_blank" rel="noopener">http://admin:xxxxxxxxxxx@example.com/</a></li>
+</ul>
+</li>
+</ul>
+<p>这样一来，每次你push代码到Bitbucket，它都会通知Jenkins去做你要让它帮你做的事情！<br><em>确保Authentication Token与API Token都跟你在Jenkins上的一致。</em></p>
+<p>Execute Shell在Jenkins那build下选择execute shell，在里面填入你让Jenkins帮你做的事！以下例子，是每次push代码到Bitbucket，Jenkins都会帮你在新代码下执行rspec测试.</p>
+<pre><code>Ruby Code:
+#!/bin/bash -x
+source /etc/profile.d/rvm.sh       # load rvm environment
+rvm use 2.2.0           # use ruby 2.2.0
+bundle install
+read -d &apos;&apos; database_yml &lt;&lt;&quot;EOF&quot;
+default: &amp;default
+  adapter: mysql2
+  encoding: utf8
+  pool: 5
+  username: &quot;username&quot;
+  password: &quot;password&quot;
+
+test:
+  &lt;&lt;: *default
+  database: p2p_test
+EOF
+echo &quot;$database_yml&quot; &gt; config/database.yml
+rake db:test:prepare RAILS_ENV=test
+rake spec
+</code></pre>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://jack-nie.github.io/jenkenis-server-configuration/" data-id="cjqvr5if90014ka6xl628nldw" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Server/">Server</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/change-detection-in-angular-2/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          【翻译】Angular2 变更检测
+        
+      </div>
+    </a>
+  
+  
+    <a href="/using-weixin-jssdk-upload-and-download-pictures/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">使用微信jssdk上传和下载图片</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/CSS/">CSS</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/DDD/">DDD</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Git/">Git</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Go/">Go</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/HTTP/">HTTP</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/JavaScript/">JavaScript</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Learning-C/">Learning C</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Rails/">Rails</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Ruby/">Ruby</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Server/">Server</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/TCP-IP/">TCP/IP</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Test/">Test</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/best-practices/">best-practices</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/design-pattern/">design-pattern</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/postgresql/">postgresql</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/weixin/">weixin</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/分布式/">分布式</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/">C</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSS/">CSS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DDD/">DDD</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Go/">Go</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP/">HTTP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/">JavaScript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Rails/">Rails</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Rspec/">Rspec</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Ruby/">Ruby</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Server/">Server</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCP-IP/">TCP/IP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/postgresql/">postgresql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/weixin/">weixin</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式/">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/测试/">测试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/C/" style="font-size: 12.86px;">C</a> <a href="/tags/CSS/" style="font-size: 10px;">CSS</a> <a href="/tags/DDD/" style="font-size: 10px;">DDD</a> <a href="/tags/Git/" style="font-size: 11.43px;">Git</a> <a href="/tags/Go/" style="font-size: 18.57px;">Go</a> <a href="/tags/HTTP/" style="font-size: 10px;">HTTP</a> <a href="/tags/JavaScript/" style="font-size: 17.14px;">JavaScript</a> <a href="/tags/Rails/" style="font-size: 14.29px;">Rails</a> <a href="/tags/Rspec/" style="font-size: 10px;">Rspec</a> <a href="/tags/Ruby/" style="font-size: 20px;">Ruby</a> <a href="/tags/Server/" style="font-size: 10px;">Server</a> <a href="/tags/TCP-IP/" style="font-size: 10px;">TCP/IP</a> <a href="/tags/postgresql/" style="font-size: 12.86px;">postgresql</a> <a href="/tags/react/" style="font-size: 10px;">react</a> <a href="/tags/weixin/" style="font-size: 11.43px;">weixin</a> <a href="/tags/分布式/" style="font-size: 10px;">分布式</a> <a href="/tags/测试/" style="font-size: 10px;">测试</a> <a href="/tags/设计模式/" style="font-size: 15.71px;">设计模式</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/gokit-learning-one/">go-kit学习笔记(一)</a>
+          </li>
+        
+          <li>
+            <a href="/gokit-introduction/">go-kit简介</a>
+          </li>
+        
+          <li>
+            <a href="/golang-context/">golang中context包详解</a>
+          </li>
+        
+          <li>
+            <a href="/golang-handle-and-handlefunc/">Golang中的Handle和HandleFunc</a>
+          </li>
+        
+          <li>
+            <a href="/golang-http-router/">Golang中的router</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 Jack Nie<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

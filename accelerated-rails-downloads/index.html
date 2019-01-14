@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>【翻译】利用Nginx加速Rails下载 | Jack&#39;s Programming Notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Accelerated Rails Downloads with NGINX">
+<meta name="keywords" content="nginx,rails">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【翻译】利用Nginx加速Rails下载">
+<meta property="og:url" content="http://jack-nie.github.io/accelerated-rails-downloads/index.html">
+<meta property="og:site_name" content="Jack&#39;s Programming Notes">
+<meta property="og:description" content="Accelerated Rails Downloads with NGINX">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-11-09T09:04:24.166Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="【翻译】利用Nginx加速Rails下载">
+<meta name="twitter:description" content="Accelerated Rails Downloads with NGINX">
+  
+    <link rel="alternate" href="/atom.xml" title="Jack&#39;s Programming Notes" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Jack&#39;s Programming Notes</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">Feel the world!</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://jack-nie.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-accelerated-rails-downloads" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/accelerated-rails-downloads/" class="article-date">
+  <time datetime="2015-10-23T16:00:00.000Z" itemprop="datePublished">2015-10-24</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Ruby/">Ruby</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      【翻译】利用Nginx加速Rails下载
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Rails有一个选项可以用来启用<code>X-Accel-Redirect</code>，但是这并不是全部。为了能够使其工作，还需要对Nginx进行一些配置，这稍微有点繁琐。下面说一下我是怎么做的。</p>
+<h3 id="问题：高效的传送文件"><a href="#问题：高效的传送文件" class="headerlink" title="问题：高效的传送文件"></a>问题：高效的传送文件</h3><p>扩展Rails应用全部都是有关与减少请求数，使得等待的时间越短越好。将耗费时间的请求使用异步的方式在后台运行，分发静态资源请求到CDN,使用缓存降低响应时间。</p>
+<p>但是有一类情景需要耗费比较长的时间，但是并不适合与一上的任意一种情况，那就是通过Rails应用传递大文件。你可能需要解决这个问题，因为文件需要加密(例如Rails session),或者是动态生成的。在这些情景下，你不能提前将其上传到CDN,异步传送可能会造成不好的用户体验。</p>
+<p>那么如何才能传送大文件的过程中不阻塞Rails应用呢？</p>
+<h3 id="Nginx和SEND-FILE是如何工作的？"><a href="#Nginx和SEND-FILE是如何工作的？" class="headerlink" title="Nginx和SEND_FILE是如何工作的？"></a>Nginx和<code>SEND_FILE</code>是如何工作的？</h3><p>如果你正在使用Nginx,那么解决方案就是使用<code>X-Accel-Redirect</code>,它是这样工作的。</p>
+<ol>
+<li>Rails控制器调用<code>send_file</code>方法，准备一个将要被下载的文件。对于一个生成好的文件，通常会被放在<code>&lt;rails root&gt;/tmp</code>文件夹下。</li>
+<li>Rack检测<code>X-Accel-Mapping</code>头部是否存在于请求中。如果存在，它就通过这种映射将<code>send_file</code>路径转换成Nginx能够理解的URI。</li>
+<li>Rack发送一个包含<code>X-Accel-Redirect</code>头的空响应给Nginx，这个头部告诉Nginx”请加载这个URI，并将其作为响应”。从Rails应用的角度来讲，在这一点上响应已经完成了，并且能够继续接受其他的请求。</li>
+<li>Nginx完成当前请求并处理一段时间，内部通过<code>X-Accel-Redirect</code>头部提供的URI进行重定向。</li>
+<li>Nginx查询配置文件(例如location指令)来找到URI指向的文件。假定该文件存在，它将会高效的将文件传送给客户端。</li>
+</ol>
+<p>如你所见，一个简单的<code>sned_file</code>只有在一系列的步骤都设置正确才会成功，下面是让其正确工作的步骤。</p>
+<h3 id="设置Rails"><a href="#设置Rails" class="headerlink" title="设置Rails"></a>设置Rails</h3><p>首先，Rails需要被告知使用<code>X-Accel-Redirect</code>特性。否则Rails自身将会使用一个更加基础也更加慢的方式来处理I/O流。</p>
+<p>为了启用Nginx加速，反注释掉<code>config/environments/production.rb</code>中的代码：</p>
+<pre><code>config.action_dispatch.x_sendfile_header = &quot;X-Accel-Redirect&quot; # for NGINX
+</code></pre><h3 id="设置Nginx路径来伺服文件"><a href="#设置Nginx路径来伺服文件" class="headerlink" title="设置Nginx路径来伺服文件"></a>设置Nginx路径来伺服文件</h3><p>如果不做配置，Nginx并不能伺服文件系统中的任何文件，我们需要设置<code>document root</code>和一个URI来访问到将要传送的文件。为了防止和Rails的路由产生冲突，我选择使用<code>__send_file_accel</code>作为URI。</p>
+<p><code>document root</code>需要仔细选择以让Rails应用能够轻松的访问到。我的项目使用了 Capistrano, Rails应用被部署在<code>/home/deployer/apps/my_app/releases</code>,所以很自然的root路径为：</p>
+<pre><code>code:
+# Allow NGINX to serve any file in /home/deployer/apps/my_app/releases
+# via a special internal-only location.
+location /__send_file_accel {
+    internal;
+    alias /home/deployer/apps/my_app/releases;
+}
+</code></pre><h3 id="发送X-Accel-Mapping头"><a href="#发送X-Accel-Mapping头" class="headerlink" title="发送X-Accel-Mapping头"></a>发送<code>X-Accel-Mapping</code>头</h3><p>假设我们有以下的文件将要传送：</p>
+<pre><code>/home/deployer/apps/my_app/releases/20151003173639/tmp/file.zip
+</code></pre><p>这意味者Nginx将会收到以下头部：</p>
+<pre><code>X-Accel-Redirect: /__send_file_accel/20151003173639/tmp/file.zip
+</code></pre><p>Rails(更精确地将Rack)需要直到怎么进行转换，下面是通过Nginx发送给Rails的正确头部(比如将其放在Unicorn的反向代理文件中):</p>
+<pre><code>code:
+proxy_set_header X-Sendfile-Type X-Accel-Redirect;
+proxy_set_header X-Accel-Mapping /home/deployer/apps/my_app/releases/=/__send_file_accel/;
+</code></pre><h3 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h3><p>下面是一个通过Rails控制器传送文件的小例子：</p>
+<pre><code>send_file Rails.root.join(&quot;tmp&quot;, &quot;file.zip&quot;)
+</code></pre><p>在下载的过程中，你将会在Rails的<code>production.log</code>中看到如下的内容：</p>
+<pre><code>code:
+Sent file /home/deployer/apps/nginx-test/releases/20151011032644/tmp/file.zip (0.2ms)
+Completed 200 OK in 2ms (ActiveRecord: 0.0ms)
+</code></pre><p>在响应头中，你将会看到是Rails还是Nginx在传送文件的线索。如果响应头部中包含<code>X-Request-Id</code>,这就意味这是Rails在伺服。</p>
+<pre><code>code:
+X-Request-Id: a4d62cdb-569b-4120-b1ff-e2adbf77039a
+X-Runtime: 0.005559
+</code></pre><p>如果所有的配置都正确的话，你将不会看到以上内容，也就是说Nginx在传递文件，而不是Rails。</p>
+<p>这就是所有的步骤，你现在将传递文件的责任从Rails传递给Nginx了。</p>
+<p>参考文献:</p>
+<ul>
+<li><a href="https://mattbrictson.com/accelerated-rails-downloads?utm_source=rubyweekly&amp;utm_medium=email" title="Accelerated Rails Downloads with NGINX" target="_blank" rel="noopener">Accelerated Rails Downloads with NGINX</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://jack-nie.github.io/accelerated-rails-downloads/" data-id="cjqvr5ifj001qka6xmq38mrpi" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Rails/">Rails</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/understanding-rails's-delegate-module/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          理解Rails中的delegate模块
+        
+      </div>
+    </a>
+  
+  
+    <a href="/git-merge-multi-commits/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Git合并多次提交</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/CSS/">CSS</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/DDD/">DDD</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Git/">Git</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Go/">Go</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/HTTP/">HTTP</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/JavaScript/">JavaScript</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Learning-C/">Learning C</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Rails/">Rails</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Ruby/">Ruby</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Server/">Server</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/TCP-IP/">TCP/IP</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Test/">Test</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/best-practices/">best-practices</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/design-pattern/">design-pattern</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/postgresql/">postgresql</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/weixin/">weixin</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/分布式/">分布式</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/">C</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSS/">CSS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DDD/">DDD</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Go/">Go</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP/">HTTP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/">JavaScript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Rails/">Rails</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Rspec/">Rspec</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Ruby/">Ruby</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Server/">Server</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCP-IP/">TCP/IP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/postgresql/">postgresql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/weixin/">weixin</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式/">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/测试/">测试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/C/" style="font-size: 12.86px;">C</a> <a href="/tags/CSS/" style="font-size: 10px;">CSS</a> <a href="/tags/DDD/" style="font-size: 10px;">DDD</a> <a href="/tags/Git/" style="font-size: 11.43px;">Git</a> <a href="/tags/Go/" style="font-size: 18.57px;">Go</a> <a href="/tags/HTTP/" style="font-size: 10px;">HTTP</a> <a href="/tags/JavaScript/" style="font-size: 17.14px;">JavaScript</a> <a href="/tags/Rails/" style="font-size: 14.29px;">Rails</a> <a href="/tags/Rspec/" style="font-size: 10px;">Rspec</a> <a href="/tags/Ruby/" style="font-size: 20px;">Ruby</a> <a href="/tags/Server/" style="font-size: 10px;">Server</a> <a href="/tags/TCP-IP/" style="font-size: 10px;">TCP/IP</a> <a href="/tags/postgresql/" style="font-size: 12.86px;">postgresql</a> <a href="/tags/react/" style="font-size: 10px;">react</a> <a href="/tags/weixin/" style="font-size: 11.43px;">weixin</a> <a href="/tags/分布式/" style="font-size: 10px;">分布式</a> <a href="/tags/测试/" style="font-size: 10px;">测试</a> <a href="/tags/设计模式/" style="font-size: 15.71px;">设计模式</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/gokit-learning-one/">go-kit学习笔记(一)</a>
+          </li>
+        
+          <li>
+            <a href="/gokit-introduction/">go-kit简介</a>
+          </li>
+        
+          <li>
+            <a href="/golang-context/">golang中context包详解</a>
+          </li>
+        
+          <li>
+            <a href="/golang-handle-and-handlefunc/">Golang中的Handle和HandleFunc</a>
+          </li>
+        
+          <li>
+            <a href="/golang-http-router/">Golang中的router</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 Jack Nie<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>
