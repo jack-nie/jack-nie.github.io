@@ -66,9 +66,9 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-understanding-javascript&#39;s-variable-scope-and-hoisting" class="article article-type-post" itemscope="" itemprop="blogPost">
+    <article id="post-understanding-javascript&#39;s-closures" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
-    <a href="/understanding-javascript's-variable-scope-and-hoisting/" class="article-date">
+    <a href="/understanding-javascript's-closures/" class="article-date">
   <time datetime="2015-11-06T16:00:00.000Z" itemprop="datePublished">2015-11-07</time>
 </a>
     
@@ -84,7 +84,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/understanding-javascript's-variable-scope-and-hoisting/">理解JavaScript中的变量作用域及声明提前</a>
+      <a class="article-title" href="/understanding-javascript's-closures/">理解JavaScript中的闭包</a>
     </h1>
   
 
@@ -92,29 +92,64 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>   在编程语言中，作用域控制着变量及参数的可见性与生命周期,能够减少名称冲突以及提供必要的自动内存管理。如果想要更好的理解及运用JavaScript,那么理解其作用域就显得很有必要，本文将深入探讨这一主题。<br>   变量的作用域定义了在该变量的上下文中对于该变量的可见性,JavaScript中的变量有全局变量和局部变量之分。</p>
-<h3 id="局部变量"><a href="#局部变量" class="headerlink" title="局部变量"></a>局部变量</h3><p>   大多数语言都有块级作用域，在一个代码块中在所定义的代码块之外是不可见的，在代码块中定义的变量在代码块执行结束之后就会被释放掉。但是实际上JavaScript并不支持块级作用域，这常常会造成混淆。对于JavaScript来说，它拥有函数级的作用域，函数内部的变量只在其内部及内部定义的函数可见。<br>   JavaScript Code:<br>   var greet = “Hello world!”;<br>   function sayHi() {<br>     var greet = “Hello inner!”;<br>     console.log(greet);//“Hello inner!”<br>   }</p>
-<p>   console.log(greet);//“Hello world!”</p>
-<h3 id="JavaScript没有块级作用域"><a href="#JavaScript没有块级作用域" class="headerlink" title="#JavaScript没有块级作用域"></a>#JavaScript没有块级作用域</h3><p>  让我们来看下面的一个例子：</p>
-<p>   JavaScript Code:<br>     var greet = “Hello world!”<br>     if (greet) {<br>       greet = “hello inner!”<br>       console.log(greet);//“Hello inner”<br>     }<br>     console.log(greet)://“Hello inner”<br>   我们可以看到代码块外部定义的变量的值已经被改变。</p>
-<h3 id="全局变量"><a href="#全局变量" class="headerlink" title="#全局变量"></a>#全局变量</h3><p>  所有在函数外部定义的变量都是全局变量，对整个应用可见，如果在函数体内定义变量，但是没有使用<code>var</code>关键字，那么它也将成为全局变量。</p>
-<p>   JavaScript Code:<br>     var greetOuter = “Hello world!”;<br>     greetAnother = “Hello another!”<br>     function sayHi() {<br>       greet = “Hello inner!”<br>       console.log(greetOuter);//“Hello world!”<br>       console.log(greetAnother);//“Hello another!”<br>       console.log(greet);//“Hello inner!”<br>     }<br>     console.log(greet);//“Hello inner!”</p>
-<h3 id="setTimeout中的变量实在全局作用域中执行的"><a href="#setTimeout中的变量实在全局作用域中执行的" class="headerlink" title="#setTimeout中的变量实在全局作用域中执行的"></a>#<code>setTimeout</code>中的变量实在全局作用域中执行的</h3><p>   需要注意的是<code>setTimeout</code>中的所有函数都是在全局作用域中执行的。</p>
-<p>   JavaScript Code:<br>   // setTimeout中的<code>this</code>对象指向全局变量<code>window</code><br>   var highValue = 200;<br>   var constantVal = 2;<br>     var myObj = {<br>     highValue: 20,<br>     constantVal: 5,<br>     calculateIt: function () {<br>       setTimeout (function  () {<br>         console.log(this.constantVal * this.highValue);<br>       }, 2000);<br>     }<br>   }<br>   myObj.calculateIt(); // 400</p>
-<h3 id="声明提前"><a href="#声明提前" class="headerlink" title="声明提前"></a>声明提前</h3><p>  JavaScript的函数作用域是指在函数体内声明的所有变量在函数体内始终可见，也就是说，在函数体内变量在声明之前已经可以使用，JavaScript的这个特性被称为声明提前。JavaScript中的所有变量声明都被提升至函数体的顶部，但是不包括赋值。声明提前的这一步操作是在JavaScript引擎预编译时进行的，是在代码开始执行之前。</p>
+        <p>   通俗的讲闭包就是在函数内部定义函数，内部的函数可以访问其外部函数的作用域。函数的变量可以被隐藏与作用域链之内，看起来像是变量被函数包裹了起来，因此被称作闭包。<br>   从技术的角度讲，所有的JavaScript函数都是闭包，它们都是对象，它们都关联到作用域链。<br>   理解闭包，需要首先了解JavaScript的词法作用域规则，函数的执行依赖变量作用域，这个作用域是在函数定义时绑定的，而不是在函数调用时绑定的。JavaScript函数对象的内部状态不仅包含函数的代码逻辑，还包含了当前的作用域链。<br>   我们来看一下下面的在这个例子：</p>
 <pre><code>JavaScript Code:
-var greet = &quot;Hello world!&quot;;
-function sayHi() {
-  console.log(greet);//&quot;undefined&quot;
-  var greet = &quot;Hello inner&quot;;
-  console.log(greet);//&quot;Hello inner&quot;
+  var scope = &quot;global scope&quot;
+  function checkScope() {
+    var scope = &quot;local scope&quot;;
+    function f() {return scope;}
+    return f;
+  }
+  checkScope()();
+</code></pre><p>运行代码可以发现,输出值为”local scope”,这意味着闭包可以访问外部函数的变量，即使外部函数已经执行完毕。</p>
+<p>闭包存储的是对外部变量的引用，而不是真实的值。当闭包被调用之前就改变了外部函数的变量的值的时候，情况会变得很有趣。通过这一特性，我们可以在JavaScript实现私有变量。</p>
+<pre><code>JavaScript Code:
+function car() {
+  var status = &quot;driving&quot;;
+  return {
+    getStatus: function() {
+      return status;
+    },
+
+    setStatus: function(newStatus) {
+      status = newStatus;
+    }
+  }
 }
-</code></pre><p>   由于声明提前的存在，<code>greet</code>的声明被提升到了函数体的顶部，在函数体内的局部变量拥有更高的优先级，因此覆盖掉了同名的全局变量。声明提前只是提升了变量的声明，但是赋值操作并没有提前，还停留在原来的位置，所以函数体内的第一行语句输出为<code>undefined</code>。</p>
-<p>   另外，需要指出的一点是，函数声明会比变量声明拥有更高的优先级，在提升的过程中会覆盖掉同名的变量声明，但是函数表达式则没有这一特性。</p>
-<p>   由于声明提前的存在以及JavaScript没有块级作用域，所以推荐的做法是将变量的声明放在函数体的顶部，可以真实的反应变量的作用域。</p>
+
+var audi = car();
+audi.getStatus();
+audi.setStatus(&quot;stop&quot;);
+audi.getStatus();
+</code></pre><p>通过分析可以发现，内部函数访问的外部函数的实际变量，而不是拷贝。为了深刻的理解这一特性，我们来看一下下面的例子：</p>
+<pre><code>JavaScript Code:
+var handlers = function(nodes) {
+  var i;
+  for (i = 0; i &lt; nodes.length; i += 1) {
+    nodes[i].onClick = function(e) {
+      console.log(i);
+    };
+  }
+};
+</code></pre><p>这段函数的本意是当用户点击某一节点的时候，打印出该节点的序号，但是事实是每次都返回节点的数目的值。这是因为事件处理器绑定了变量<code>i</code>本身，而不是在函数构造时的<code>i</code>的值。</p>
+<p>修复这段代码的方式是循环外部构造一个函数，然后在循环体内调用它。</p>
+<pre><code>JavaScript Code:
+var handlers = function(nodes) {
+  var helper = function(i) {
+    return function(e) {
+      console.log(i);
+    };
+  };
+
+  var i;
+  for (i = 0, i &lt; nodes.length, i += 1) {
+    nodes[i].onClick = helper(i);
+  }
+};
+</code></pre><p>这样，我们就能得到正确的结果了，当然还有一种改进的方式就是在循环体内构造一个立即调用的函数。<br>但是在循环中构造函数会带来不必要的计算，还会引起混淆，所以不建议这么做。</p>
 <p>参考文献:</p>
 <ul>
-<li><a href="http://javascriptissexy.com/javascript-variable-scope-and-hoisting-explained/" title="JavaScript Variable Scope and Hoisting Explained" target="_blank" rel="noopener">JavaScript Variable Scope and Hoisting Explained</a></li>
+<li><a href="http://javascriptissexy.com/understand-javascript-closures-with-ease/" title="Understand JavaScript Closures With Ease" target="_blank" rel="noopener">Understand JavaScript Closures With Ease</a></li>
 <li><a href="http://www.amazon.cn/O-Reilly%25252525252525252525E7%25252525252525252525B2%25252525252525252525BE%25252525252525252525E5%2525252525252525252593%2525252525252525252581%25252525252525252525E5%252525252525252525259B%25252525252525252525BE%25252525252525252525E4%25252525252525252525B9%25252525252525252525A6%25252525252525252525E7%25252525252525252525B3%25252525252525252525BB%25252525252525252525E5%2525252525252525252588%2525252525252525252597-JavaScript%25252525252525252525E6%252525252525252525259D%2525252525252525252583%25252525252525252525E5%25252525252525252525A8%2525252525252525252581%25252525252525252525E6%252525252525252525258C%2525252525252525252587%25252525252525252525E5%252525252525252525258D%2525252525252525252597-%25252525252525252525E5%25252525252525252525BC%2525252525252525252597%25252525252525252525E5%2525252525252525252585%25252525252525252525B0%25252525252525252525E7%25252525252525252525BA%25252525252525252525B3%25252525252525252525E6%25252525252525252525A0%25252525252525252525B9/dp/B007VISQ1Y?SubscriptionId=AKIAJMGEVRIO53UGJCYQ&amp;tag=16-28-282__-23&amp;linkCode=sp1&amp;camp=2025&amp;creative=165953&amp;creativeASIN=B007VISQ1Y" title="JavaScript权威指南(第6版)" target="_blank" rel="noopener">JavaScript权威指南</a></li>
 <li><a href="http://www.amazon.cn/JavaScript%2525252525252525E8%2525252525252525AF%2525252525252525AD%2525252525252525E8%2525252525252525A8%252525252525252580%2525252525252525E7%2525252525252525B2%2525252525252525BE%2525252525252525E7%2525252525252525B2%2525252525252525B9-%2525252525252525E9%252525252525252581%252525252525252593%2525252525252525E6%2525252525252525A0%2525252525252525BC%2525252525252525E6%25252525252525258B%252525252525252589%2525252525252525E6%252525252525252596%2525252525252525AF%2525252525252525E2%252525252525252580%2525252525252525A2%2525252525252525E5%252525252525252585%25252525252525258B%2525252525252525E7%2525252525252525BD%252525252525252597%2525252525252525E5%252525252525252585%25252525252525258B%2525252525252525E7%2525252525252525A6%25252525252525258F%2525252525252525E5%2525252525252525BE%2525252525252525B7/dp/B0097CON2S?SubscriptionId=AKIAJMGEVRIO53UGJCYQ&amp;tag=16-28-282__-23&amp;linkCode=sp1&amp;camp=2025&amp;creative=165953&amp;creativeASIN=B0097CON2S" title="JavaScript语言精粹(修订版)" target="_blank" rel="noopener">JavaScript语言精粹</a></li>
 </ul>
@@ -122,7 +157,9 @@ function sayHi() {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://jack-nie.github.io/understanding-javascript's-variable-scope-and-hoisting/" data-id="cjqvr5ifu002aka6xn2csjemp" class="article-share-link">Share</a>
+      <a data-url="http://jack-nie.github.io/understanding-javascript's-closures/" data-id="cjqvrwisp0024ud6x80k4iq7x" class="article-share-link">Share</a>
+      
+        <a href="http://jack-nie.github.io/understanding-javascript's-closures/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JavaScript/">JavaScript</a></li></ul>
@@ -231,7 +268,9 @@ $(&quot;button&quot;).click(function(event) {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://jack-nie.github.io/understanding-javascript's-this-key-words/" data-id="cjqvr5ifs0025ka6xm98e07fl" class="article-share-link">Share</a>
+      <a data-url="http://jack-nie.github.io/understanding-javascript's-this-key-words/" data-id="cjqvrwiss002cud6xjhkzoqhk" class="article-share-link">Share</a>
+      
+        <a href="http://jack-nie.github.io/understanding-javascript's-this-key-words/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JavaScript/">JavaScript</a></li></ul>
@@ -243,9 +282,9 @@ $(&quot;button&quot;).click(function(event) {
 
 
   
-    <article id="post-understanding-javascript&#39;s-closures" class="article article-type-post" itemscope="" itemprop="blogPost">
+    <article id="post-understanding-javascript&#39;s-variable-scope-and-hoisting" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
-    <a href="/understanding-javascript's-closures/" class="article-date">
+    <a href="/understanding-javascript's-variable-scope-and-hoisting/" class="article-date">
   <time datetime="2015-11-06T16:00:00.000Z" itemprop="datePublished">2015-11-07</time>
 </a>
     
@@ -261,7 +300,7 @@ $(&quot;button&quot;).click(function(event) {
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/understanding-javascript's-closures/">理解JavaScript中的闭包</a>
+      <a class="article-title" href="/understanding-javascript's-variable-scope-and-hoisting/">理解JavaScript中的变量作用域及声明提前</a>
     </h1>
   
 
@@ -269,64 +308,29 @@ $(&quot;button&quot;).click(function(event) {
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>   通俗的讲闭包就是在函数内部定义函数，内部的函数可以访问其外部函数的作用域。函数的变量可以被隐藏与作用域链之内，看起来像是变量被函数包裹了起来，因此被称作闭包。<br>   从技术的角度讲，所有的JavaScript函数都是闭包，它们都是对象，它们都关联到作用域链。<br>   理解闭包，需要首先了解JavaScript的词法作用域规则，函数的执行依赖变量作用域，这个作用域是在函数定义时绑定的，而不是在函数调用时绑定的。JavaScript函数对象的内部状态不仅包含函数的代码逻辑，还包含了当前的作用域链。<br>   我们来看一下下面的在这个例子：</p>
+        <p>   在编程语言中，作用域控制着变量及参数的可见性与生命周期,能够减少名称冲突以及提供必要的自动内存管理。如果想要更好的理解及运用JavaScript,那么理解其作用域就显得很有必要，本文将深入探讨这一主题。<br>   变量的作用域定义了在该变量的上下文中对于该变量的可见性,JavaScript中的变量有全局变量和局部变量之分。</p>
+<h3 id="局部变量"><a href="#局部变量" class="headerlink" title="局部变量"></a>局部变量</h3><p>   大多数语言都有块级作用域，在一个代码块中在所定义的代码块之外是不可见的，在代码块中定义的变量在代码块执行结束之后就会被释放掉。但是实际上JavaScript并不支持块级作用域，这常常会造成混淆。对于JavaScript来说，它拥有函数级的作用域，函数内部的变量只在其内部及内部定义的函数可见。<br>   JavaScript Code:<br>   var greet = “Hello world!”;<br>   function sayHi() {<br>     var greet = “Hello inner!”;<br>     console.log(greet);//“Hello inner!”<br>   }</p>
+<p>   console.log(greet);//“Hello world!”</p>
+<h3 id="JavaScript没有块级作用域"><a href="#JavaScript没有块级作用域" class="headerlink" title="#JavaScript没有块级作用域"></a>#JavaScript没有块级作用域</h3><p>  让我们来看下面的一个例子：</p>
+<p>   JavaScript Code:<br>     var greet = “Hello world!”<br>     if (greet) {<br>       greet = “hello inner!”<br>       console.log(greet);//“Hello inner”<br>     }<br>     console.log(greet)://“Hello inner”<br>   我们可以看到代码块外部定义的变量的值已经被改变。</p>
+<h3 id="全局变量"><a href="#全局变量" class="headerlink" title="#全局变量"></a>#全局变量</h3><p>  所有在函数外部定义的变量都是全局变量，对整个应用可见，如果在函数体内定义变量，但是没有使用<code>var</code>关键字，那么它也将成为全局变量。</p>
+<p>   JavaScript Code:<br>     var greetOuter = “Hello world!”;<br>     greetAnother = “Hello another!”<br>     function sayHi() {<br>       greet = “Hello inner!”<br>       console.log(greetOuter);//“Hello world!”<br>       console.log(greetAnother);//“Hello another!”<br>       console.log(greet);//“Hello inner!”<br>     }<br>     console.log(greet);//“Hello inner!”</p>
+<h3 id="setTimeout中的变量实在全局作用域中执行的"><a href="#setTimeout中的变量实在全局作用域中执行的" class="headerlink" title="#setTimeout中的变量实在全局作用域中执行的"></a>#<code>setTimeout</code>中的变量实在全局作用域中执行的</h3><p>   需要注意的是<code>setTimeout</code>中的所有函数都是在全局作用域中执行的。</p>
+<p>   JavaScript Code:<br>   // setTimeout中的<code>this</code>对象指向全局变量<code>window</code><br>   var highValue = 200;<br>   var constantVal = 2;<br>     var myObj = {<br>     highValue: 20,<br>     constantVal: 5,<br>     calculateIt: function () {<br>       setTimeout (function  () {<br>         console.log(this.constantVal * this.highValue);<br>       }, 2000);<br>     }<br>   }<br>   myObj.calculateIt(); // 400</p>
+<h3 id="声明提前"><a href="#声明提前" class="headerlink" title="声明提前"></a>声明提前</h3><p>  JavaScript的函数作用域是指在函数体内声明的所有变量在函数体内始终可见，也就是说，在函数体内变量在声明之前已经可以使用，JavaScript的这个特性被称为声明提前。JavaScript中的所有变量声明都被提升至函数体的顶部，但是不包括赋值。声明提前的这一步操作是在JavaScript引擎预编译时进行的，是在代码开始执行之前。</p>
 <pre><code>JavaScript Code:
-  var scope = &quot;global scope&quot;
-  function checkScope() {
-    var scope = &quot;local scope&quot;;
-    function f() {return scope;}
-    return f;
-  }
-  checkScope()();
-</code></pre><p>运行代码可以发现,输出值为”local scope”,这意味着闭包可以访问外部函数的变量，即使外部函数已经执行完毕。</p>
-<p>闭包存储的是对外部变量的引用，而不是真实的值。当闭包被调用之前就改变了外部函数的变量的值的时候，情况会变得很有趣。通过这一特性，我们可以在JavaScript实现私有变量。</p>
-<pre><code>JavaScript Code:
-function car() {
-  var status = &quot;driving&quot;;
-  return {
-    getStatus: function() {
-      return status;
-    },
-
-    setStatus: function(newStatus) {
-      status = newStatus;
-    }
-  }
+var greet = &quot;Hello world!&quot;;
+function sayHi() {
+  console.log(greet);//&quot;undefined&quot;
+  var greet = &quot;Hello inner&quot;;
+  console.log(greet);//&quot;Hello inner&quot;
 }
-
-var audi = car();
-audi.getStatus();
-audi.setStatus(&quot;stop&quot;);
-audi.getStatus();
-</code></pre><p>通过分析可以发现，内部函数访问的外部函数的实际变量，而不是拷贝。为了深刻的理解这一特性，我们来看一下下面的例子：</p>
-<pre><code>JavaScript Code:
-var handlers = function(nodes) {
-  var i;
-  for (i = 0; i &lt; nodes.length; i += 1) {
-    nodes[i].onClick = function(e) {
-      console.log(i);
-    };
-  }
-};
-</code></pre><p>这段函数的本意是当用户点击某一节点的时候，打印出该节点的序号，但是事实是每次都返回节点的数目的值。这是因为事件处理器绑定了变量<code>i</code>本身，而不是在函数构造时的<code>i</code>的值。</p>
-<p>修复这段代码的方式是循环外部构造一个函数，然后在循环体内调用它。</p>
-<pre><code>JavaScript Code:
-var handlers = function(nodes) {
-  var helper = function(i) {
-    return function(e) {
-      console.log(i);
-    };
-  };
-
-  var i;
-  for (i = 0, i &lt; nodes.length, i += 1) {
-    nodes[i].onClick = helper(i);
-  }
-};
-</code></pre><p>这样，我们就能得到正确的结果了，当然还有一种改进的方式就是在循环体内构造一个立即调用的函数。<br>但是在循环中构造函数会带来不必要的计算，还会引起混淆，所以不建议这么做。</p>
+</code></pre><p>   由于声明提前的存在，<code>greet</code>的声明被提升到了函数体的顶部，在函数体内的局部变量拥有更高的优先级，因此覆盖掉了同名的全局变量。声明提前只是提升了变量的声明，但是赋值操作并没有提前，还停留在原来的位置，所以函数体内的第一行语句输出为<code>undefined</code>。</p>
+<p>   另外，需要指出的一点是，函数声明会比变量声明拥有更高的优先级，在提升的过程中会覆盖掉同名的变量声明，但是函数表达式则没有这一特性。</p>
+<p>   由于声明提前的存在以及JavaScript没有块级作用域，所以推荐的做法是将变量的声明放在函数体的顶部，可以真实的反应变量的作用域。</p>
 <p>参考文献:</p>
 <ul>
-<li><a href="http://javascriptissexy.com/understand-javascript-closures-with-ease/" title="Understand JavaScript Closures With Ease" target="_blank" rel="noopener">Understand JavaScript Closures With Ease</a></li>
+<li><a href="http://javascriptissexy.com/javascript-variable-scope-and-hoisting-explained/" title="JavaScript Variable Scope and Hoisting Explained" target="_blank" rel="noopener">JavaScript Variable Scope and Hoisting Explained</a></li>
 <li><a href="http://www.amazon.cn/O-Reilly%25252525252525252525E7%25252525252525252525B2%25252525252525252525BE%25252525252525252525E5%2525252525252525252593%2525252525252525252581%25252525252525252525E5%252525252525252525259B%25252525252525252525BE%25252525252525252525E4%25252525252525252525B9%25252525252525252525A6%25252525252525252525E7%25252525252525252525B3%25252525252525252525BB%25252525252525252525E5%2525252525252525252588%2525252525252525252597-JavaScript%25252525252525252525E6%252525252525252525259D%2525252525252525252583%25252525252525252525E5%25252525252525252525A8%2525252525252525252581%25252525252525252525E6%252525252525252525258C%2525252525252525252587%25252525252525252525E5%252525252525252525258D%2525252525252525252597-%25252525252525252525E5%25252525252525252525BC%2525252525252525252597%25252525252525252525E5%2525252525252525252585%25252525252525252525B0%25252525252525252525E7%25252525252525252525BA%25252525252525252525B3%25252525252525252525E6%25252525252525252525A0%25252525252525252525B9/dp/B007VISQ1Y?SubscriptionId=AKIAJMGEVRIO53UGJCYQ&amp;tag=16-28-282__-23&amp;linkCode=sp1&amp;camp=2025&amp;creative=165953&amp;creativeASIN=B007VISQ1Y" title="JavaScript权威指南(第6版)" target="_blank" rel="noopener">JavaScript权威指南</a></li>
 <li><a href="http://www.amazon.cn/JavaScript%2525252525252525E8%2525252525252525AF%2525252525252525AD%2525252525252525E8%2525252525252525A8%252525252525252580%2525252525252525E7%2525252525252525B2%2525252525252525BE%2525252525252525E7%2525252525252525B2%2525252525252525B9-%2525252525252525E9%252525252525252581%252525252525252593%2525252525252525E6%2525252525252525A0%2525252525252525BC%2525252525252525E6%25252525252525258B%252525252525252589%2525252525252525E6%252525252525252596%2525252525252525AF%2525252525252525E2%252525252525252580%2525252525252525A2%2525252525252525E5%252525252525252585%25252525252525258B%2525252525252525E7%2525252525252525BD%252525252525252597%2525252525252525E5%252525252525252585%25252525252525258B%2525252525252525E7%2525252525252525A6%25252525252525258F%2525252525252525E5%2525252525252525BE%2525252525252525B7/dp/B0097CON2S?SubscriptionId=AKIAJMGEVRIO53UGJCYQ&amp;tag=16-28-282__-23&amp;linkCode=sp1&amp;camp=2025&amp;creative=165953&amp;creativeASIN=B0097CON2S" title="JavaScript语言精粹(修订版)" target="_blank" rel="noopener">JavaScript语言精粹</a></li>
 </ul>
@@ -334,7 +338,9 @@ var handlers = function(nodes) {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://jack-nie.github.io/understanding-javascript's-closures/" data-id="cjqvr5ifr0022ka6x4lxkde80" class="article-share-link">Share</a>
+      <a data-url="http://jack-nie.github.io/understanding-javascript's-variable-scope-and-hoisting/" data-id="cjqvrwisx002kud6xadtl107e" class="article-share-link">Share</a>
+      
+        <a href="http://jack-nie.github.io/understanding-javascript's-variable-scope-and-hoisting/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JavaScript/">JavaScript</a></li></ul>
@@ -427,10 +433,99 @@ end
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://jack-nie.github.io/understanding-rails's-delegate-module/" data-id="cjqvr5ifn001yka6xlf8c9mpu" class="article-share-link">Share</a>
+      <a data-url="http://jack-nie.github.io/understanding-rails's-delegate-module/" data-id="cjqvrwisq0028ud6xxfyktnf8" class="article-share-link">Share</a>
+      
+        <a href="http://jack-nie.github.io/understanding-rails's-delegate-module/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Rails/">Rails</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Ruby/">Ruby</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-git-merge-multi-commits" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/git-merge-multi-commits/" class="article-date">
+  <time datetime="2015-10-23T16:00:00.000Z" itemprop="datePublished">2015-10-24</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Git/">Git</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/git-merge-multi-commits/">Git合并多次提交</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在工作中，有时候会遇到多次针对一个问题的多次提交，因而会产生很多的提交记录，这让人看起来很不爽。<br>那么怎么样才能将多次的提交合并呢？答案是通过rebase命令。</p>
+<p>当你执行了<code>git rebase --interactive HEAD~2 master</code>命令后，将会出现如下的交互式画面：</p>
+<pre><code>Code:
+pick e30746d modify ruby case statement
+pick d870d17 fix display problems
+
+# Rebase 15e28f4..d870d17 onto 15e28f4
+#
+# Commands:
+#  p, pick = use commit
+#  r, reword = use commit, but edit the commit message
+#  e, edit = use commit, but stop for amending
+#  s, squash = use commit, but meld into previous commit
+#  f, fixup = like &quot;squash&quot;, but discard this commit&apos;s log message
+#  x, exec = run command (the rest of the line) using shell
+</code></pre><p>注释掉的部分是git给出的操作提示，这里选择<code>squash</code>选项来替换掉<code>pick</code>，需要注意的是，最上方的那一行<code>pick</code><br>需要保留，否则会出现<code>Cannot &#39;squash&#39; without a previous commit</code>的错误提示。如果你不小心替换掉了，那么<br>需要使用<code>git rebase --abort</code>再来一遍。</p>
+<p>退出编辑器之后，将会进入到下一个界面，如下所示：</p>
+<pre><code>Code:
+# This is a combination of 2 commits.
+# The first commit&apos;s message is:
+
+modify ruby case statement
+
+# This is the 2nd commit message:
+
+fix display problems
+</code></pre><p>没有被注释掉的部分是前两次的提交记录，可以选择保留，也可以选择删掉重写，然后退出就可以了。<br>之后就可以通过<code>git log --oneline --decorate</code>查看提交记录，发现前几次的提交已经合并掉了。</p>
+<p>另外一种合并的方式：</p>
+<pre><code>code:
+$ git reset HEAD~5
+$ git add .
+$ git commit -am &quot;Here&apos;s the bug fix that closes #28&quot;
+$ git push --force
+</code></pre><p>如果你想修复之前的提交，又不想有多次记录，那么可以在修复的这次提交中使用：</p>
+<pre><code>Code:
+git commit --fixup bbb2222
+git rebase --interactive --autosquash bbb1111
+#bbb1111为你需要修复的提交的前一次提交
+</code></pre><p>参考文献:</p>
+<ul>
+<li><a href="https://robots.thoughtbot.com/autosquashing-git-commits" title="Auto-squashing Git Commits" target="_blank" rel="noopener">Auto-squashing Git Commits</a></li>
+<li><a href="http://stackoverflow.com/questions/2563632/how-can-i-merge-two-commits-into-one" title="How can I merge two commits into one?" target="_blank" rel="noopener">How can I merge two commits into one?</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://jack-nie.github.io/git-merge-multi-commits/" data-id="cjqvrwism0020ud6x2dqr76cf" class="article-share-link">Share</a>
+      
+        <a href="http://jack-nie.github.io/git-merge-multi-commits/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Git/">Git</a></li></ul>
 
     </footer>
   </div>
@@ -518,95 +613,12 @@ X-Runtime: 0.005559
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://jack-nie.github.io/accelerated-rails-downloads/" data-id="cjqvr5ifj001qka6xmq38mrpi" class="article-share-link">Share</a>
+      <a data-url="http://jack-nie.github.io/accelerated-rails-downloads/" data-id="cjqvrwisi001wud6xiq45tijr" class="article-share-link">Share</a>
+      
+        <a href="http://jack-nie.github.io/accelerated-rails-downloads/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Rails/">Rails</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-git-merge-multi-commits" class="article article-type-post" itemscope="" itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/git-merge-multi-commits/" class="article-date">
-  <time datetime="2015-10-23T16:00:00.000Z" itemprop="datePublished">2015-10-24</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/Git/">Git</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/git-merge-multi-commits/">Git合并多次提交</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>在工作中，有时候会遇到多次针对一个问题的多次提交，因而会产生很多的提交记录，这让人看起来很不爽。<br>那么怎么样才能将多次的提交合并呢？答案是通过rebase命令。</p>
-<p>当你执行了<code>git rebase --interactive HEAD~2 master</code>命令后，将会出现如下的交互式画面：</p>
-<pre><code>Code:
-pick e30746d modify ruby case statement
-pick d870d17 fix display problems
-
-# Rebase 15e28f4..d870d17 onto 15e28f4
-#
-# Commands:
-#  p, pick = use commit
-#  r, reword = use commit, but edit the commit message
-#  e, edit = use commit, but stop for amending
-#  s, squash = use commit, but meld into previous commit
-#  f, fixup = like &quot;squash&quot;, but discard this commit&apos;s log message
-#  x, exec = run command (the rest of the line) using shell
-</code></pre><p>注释掉的部分是git给出的操作提示，这里选择<code>squash</code>选项来替换掉<code>pick</code>，需要注意的是，最上方的那一行<code>pick</code><br>需要保留，否则会出现<code>Cannot &#39;squash&#39; without a previous commit</code>的错误提示。如果你不小心替换掉了，那么<br>需要使用<code>git rebase --abort</code>再来一遍。</p>
-<p>退出编辑器之后，将会进入到下一个界面，如下所示：</p>
-<pre><code>Code:
-# This is a combination of 2 commits.
-# The first commit&apos;s message is:
-
-modify ruby case statement
-
-# This is the 2nd commit message:
-
-fix display problems
-</code></pre><p>没有被注释掉的部分是前两次的提交记录，可以选择保留，也可以选择删掉重写，然后退出就可以了。<br>之后就可以通过<code>git log --oneline --decorate</code>查看提交记录，发现前几次的提交已经合并掉了。</p>
-<p>另外一种合并的方式：</p>
-<pre><code>code:
-$ git reset HEAD~5
-$ git add .
-$ git commit -am &quot;Here&apos;s the bug fix that closes #28&quot;
-$ git push --force
-</code></pre><p>如果你想修复之前的提交，又不想有多次记录，那么可以在修复的这次提交中使用：</p>
-<pre><code>Code:
-git commit --fixup bbb2222
-git rebase --interactive --autosquash bbb1111
-#bbb1111为你需要修复的提交的前一次提交
-</code></pre><p>参考文献:</p>
-<ul>
-<li><a href="https://robots.thoughtbot.com/autosquashing-git-commits" title="Auto-squashing Git Commits" target="_blank" rel="noopener">Auto-squashing Git Commits</a></li>
-<li><a href="http://stackoverflow.com/questions/2563632/how-can-i-merge-two-commits-into-one" title="How can I merge two commits into one?" target="_blank" rel="noopener">How can I merge two commits into one?</a></li>
-</ul>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://jack-nie.github.io/git-merge-multi-commits/" data-id="cjqvr5ifm001uka6xk3nnm72a" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Git/">Git</a></li></ul>
 
     </footer>
   </div>
@@ -690,7 +702,9 @@ end
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://jack-nie.github.io/factory-method-pattern/" data-id="cjqvr5ifi001mka6xptmxjjlv" class="article-share-link">Share</a>
+      <a data-url="http://jack-nie.github.io/factory-method-pattern/" data-id="cjqvrwisg001sud6xflhe4dmv" class="article-share-link">Share</a>
+      
+        <a href="http://jack-nie.github.io/factory-method-pattern/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Ruby/">Ruby</a></li></ul>
@@ -833,7 +847,9 @@ end
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://jack-nie.github.io/abstract-factory-pattern/" data-id="cjqvr5ifg001jka6xxa0k7imp" class="article-share-link">Share</a>
+      <a data-url="http://jack-nie.github.io/abstract-factory-pattern/" data-id="cjqvrwisf001oud6xv11qxn9l" class="article-share-link">Share</a>
+      
+        <a href="http://jack-nie.github.io/abstract-factory-pattern/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Ruby/">Ruby</a></li></ul>
@@ -893,7 +909,9 @@ end
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://jack-nie.github.io/git-clean/" data-id="cjqvr5ifc001cka6xlzeuvp7o" class="article-share-link">Share</a>
+      <a data-url="http://jack-nie.github.io/git-clean/" data-id="cjqvrwisd001kud6xc4vbm5bc" class="article-share-link">Share</a>
+      
+        <a href="http://jack-nie.github.io/git-clean/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Git/">Git</a></li></ul>
@@ -986,7 +1004,9 @@ class ObservableTodosCmp {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://jack-nie.github.io/change-detection-in-angular-2/" data-id="cjqvr5ife001gka6xov4l4w3s" class="article-share-link">Share</a>
+      <a data-url="http://jack-nie.github.io/change-detection-in-angular-2/" data-id="cjqvrwisa001cud6xk8ij488l" class="article-share-link">Share</a>
+      
+        <a href="http://jack-nie.github.io/change-detection-in-angular-2/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JavaScript/">JavaScript</a></li></ul>
@@ -1100,6 +1120,18 @@ class ObservableTodosCmp {
   
 </nav>
     
+<script>
+  var disqus_shortname = 'kingguy';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 
