@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>【翻译】Preload, includes, eagerload and joins | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Preload, includes, eagerload and joins">
+<meta name="keywords" content="Ruby">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【翻译】Preload, includes, eagerload and joins">
+<meta property="og:url" content="http://yoursite.com/2015/05/20/2015-05-20-preload-eagerload-includes-and-joins/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="Preload, includes, eagerload and joins">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-11-09T09:04:23.614Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="【翻译】Preload, includes, eagerload and joins">
+<meta name="twitter:description" content="Preload, includes, eagerload and joins">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-2015-05-20-preload-eagerload-includes-and-joins" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/05/20/2015-05-20-preload-eagerload-includes-and-joins/" class="article-date">
+  <time datetime="2015-05-19T16:00:00.000Z" itemprop="datePublished">2015-05-20</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Ruby/">Ruby</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      【翻译】Preload, includes, eagerload and joins
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Rails提供了四种不同的方式来加载关联数据，本文将详细解析这四种方式的异同。</p>
+<h3 id="Preload"><a href="#Preload" class="headerlink" title="Preload"></a>Preload</h3><p>方法<code>preload</code>通过两条sql查询来加载关联数据。</p>
+<pre><code>Ruby Code:
+User.preload(:posts).to_a
+
+# =&gt;
+SELECT &quot;users&quot;.* FROM &quot;users&quot;
+SELECT &quot;posts&quot;.* FROM &quot;posts&quot;  WHERE &quot;posts&quot;.&quot;user_id&quot; IN (1)
+</code></pre><p>上面的查询是方法<code>includes</code>默认的加载数据的方式。因为<code>preload</code>总是产生两条sql查询，所以我们不能够在<code>where</code>条件中使用<code>posts</code>表，下面的查询将导致一个错误。</p>
+<pre><code>Ruby Code:
+User.preload(:posts).where(&quot;posts.desc=&apos;ruby is awesome&apos;&quot;)
+
+# =&gt;
+SQLite3::SQLException: no such column: posts.desc:
+SELECT &quot;users&quot;.* FROM &quot;users&quot;  WHERE (posts.desc=&apos;ruby is awesome&apos;)
+</code></pre><p>当然，我们可以通过如下方式来使用<code>where</code>条件。</p>
+<pre><code>Ruby Code:
+User.preload(:posts).where(&quot;users.name=&apos;Neeraj&apos;&quot;)
+
+# =&gt;
+SELECT &quot;users&quot;.* FROM &quot;users&quot;  WHERE (users.name=&apos;Neeraj&apos;)
+SELECT &quot;posts&quot;.* FROM &quot;posts&quot;  WHERE &quot;posts&quot;.&quot;user_id&quot; IN (3)
+</code></pre><h3 id="Includes"><a href="#Includes" class="headerlink" title="Includes"></a>Includes</h3><p>方法<code>includes</code>通过分离的sql查询加载关联数据时和<code>preload</code>的表现形式是一样的。但是<code>includes</code>比<code>preload</code>更加的智能，通过上面的例子可以看出通过<code>User.preload(:posts).where(&quot;posts.desc=&#39;ruby is awesome&#39;&quot;)</code>查询语句使用<code>preload</code>产生了一个错误。下面来看一下使用<code>includes</code>的情况。</p>
+<pre><code>Ruby Code:
+User.includes(:posts).where(&apos;posts.desc = &quot;ruby is awesome&quot;&apos;).to_a
+
+# =&gt;
+SELECT &quot;users&quot;.&quot;id&quot; AS t0_r0, &quot;users&quot;.&quot;name&quot; AS t0_r1, &quot;posts&quot;.&quot;id&quot; AS t1_r0,
+       &quot;posts&quot;.&quot;title&quot; AS t1_r1,
+       &quot;posts&quot;.&quot;user_id&quot; AS t1_r2, &quot;posts&quot;.&quot;desc&quot; AS t1_r3
+FROM &quot;users&quot; LEFT OUTER JOIN &quot;posts&quot; ON &quot;posts&quot;.&quot;user_id&quot; = &quot;users&quot;.&quot;id&quot;
+WHERE (posts.desc = &quot;ruby is awesome&quot;)
+</code></pre><p>可以看到，<code>includes</code>通过<code>LEFT OUTER JOIN</code>将两条sql查询转换成一条单独的sql语句查询。默认情况下，<code>includes</code>将产生两条单独的查询。假定在某些情况下，你需要强制使<code>includes</code>只产生一条单独的查询语句，可以通过<code>references</code>来达到目标。</p>
+<pre><code>Ruby Code:
+User.includes(:posts).references(:posts).to_a
+
+# =&gt;
+SELECT &quot;users&quot;.&quot;id&quot; AS t0_r0, &quot;users&quot;.&quot;name&quot; AS t0_r1, &quot;posts&quot;.&quot;id&quot; AS t1_r0,
+       &quot;posts&quot;.&quot;title&quot; AS t1_r1,
+       &quot;posts&quot;.&quot;user_id&quot; AS t1_r2, &quot;posts&quot;.&quot;desc&quot; AS t1_r3
+FROM &quot;users&quot; LEFT OUTER JOIN &quot;posts&quot; ON &quot;posts&quot;.&quot;user_id&quot; = &quot;users&quot;.&quot;id&quot;
+</code></pre><p>上面的例子中，只产生了一条sql查询。</p>
+<h3 id="Eager-load"><a href="#Eager-load" class="headerlink" title="Eager load"></a>Eager load</h3><p>立即加载使用<code>LEFT OUTER JOIN</code>产生一条sql语句来加载所有的关联数据。</p>
+<pre><code>Ruby Code:
+User.eager_load(:posts).to_a
+
+# =&gt;
+SELECT &quot;users&quot;.&quot;id&quot; AS t0_r0, &quot;users&quot;.&quot;name&quot; AS t0_r1, &quot;posts&quot;.&quot;id&quot; AS t1_r0,
+       &quot;posts&quot;.&quot;title&quot; AS t1_r1, &quot;posts&quot;.&quot;user_id&quot; AS t1_r2, &quot;posts&quot;.&quot;desc&quot; AS t1_r3
+FROM &quot;users&quot; LEFT OUTER JOIN &quot;posts&quot; ON &quot;posts&quot;.&quot;user_id&quot; = &quot;users&quot;.&quot;id&quot;
+</code></pre><p>当在<code>where</code>或者<code>order</code>子句中使用了来自表<code>posts</code>中的属性时，includes会强制只使用一条sql语句。</p>
+<h3 id="Joins"><a href="#Joins" class="headerlink" title="Joins"></a>Joins</h3><p>方法<code>joins</code>使用<code>inner join</code>来加载关联数据。</p>
+<pre><code>Ruby Code:
+User.joins(:posts)
+
+# =&gt;
+SELECT &quot;users&quot;.* FROM &quot;users&quot; INNER JOIN &quot;posts&quot; ON &quot;posts&quot;.&quot;user_id&quot; = &quot;users&quot;.&quot;id&quot;
+</code></pre><p>上面的案例中没有选择任何posts数据，上面的查询也有可能产生重复的结果，为了验证，让我们来创建一些示例数据。</p>
+<pre><code>Ruby Code:
+def self.setup
+  User.delete_all
+  Post.delete_all
+
+  u = User.create name: &apos;Neeraj&apos;
+  u.posts.create! title: &apos;ruby&apos;, desc: &apos;ruby is awesome&apos;
+  u.posts.create! title: &apos;rails&apos;, desc: &apos;rails is awesome&apos;
+  u.posts.create! title: &apos;JavaScript&apos;, desc: &apos;JavaScript is awesome&apos;
+
+  u = User.create name: &apos;Neil&apos;
+  u.posts.create! title: &apos;JavaScript&apos;, desc: &apos;Javascript is awesome&apos;
+
+  u = User.create name: &apos;Trisha&apos;
+end
+</code></pre><p>利用上面的示例数据，如果执行<code>User.joins(:posts)</code>将会得到如下的结果。</p>
+<pre><code>Ruby Code:
+#&lt;User id: 9, name: &quot;Neeraj&quot;&gt;
+#&lt;User id: 9, name: &quot;Neeraj&quot;&gt;
+#&lt;User id: 9, name: &quot;Neeraj&quot;&gt;
+#&lt;User id: 10, name: &quot;Neil&quot;&gt;
+</code></pre><p>可以通过使用<code>distinct</code>来消除重复的结果。</p>
+<pre><code>Ruby Code:
+User.joins(:posts).select(&apos;distinct users.*&apos;).to_a
+</code></pre><p>如果想利用来自<code>posts</code>表中的属性，我们需要选择他们。</p>
+<pre><code>Ruby Code:
+records = User.joins(:posts).select(&apos;distinct users.*, posts.title as posts_title&apos;).to_a
+records.each do |user|
+  puts user.name
+  puts user.posts_title
+end
+</code></pre><p>需要指出的一点是使用<code>joins</code>意味着如果你使用<code>user.posts</code>将会产生另外的一条SQL查询。</p>
+<p>原文：</p>
+<ul>
+<li><a href="http://blog.bigbinary.com/2013/07/01/preload-vs-eager-load-vs-joins-vs-includes.html" title="Preload, Eagerload, Includes and Joins" target="_blank" rel="noopener">Preload, Eagerload, Includes and Joins</a></li>
+</ul>
+<p>扩展阅读：</p>
+<ul>
+<li><a href="http://blog.arkency.com/2013/12/rails4-preloading/" title="3 ways to do eager loading (preloading) in Rails 3 &amp; 4" target="_blank" rel="noopener">3 ways to do eager loading (preloading) in Rails 3 &amp; 4</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/05/20/2015-05-20-preload-eagerload-includes-and-joins/" data-id="cjo9s9ubb006dbw6x2xarqorz" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Ruby/">Ruby</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/08/02/2015-08-02-rubys-case-statement-advanced-techniques/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          【翻译】Ruby’s case statement – advanced techniques
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/05/10/2015-05-10-the-ruby-global-interpreter-lock/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">【翻译】Ruby全局解释锁</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/CSS/">CSS</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/DDD/">DDD</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Git/">Git</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Go/">Go</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/HTTP/">HTTP</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/JavaScript/">JavaScript</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Learning-C/">Learning C</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Rails/">Rails</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Ruby/">Ruby</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Server/">Server</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/TCP-IP/">TCP/IP</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Test/">Test</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/best-practices/">best-practices</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/design-pattern/">design-pattern</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/postgresql/">postgresql</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/weixin/">weixin</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/分布式/">分布式</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/">C</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSS/">CSS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DDD/">DDD</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Go/">Go</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP/">HTTP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/">JavaScript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Rails/">Rails</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Rspec/">Rspec</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Ruby/">Ruby</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Server/">Server</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCP-IP/">TCP/IP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/postgresql/">postgresql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/weixin/">weixin</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式/">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/测试/">测试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/C/" style="font-size: 12.86px;">C</a> <a href="/tags/CSS/" style="font-size: 10px;">CSS</a> <a href="/tags/DDD/" style="font-size: 10px;">DDD</a> <a href="/tags/Git/" style="font-size: 11.43px;">Git</a> <a href="/tags/Go/" style="font-size: 18.57px;">Go</a> <a href="/tags/HTTP/" style="font-size: 10px;">HTTP</a> <a href="/tags/JavaScript/" style="font-size: 17.14px;">JavaScript</a> <a href="/tags/Rails/" style="font-size: 14.29px;">Rails</a> <a href="/tags/Rspec/" style="font-size: 10px;">Rspec</a> <a href="/tags/Ruby/" style="font-size: 20px;">Ruby</a> <a href="/tags/Server/" style="font-size: 10px;">Server</a> <a href="/tags/TCP-IP/" style="font-size: 10px;">TCP/IP</a> <a href="/tags/postgresql/" style="font-size: 12.86px;">postgresql</a> <a href="/tags/react/" style="font-size: 10px;">react</a> <a href="/tags/weixin/" style="font-size: 11.43px;">weixin</a> <a href="/tags/分布式/" style="font-size: 10px;">分布式</a> <a href="/tags/测试/" style="font-size: 10px;">测试</a> <a href="/tags/设计模式/" style="font-size: 15.71px;">设计模式</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/04/14/2018-04-14-gokit-learning-one/">go-kit学习笔记(一)</a>
+          </li>
+        
+          <li>
+            <a href="/2018/04/14/2018-04-14-gokit-introduction/">go-kit简介</a>
+          </li>
+        
+          <li>
+            <a href="/2018/04/14/2018-04-14-golang-context/">golang中context包详解</a>
+          </li>
+        
+          <li>
+            <a href="/2018/03/31/2018-03-31-golang-handle-and-handlefunc/">Golang中的Handle和HandleFunc</a>
+          </li>
+        
+          <li>
+            <a href="/2018/03/30/2018-03-30-golang-http-router/">Golang中的router</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>Ruby中的Array详解 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Ruby中的Array详解">
+<meta name="keywords" content="Ruby,array">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ruby中的Array详解">
+<meta property="og:url" content="http://yoursite.com/2015/04/23/2015-04-23-array-is-one-of-the-workhorses-in-ruby/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="Ruby中的Array详解">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-11-09T09:04:22.870Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Ruby中的Array详解">
+<meta name="twitter:description" content="Ruby中的Array详解">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-2015-04-23-array-is-one-of-the-workhorses-in-ruby" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/04/23/2015-04-23-array-is-one-of-the-workhorses-in-ruby/" class="article-date">
+  <time datetime="2015-04-22T16:00:00.000Z" itemprop="datePublished">2015-04-23</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Ruby/">Ruby</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Ruby中的Array详解
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在这篇文章中，我将深入探讨<code>Arrays</code>。数组中有很多方法我们每天都用，但是也有一部分方法我们甚至不知道他们的存在。</p>
+<h3 id="基础"><a href="#基础" class="headerlink" title="基础"></a>基础</h3><p>关于数组有一个非常无聊的定义，但是我们必须记住：数组的下标是从0开始的。一个负数下标表明从数组的最后开始计数–也就是说-1代表数组的最后一个数，-2代表倒数第2个数，以此类推。</p>
+<p>那么问题来了,我们要怎样去创建一个数组呢？<br> Ruby code:<br>        array = Array.new<br>         =&gt; []</p>
+<p>或者<br> Ruby code:<br>        array = []<br>         =&gt; []<br>数组可以包含各种类型的对象，整数、字符串、浮点数等-数组并不关心类型。<br> Ruby code:<br>        array = [1, 2, “Super Mario”, 2.4, “Batman”, 100]<br>         =&gt; [1, 2, “Super Mario”, 2.4, “Batman”, 100]<br>或者</p>
+<p> Ruby code:<br>        Array.new(3)<br>         =&gt; [nil, nil, nil]<br>或者</p>
+<p> Ruby code:<br>        Array.new(3, true)<br>         =&gt; [true, true, true]<br>就像我们所熟知的，Ruby是一个完全的面向对象的语言，所以arrays也表现为对象。</p>
+<h3 id="探索的越深就越有趣"><a href="#探索的越深就越有趣" class="headerlink" title="探索的越深就越有趣"></a>探索的越深就越有趣</h3><p>让我们从用的最多的迭代方法<code>#each</code>开始。这是一个我们过去见到过很多次并且在将来也会遇到很多次的方法。<code>Array</code>和<code>Range</code>类都有<code>#each</code>方法，通常<code>#each</code>会遍历每一个对象，并将其作为参数传入到block中，返回值为原始的集合。<br> Ruby code:<br>        [1, 3, 4, 1, 2].each {|n| puts “#{n}! “}<br>        1!<br>        3!<br>        4!<br>        1!<br>        2!<br>         =&gt; [1, 3, 4, 1, 2]<br>还有一个情况是如果想知道数组元素的位置，可以用<code>#each_with_index</code>。<br> Ruby code:<br>        %w{Ruby is cool and provides us<br>        with another syntax arrays}.each_with_index {|item, index| puts “position</p>
+<pre><code>#{index} for #{item}&quot;}
+position 0 for Ruby
+position 1 for is
+position 2 for cool
+position 3 for and
+position 4 for provides
+position 5 for us
+position 6 for with
+position 7 for another
+position 8 for syntax
+position 9 for for
+position 10 for arrays
+ =&gt; [&quot;Ruby&quot;, &quot;is&quot;, &quot;cool&quot;, &quot;and&quot;, &quot;provides&quot;,
+     &quot;us&quot;, &quot;with&quot;, &quot;another&quot;, &quot;syntax&quot;, &quot;for&quot;,
+     &quot;arrays&quot;]
+</code></pre><p>假设我们要区分偶数与基数，解决这个问题有许多种方法，但是<code>#select</code>是相对比较简洁的方法。<br> Ruby code:<br>        %w{1 2 3 4 5 6 7 8 9 10 11 112 123 1432}.select { |num| num%2==0 }<br>         =&gt; []<br>但是结果并不是像我们预期的那样，为什么呢？答案是非常简单的，让我们先来看一看<code>%w{1 2 3 4 5 6 7 8 9 10 11 112 123 1432}</code>返回的是什么。<br> Ruby code:<br>        %w{1 2 3 4 5 6 7 8 9 10 11 112 123 1432}<br>         =&gt; [“1”, “2”, “3”, “4”, “5”, “6”, “7”, “8”, “9”, “10”, “11”, “112”, “123”, “1432”]<br>问题很明显，我们不能对字符串应用除法运算，实际上我们不能对字符串做任何数学运算。<br> Ruby code:<br>        %q =&gt; Single quoted string<br>        %Q or % =&gt; Double quoted string<br>        %w or %W =&gt; Array of tokens<br>        %r =&gt; Regular Expression<br>        %x =&gt; Shell Command<br>        %i =&gt; Array of Symbols<br>为了避免这种情况让我们回到<code>[...]</code>,这样就不会再次踩坑。<br> Ruby code:<br>        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 112, 123, 1432].select { |num| num%2==0 }<br>         =&gt; [2, 4, 6, 8, 10, 112, 1432]</p>
+<p><strong>没有数据操作我们将变成什么?</strong>举例来说，我们有很多用户，然后需要根据用户名来自动生成邮件地址，<code>#map</code>在这里将充当救世主的角色。<br> Ruby code:<br>        users = [“Dalton Brown”, “Ralph Braun”, “Keara Mueller”, “Suzanne Schuppe”, “Trisha Batz”]<br>        users.map { |user| user.downcase.tr(“ “, “_”) + “@your_site.com” }<br>得到的结果是：<br> Ruby code:<br>        =&gt; [“dalton_brown@your_site.com”,  “ralph_braun@your_site.com”,<br>          “keara_mueller@your_site.com”, “suzanne_schuppe@your_site.com”,<br>          “trisha_batz@your_site.com”]</p>
+<h3 id="鲜为人知的方法"><a href="#鲜为人知的方法" class="headerlink" title="鲜为人知的方法"></a>鲜为人知的方法</h3><p>请记住<code>#uniq</code>和<code>#uniq</code>这两个方法之间的区别。<code>#uniq</code>返回一个去掉了重复元素的新数组，但是<code>#uniq！</code>会直接从原数组中删除重复的元素。<br> Ruby code:<br>        example_array = [“x”, “z”, “z”, “z”, “a”, “b”, “b”]<br>        &gt; example_array.uniq<br>         =&gt; [“x”, “z”, “a”, “b”]<br>        &gt; example_array<br>         =&gt; [“x”, “z”, “z”, “z”, “a”, “b”, “b”]<br>和<br>  Ruby code:<br>        &gt; example_array.uniq!<br>         =&gt; [“x”, “z”, “a”, “b”]<br>        &gt; example_array<br>         =&gt; [“x”, “z”, “a”, “b”]<br>你想要对数组中的元素进行分组么？那么<code>#group将</code>很适合你。<br>  Ruby code:<br>        users.group_by{|name| name.length}<br>         =&gt; {12=&gt;[“Dalton Brown”], 11=&gt;[“Ralph Braun”, “Trisha Batz”], 13=&gt;[“Keara Mueller”], 15=&gt;[“Suzanne Schuppe”]}<br>还有其它的一些非常有用的方法如<code>|</code>和 <code>&amp;</code>。<br> Ruby code:<br>        milan_colors = %w{red black}<br>        liverpool_colors = %w{white red}<br>        milan_colors | liverpool_colors<br>        =&gt; [“red”, “black”, “white”]<br>        milan_colors &amp; liverpool_colors<br>        =&gt; [“red”]<br>当然还不能忘了范围方法，我是这么称呼的~~<br> Ruby code:<br>        2.1.2 :001 &gt; a = [1, 2, 3, 4, 5]<br>        =&gt; [1, 2, 3, 4, 5]<br>        2.1.2 :002 &gt; a[0..-3]<br>        =&gt; [1, 2, 3]<br>        2.1.2 :003 &gt; a[0…-3]<br>        =&gt; [1, 2]<br>&lt;&lt;, +, 操作符和concat<br> Ruby code:<br>        [1] &lt;&lt; [2,3]<br>        [1].concat([2,3])<br>        [1] + [2,3]</p>
+<pre><code>#=&gt; [1, [2, 3]]
+#=&gt; [1, 2, 3]
+#=&gt; [1, 2, 3]
+</code></pre><p>参考资料：</p>
+<ul>
+<li><a href="http://blog.diatomenterprises.com/arrays-are-the-workhorse-of-ruby/" target="_blank" rel="noopener">http://blog.diatomenterprises.com/arrays-are-the-workhorse-of-ruby/</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/04/23/2015-04-23-array-is-one-of-the-workhorses-in-ruby/" data-id="cjo9s9u7j000vbw6xyhp2fz4y" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Ruby/">Ruby</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/04/24/2015-04-24-pattern-to-pattern-template-method-and-strategy/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          【翻译】模板方法模式和策略模式的比较
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/04/22/2015-04-22-the-difference-between-instance_eval-and-instance_exec/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">【翻译】instance_eval和instance_exec之间的区别</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/CSS/">CSS</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/DDD/">DDD</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Git/">Git</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Go/">Go</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/HTTP/">HTTP</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/JavaScript/">JavaScript</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Learning-C/">Learning C</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Rails/">Rails</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Ruby/">Ruby</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Server/">Server</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/TCP-IP/">TCP/IP</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Test/">Test</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/best-practices/">best-practices</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/design-pattern/">design-pattern</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/postgresql/">postgresql</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/weixin/">weixin</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/分布式/">分布式</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/">C</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSS/">CSS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DDD/">DDD</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Go/">Go</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP/">HTTP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/">JavaScript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Rails/">Rails</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Rspec/">Rspec</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Ruby/">Ruby</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Server/">Server</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCP-IP/">TCP/IP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/postgresql/">postgresql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/weixin/">weixin</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式/">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/测试/">测试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/C/" style="font-size: 12.86px;">C</a> <a href="/tags/CSS/" style="font-size: 10px;">CSS</a> <a href="/tags/DDD/" style="font-size: 10px;">DDD</a> <a href="/tags/Git/" style="font-size: 11.43px;">Git</a> <a href="/tags/Go/" style="font-size: 18.57px;">Go</a> <a href="/tags/HTTP/" style="font-size: 10px;">HTTP</a> <a href="/tags/JavaScript/" style="font-size: 17.14px;">JavaScript</a> <a href="/tags/Rails/" style="font-size: 14.29px;">Rails</a> <a href="/tags/Rspec/" style="font-size: 10px;">Rspec</a> <a href="/tags/Ruby/" style="font-size: 20px;">Ruby</a> <a href="/tags/Server/" style="font-size: 10px;">Server</a> <a href="/tags/TCP-IP/" style="font-size: 10px;">TCP/IP</a> <a href="/tags/postgresql/" style="font-size: 12.86px;">postgresql</a> <a href="/tags/react/" style="font-size: 10px;">react</a> <a href="/tags/weixin/" style="font-size: 11.43px;">weixin</a> <a href="/tags/分布式/" style="font-size: 10px;">分布式</a> <a href="/tags/测试/" style="font-size: 10px;">测试</a> <a href="/tags/设计模式/" style="font-size: 15.71px;">设计模式</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/04/14/2018-04-14-gokit-learning-one/">go-kit学习笔记(一)</a>
+          </li>
+        
+          <li>
+            <a href="/2018/04/14/2018-04-14-gokit-introduction/">go-kit简介</a>
+          </li>
+        
+          <li>
+            <a href="/2018/04/14/2018-04-14-golang-context/">golang中context包详解</a>
+          </li>
+        
+          <li>
+            <a href="/2018/03/31/2018-03-31-golang-handle-and-handlefunc/">Golang中的Handle和HandleFunc</a>
+          </li>
+        
+          <li>
+            <a href="/2018/03/30/2018-03-30-golang-http-router/">Golang中的router</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

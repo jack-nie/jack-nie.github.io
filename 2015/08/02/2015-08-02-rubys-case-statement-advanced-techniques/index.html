@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>【翻译】Ruby’s case statement – advanced techniques | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Ruby’s case statement – advanced techniques">
+<meta name="keywords" content="Ruby">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【翻译】Ruby’s case statement – advanced techniques">
+<meta property="og:url" content="http://yoursite.com/2015/08/02/2015-08-02-rubys-case-statement-advanced-techniques/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="Ruby’s case statement – advanced techniques">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-11-09T09:04:23.690Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="【翻译】Ruby’s case statement – advanced techniques">
+<meta name="twitter:description" content="Ruby’s case statement – advanced techniques">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-2015-08-02-rubys-case-statement-advanced-techniques" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/08/02/2015-08-02-rubys-case-statement-advanced-techniques/" class="article-date">
+  <time datetime="2015-08-01T16:00:00.000Z" itemprop="datePublished">2015-08-02</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Ruby/">Ruby</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      【翻译】Ruby’s case statement – advanced techniques
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>没有什么比case语句更加的简单和无聊了。这是沿袭自C语言，通常被用来代替一系列的if语句。实际上，Ruby中的case语句比你想象的要更加的丰富和更加的复杂，让我们来看一下下面的这个例子。</p>
+<pre><code>Ruby Code:
+case &quot;Hi there&quot;
+when String
+  pute &quot;case statements match class&quot;
+end
+# outputs: &quot;case statements match class&quot;
+</code></pre><p>这个例子表明case语句不仅匹配一个条目的值，并且还能匹配其class。这可能是因为Ruby内部使用了===操作符。</p>
+<h3 id="快速浏览-操作符"><a href="#快速浏览-操作符" class="headerlink" title="快速浏览===操作符"></a>快速浏览===操作符</h3><p>当你用Ruby写下x===y，你就是在询问y是属于x所代表的组吗？这是一个非常通用的语句，它的定义会依据你所处理的组别而改变。</p>
+<pre><code>Ruby Code:
+# Here, the Class.===(item) method is called, which returns true if item is an instance of the class
+
+String === &quot;hello&quot; # true
+String === 1 # false
+</code></pre><p>字符串，正则表达式以及区间都定义了各自的===方法，表现上大抵和你的预期相符合，你甚至可以在你自己的类中增加一个===方法。现在我们懂得了这些，我们可以变出各种各样的戏法。</p>
+<h3 id="case语句中的区间匹配"><a href="#case语句中的区间匹配" class="headerlink" title="case语句中的区间匹配"></a>case语句中的区间匹配</h3><p>你之所以能够在case语句中使用区间，是因为range === n 返回的是range.include?(n)。我为什么这肯定呢？这是因为<a href="http://ruby-doc.org/core-2.2.0/Range.html#method-i-3D-3D-3D" title="文档" target="_blank" rel="noopener">文档</a>中已经写明了。</p>
+<pre><code>Ruby Code:
+case 5
+when (1..10)
+  puts &quot;case statements match inclusion in a range&quot;
+end
+
+# outputs &quot;case statements match inclusion in a range&quot;
+</code></pre><h3 id="case语句中的正则表达式匹配"><a href="#case语句中的正则表达式匹配" class="headerlink" title="case语句中的正则表达式匹配"></a>case语句中的正则表达式匹配</h3><p>在case语句中使用正则也是可能的，因为/regexp/ === “string”返回true，当且仅当字符串匹配该正则表达式时。正则表达式的<a href="http://ruby-doc.org/core-2.2.0/Regexp.html#method-i-3D-3D-3D" title="文档" target="_blank" rel="noopener">文档</a>对其做出了解释。<br>    Ruby Code:<br>    case “FOOBAR”<br>    when /BAR$/<br>      puts “they can match regular expressions!”<br>    end</p>
+<pre><code># outputs &quot;they can match regular expressions!&quot;
+</code></pre><h3 id="匹配proc和lambda"><a href="#匹配proc和lambda" class="headerlink" title="匹配proc和lambda"></a>匹配proc和lambda</h3><p>这是非常奇怪的一类，当你使用Proc#===(item)，就和Proc#call(item)一样。这是定义的<a href="http://ruby-doc.org/core-2.2.0/Proc.html#method-i-3D-3D-3D" title="文档" target="_blank" rel="noopener">文档</a>，这个文档的意思是你可以通过动态匹配在case语句中使用proc和lambda。<br>    Ruby Code:<br>    case 40<br>    when -&gt; (n) { n.to_s == “40” }<br>      puts “lambdas!”<br>    end</p>
+<pre><code># outputs &quot;lambdas&quot;
+</code></pre><p>另外的写法：</p>
+<pre><code>Ruby Code:
+ odd  = proc(&amp;:odd?)
+ even = proc(&amp;:even?)
+  case number
+  when odd
+    puts &quot;Odd number&quot;
+  when even
+    puts &quot;Even number&quot;
+  end
+</code></pre><h3 id="编写你自己的匹配类"><a href="#编写你自己的匹配类" class="headerlink" title="编写你自己的匹配类"></a>编写你自己的匹配类</h3><p>就像我上文提到的那样，在你自己的类中增加一个自定义的case行为就和你定义一个===方法一样简单。使用这项技术能够讲一系列复杂的条件逻辑拆分成多个较小的类。<br>    Ruby Code:<br>    class Success<br>      def self.===(item)<br>        item.status &gt;= 200 &amp;&amp; item.status &lt; 300<br>      end<br>    end</p>
+<pre><code>class Empty
+  def self.===(item)
+    item.response_size == 0
+  end
+end
+
+case http_response
+when Empty
+  puts &quot;response was empty&quot;
+when Success
+  puts &quot;response was a success&quot;
+end
+</code></pre><h3 id="Extra"><a href="#Extra" class="headerlink" title="Extra"></a>Extra</h3><p>另外还可以在when语句中增加多个可以匹配的值。</p>
+<pre><code>Ruby code:
+print &quot;Enter your grade: &quot;
+grade = gets.chomp
+case grade
+when &quot;A&quot;, &quot;B&quot;
+  puts &apos;You pretty smart!&apos;
+when &quot;C&quot;, &quot;D&quot;
+  puts &apos;You pretty dumb!!&apos;
+else
+  puts &quot;You can&apos;t even use a computer!&quot;
+end
+</code></pre><h3 id="什么时候不该用case-when语句"><a href="#什么时候不该用case-when语句" class="headerlink" title="什么时候不该用case/when语句"></a>什么时候不该用case/when语句</h3><p>　　当你只有一些简单的1:1映射关系的时候，不该使用该方法。</p>
+<pre><code>Ruby code:
+  case country
+  when &quot;europe&quot;
+    &quot;http://eu.example.com&quot;
+  when &quot;america&quot;
+    &quot;http://us.example.com&quot;
+  end
+
+
+下面是比较好的写法：
+
+
+Ruby code:
+   SITES = {
+     &quot;europe&quot;  =&gt; &quot;http://eu.example.com&quot;,
+     &quot;america&quot; =&gt; &quot;http://us.example.com&quot;
+   }
+   SITES[country]
+</code></pre><p>原文：</p>
+<ul>
+<li><a href="http://blog.honeybadger.io/rubys-case-statement-advanced-techniques" title="Ruby’s case statement – advanced techniques" target="_blank" rel="noopener">Ruby’s case statement – advanced techniques</a></li>
+</ul>
+<p>参考：</p>
+<ul>
+<li><a href="http://www.blackbytes.info/2015/10/ruby-case/?utm_source=rubyweekly&amp;utm_medium=email" title="The Many Uses Of Ruby Case Statements" target="_blank" rel="noopener">The Many Uses Of Ruby Case Statements</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/08/02/2015-08-02-rubys-case-statement-advanced-techniques/" data-id="cjo9s9u7q0016bw6x9w5063fj" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Ruby/">Ruby</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/08/08/2015-08-08-jenkenis-server-configuration/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+           Jenkins CI服务器搭建
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/05/20/2015-05-20-preload-eagerload-includes-and-joins/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">【翻译】Preload, includes, eagerload and joins</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/CSS/">CSS</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/DDD/">DDD</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Git/">Git</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Go/">Go</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/HTTP/">HTTP</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/JavaScript/">JavaScript</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Learning-C/">Learning C</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Rails/">Rails</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Ruby/">Ruby</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Server/">Server</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/TCP-IP/">TCP/IP</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Test/">Test</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/best-practices/">best-practices</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/design-pattern/">design-pattern</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/postgresql/">postgresql</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/weixin/">weixin</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/分布式/">分布式</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/">C</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSS/">CSS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DDD/">DDD</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Go/">Go</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP/">HTTP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/">JavaScript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Rails/">Rails</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Rspec/">Rspec</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Ruby/">Ruby</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Server/">Server</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCP-IP/">TCP/IP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/postgresql/">postgresql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/weixin/">weixin</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式/">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/测试/">测试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/C/" style="font-size: 12.86px;">C</a> <a href="/tags/CSS/" style="font-size: 10px;">CSS</a> <a href="/tags/DDD/" style="font-size: 10px;">DDD</a> <a href="/tags/Git/" style="font-size: 11.43px;">Git</a> <a href="/tags/Go/" style="font-size: 18.57px;">Go</a> <a href="/tags/HTTP/" style="font-size: 10px;">HTTP</a> <a href="/tags/JavaScript/" style="font-size: 17.14px;">JavaScript</a> <a href="/tags/Rails/" style="font-size: 14.29px;">Rails</a> <a href="/tags/Rspec/" style="font-size: 10px;">Rspec</a> <a href="/tags/Ruby/" style="font-size: 20px;">Ruby</a> <a href="/tags/Server/" style="font-size: 10px;">Server</a> <a href="/tags/TCP-IP/" style="font-size: 10px;">TCP/IP</a> <a href="/tags/postgresql/" style="font-size: 12.86px;">postgresql</a> <a href="/tags/react/" style="font-size: 10px;">react</a> <a href="/tags/weixin/" style="font-size: 11.43px;">weixin</a> <a href="/tags/分布式/" style="font-size: 10px;">分布式</a> <a href="/tags/测试/" style="font-size: 10px;">测试</a> <a href="/tags/设计模式/" style="font-size: 15.71px;">设计模式</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/04/14/2018-04-14-gokit-learning-one/">go-kit学习笔记(一)</a>
+          </li>
+        
+          <li>
+            <a href="/2018/04/14/2018-04-14-gokit-introduction/">go-kit简介</a>
+          </li>
+        
+          <li>
+            <a href="/2018/04/14/2018-04-14-golang-context/">golang中context包详解</a>
+          </li>
+        
+          <li>
+            <a href="/2018/03/31/2018-03-31-golang-handle-and-handlefunc/">Golang中的Handle和HandleFunc</a>
+          </li>
+        
+          <li>
+            <a href="/2018/03/30/2018-03-30-golang-http-router/">Golang中的router</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

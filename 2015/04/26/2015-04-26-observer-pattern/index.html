@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>观察者模式 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="观察者模式">
+<meta name="keywords" content="Ruby,设计模式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="观察者模式">
+<meta property="og:url" content="http://yoursite.com/2015/04/26/2015-04-26-observer-pattern/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="观察者模式">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-11-09T09:04:23.062Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="观察者模式">
+<meta name="twitter:description" content="观察者模式">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-2015-04-26-observer-pattern" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/04/26/2015-04-26-observer-pattern/" class="article-date">
+  <time datetime="2015-04-25T16:00:00.000Z" itemprop="datePublished">2015-04-26</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/design-pattern/">design-pattern</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      观察者模式
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>观察者模式（有时又被称为发布/订阅模式）是软件设计模式的一种。在此种模式中，一个目标对象管理所有相依于它的观察者对象，并且在它本身的状态改变时主动发出通知。这通常透过呼叫各观察者所提供的方法来实现。此种模式通常被用来实作事件处理系统。在Ruby标准库中，观察者模式得到了很好的支持，开箱即用，但是为了更好的说明解释观察者模式，我们首先看一个不利用Ruby的Observer机制的例子。</p>
+<h3 id="Observable"><a href="#Observable" class="headerlink" title="Observable"></a>Observable</h3><p>首先为被观察对象创建一个<code>Observable</code>模块，该模块的职能是在其状态发生改变时通知一个或多个观察者。<br>    Ruby Code:<br>    module Observable</p>
+<pre><code>  attr_accessor :state
+
+  def attachObserver(o)
+    @observers ||= []
+    @observers &lt;&lt; o if !@observers.include?(o)
+  end
+
+  def removeObserver(o)
+    @observers.delete(o)
+  end
+
+  def state=(s)
+    @state = s
+    @observers.each do |o|
+      o.update(self) # more on update() later!
+    end
+  end
+
+end
+</code></pre><p>方法<code>attachObserver</code>和<code>removeObserver</code>用来管理观察者，我们不想拥有相同的观察者，所以只添加那些没有观察我们定义的主体的观察者对象。<br>    Ruby Code:<br>    def state=(s)<br>      @state = s<br>      @observers.each do |o|<br>        o.update(self) # more on update() later!<br>      end<br>    end<br>当被观察对象的状态发生了改变，就需要通知其观察了该对象的观察者。首先，我们覆写了有方法<code>attr_accssor</code>默认创建的修改器，在这个例子中是<code>state=</code>。在给state赋一个新的值后，调用所有观察者的<code>update</code>方法。</p>
+<h3 id="Observer"><a href="#Observer" class="headerlink" title="Observer"></a>Observer</h3><p>下面是Observer模块的实现：<br>    Ruby Code:<br>    module Observer</p>
+<pre><code>  def update(o)
+    raise &apos;Implement this!&apos;
+  end
+
+end
+</code></pre><p>在该模块中，将<code>update</code>的具体功能留给包含它的类来实现，通过这种方式，<code>Observer</code>模块的行为就像是一个需要被其包含者实现的抽象类。</p>
+<h3 id="蚁群"><a href="#蚁群" class="headerlink" title="蚁群"></a>蚁群</h3><p>作为一个简单的例子，首先定义我们的主体，也就是被观察者–蚂蚁女王。<br>    Ruby Code:<br>    class QueenAnt<br>      include Observable<br>    end<br>接下来定义一个观察者：<br>    Ruby Code:<br>    class WorkerAnt<br>      include Observer</p>
+<pre><code>  def update(o)
+    p &quot;I am working hard. Queen has changed state to #{o.state}!&quot;
+  end
+end
+</code></pre><p>类WorkerAnt定义了在蚂蚁女王的状态发生改变时的特殊行为。<br>    Ruby Code:<br>    queen = QueenAnt.new</p>
+<pre><code>worker1 = WorkerAnt.new
+worker2 = WorkerAnt.new
+worker3 = WorkerAnt.new
+
+queen.attachObserver(worker1)
+queen.attachObserver(worker2)
+
+queen.state = &apos;sleeping&apos;
+# I am working hard. Queen has changed state to sleeping!&quot;
+# I am working hard. Queen has changed state to sleeping!&quot;
+</code></pre><p>当蚂蚁女王的状态发生了改变，实例<code>worker1</code>、<code>worker2</code>会收到通知，并针对性的做出响应，实例<code>worker3</code>并没有并加入观察者列中，所以它不会受到通知。</p>
+<h3 id="Obserever机制"><a href="#Obserever机制" class="headerlink" title="Obserever机制"></a>Obserever机制</h3><p>通过Ruby的Observer机制来实现观察者模式是很便捷的，只需要将<code>observer</code>模块混入被观察者对象就可以。<br>    Ruby Code:</p>
+<pre><code># require the observer lib file
+require “observer”
+class Notifier
+end
+
+class EmailNotifier &lt; Notifier
+  def update(bank_account)
+    if bank_account.balance &lt;= 10
+      puts “Sending email to: ‘#{bank_account.owner}’ informing \n
+            him with his account balance: #{bank_account.balance}$.”
+      # send the email mechanism
+    end
+  end
+end
+
+class SMSNotifier &lt; Notifier
+  def update(bank_account)
+    if bank_account.balance &lt;= 0.5
+      puts “Sending SMS to: ‘#{bank_account.owner}’ informing \n
+           him with his account balance: #{bank_account.balance}$.”
+      # send sms mechanism
+    end
+  end
+end
+
+class BankAccount
+  # include the observable module
+  include Observable
+  attr_reader :owner,:balance
+  def initialize(owner,amount)
+    @owner,@balance = owner,amount
+    # adding list of observes to the account
+    add_observer EmailNotifier.new
+    add_observer SMSNotifier.new
+  end
+
+  # withdraw operation
+  def withdraw(amount)
+    # do whatever you need
+    @balance -=amount if (@balance - amount) &gt; 0
+    # now here comes our logic
+    # issue that the account has changed
+    changed
+    # notify the observers
+    notify_observers self
+  end
+end
+account = BankAccount.new “Jim Oslen”, 100
+account.withdraw 99.5
+#=&gt;Sending email to: ‘Jim Oslen’ informing him with
+#his account balance: 0.5$.
+#=&gt;Sending SMS to: ‘Jim Oslen’ informing him with his
+#account balance: 0.5$.
+</code></pre><p>利用Ruby的Observer机制我们要做下面的工作：</p>
+<ul>
+<li>引入<code>observer</code>库并将其包含在被观察者类中。</li>
+<li>改变对象的状态并通知观察者。</li>
+<li>让所有需要的观察者和被观察者关联。</li>
+<li>每个观察者必须实现<code>update</code>方法。</li>
+</ul>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>观察者模式和<a href="https://jack-nie.github.io/blog/pattern-to-pattern-template-method-and-strategy/" target="_blank" rel="noopener">策略模式</a>之间有一些相似之处,二者都是用一个对象（观察者模式的被观察者对象和策略模式的上下文对象）调用另一个对象（观察者模式的观察者和策略模式的策略）。二者的区别在于目的和适用情形的不同，观察者模式通过观察主题的不同状态来做出响应，策略模式则依赖于具体的策略来实现。</p>
+<p>参考资料：</p>
+<ul>
+<li><a href="http://blog.khd.me/ruby/observer-and-singleton-design-patterns-in-ruby/" title="OBSERVER AND SINGLETON DESIGN PATTERNS IN RUBY" target="_blank" rel="noopener">http://blog.khd.me/ruby/observer-and-singleton-design-patterns-in-ruby/</a></li>
+<li><a href="http://www.runtime-era.com/2012/12/basic-observer-design-pattern-in-ruby.html" title="Quick Review: Basic Observer Design Pattern in Ruby" target="_blank" rel="noopener">http://www.runtime-era.com/2012/12/basic-observer-design-pattern-in-ruby.html</a></li>
+<li><a href="http://reefpoints.dockyard.com/2013/08/20/design-patterns-observer-pattern.html" title="Design Patterns: The Observer Pattern" target="_blank" rel="noopener">http://reefpoints.dockyard.com/2013/08/20/design-patterns-observer-pattern.html</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/04/26/2015-04-26-observer-pattern/" data-id="cjo9s9u6p000gbw6xjlwp8ds9" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Ruby/">Ruby</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/设计模式/">设计模式</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/04/27/2015-04-27-adapter-pattern/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          【转载】适配器模式
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/04/25/2015-04-25-template-method-pattern/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">模板方法模式</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/CSS/">CSS</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/DDD/">DDD</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Git/">Git</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Go/">Go</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/HTTP/">HTTP</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/JavaScript/">JavaScript</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Learning-C/">Learning C</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Rails/">Rails</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Ruby/">Ruby</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Server/">Server</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/TCP-IP/">TCP/IP</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Test/">Test</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/best-practices/">best-practices</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/design-pattern/">design-pattern</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/postgresql/">postgresql</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/weixin/">weixin</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/分布式/">分布式</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/">C</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSS/">CSS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DDD/">DDD</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Go/">Go</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP/">HTTP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/">JavaScript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Rails/">Rails</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Rspec/">Rspec</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Ruby/">Ruby</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Server/">Server</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCP-IP/">TCP/IP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/postgresql/">postgresql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/weixin/">weixin</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式/">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/测试/">测试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/C/" style="font-size: 12.86px;">C</a> <a href="/tags/CSS/" style="font-size: 10px;">CSS</a> <a href="/tags/DDD/" style="font-size: 10px;">DDD</a> <a href="/tags/Git/" style="font-size: 11.43px;">Git</a> <a href="/tags/Go/" style="font-size: 18.57px;">Go</a> <a href="/tags/HTTP/" style="font-size: 10px;">HTTP</a> <a href="/tags/JavaScript/" style="font-size: 17.14px;">JavaScript</a> <a href="/tags/Rails/" style="font-size: 14.29px;">Rails</a> <a href="/tags/Rspec/" style="font-size: 10px;">Rspec</a> <a href="/tags/Ruby/" style="font-size: 20px;">Ruby</a> <a href="/tags/Server/" style="font-size: 10px;">Server</a> <a href="/tags/TCP-IP/" style="font-size: 10px;">TCP/IP</a> <a href="/tags/postgresql/" style="font-size: 12.86px;">postgresql</a> <a href="/tags/react/" style="font-size: 10px;">react</a> <a href="/tags/weixin/" style="font-size: 11.43px;">weixin</a> <a href="/tags/分布式/" style="font-size: 10px;">分布式</a> <a href="/tags/测试/" style="font-size: 10px;">测试</a> <a href="/tags/设计模式/" style="font-size: 15.71px;">设计模式</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/04/14/2018-04-14-gokit-learning-one/">go-kit学习笔记(一)</a>
+          </li>
+        
+          <li>
+            <a href="/2018/04/14/2018-04-14-gokit-introduction/">go-kit简介</a>
+          </li>
+        
+          <li>
+            <a href="/2018/04/14/2018-04-14-golang-context/">golang中context包详解</a>
+          </li>
+        
+          <li>
+            <a href="/2018/03/31/2018-03-31-golang-handle-and-handlefunc/">Golang中的Handle和HandleFunc</a>
+          </li>
+        
+          <li>
+            <a href="/2018/03/30/2018-03-30-golang-http-router/">Golang中的router</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

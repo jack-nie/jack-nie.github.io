@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="Hexo">
+<meta property="og:url" content="http://yoursite.com/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:locale" content="default">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Hexo">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-2018-04-14-gokit-learning-one" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/04/14/2018-04-14-gokit-learning-one/" class="article-date">
+  <time datetime="2018-04-14T00:00:00.000Z" itemprop="datePublished">2018-04-14</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Go/">Go</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/04/14/2018-04-14-gokit-learning-one/">go-kit学习笔记(一)</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>本文是学习go-kit的开篇，主要参考资料是官方文档。</p>
+<p>在前面的一篇文章中，已经介绍了基于go开发api服务需要哪些步骤，那么我们将来实践这些步骤。</p>
+<p>首先创建一个interface，</p>
+<pre><code>import &quot;context&quot;
+
+type StringService interface {
+        Uppercase(context.Context, string) (string, error)
+        Count(context.Context, string) int
+}
+</code></pre><p>然后编写代码实现这个interface。</p>
+<pre><code>import (
+        &quot;context&quot;
+        &quot;errors&quot;
+        &quot;strings&quot;
+)
+
+type stringService struct{}
+
+func (stringService) Uppercase(_ context.Context, s string) (string, error) {
+        if s == &quot;&quot; {
+                return &quot;&quot;, ErrEmpty
+        }
+        return strings.ToUpper(s), nil
+}
+
+func (stringService) Count(_ context.Context, s string) int {
+        return len(s)
+}
+
+var ErrEmpty = errors.New(&quot;Empty string”)
+</code></pre><p>在go-kit中首选的消息机制是RPC，所以我们接下来定义request和response的结构，保存输入和输出的数据。</p>
+<pre><code>type uppercaseRequest struct {
+        S string `json:&quot;s&quot;`
+}
+
+type uppercaseResponse struct {
+        V   string `json:&quot;v&quot;`
+        Err string `json:&quot;err,omitempty&quot;` // errors don&apos;t JSON-marshal, so we use a string
+}
+
+type countRequest struct {
+        S string `json:&quot;s&quot;`
+}
+
+type countResponse struct {
+        V int `json:&quot;v&quot;`
+}
+</code></pre><p>接下来就到了endpoint相关的逻辑了，在go-kit中，一个endpoint对应刚刚定义的interface中的方法，这里将要做的就是实现适配器将stringService中对应的方法转换成endpint.Endpoint类型。</p>
+<pre><code>import (
+        &quot;context&quot;
+        &quot;github.com/go-kit/kit/endpoint&quot;
+)
+
+func makeUppercaseEndpoint(svc StringService) endpoint.Endpoint {
+        return func(ctx context.Context, request interface{}) (interface{}, error) {
+                req := request.(uppercaseRequest)
+                v, err := svc.Uppercase(ctx, req.S)
+                if err != nil {
+                        return uppercaseResponse{v, err.Error()}, nil
+                }
+                return uppercaseResponse{v, &quot;&quot;}, nil
+        }
+}
+
+func makeCountEndpoint(svc StringService) endpoint.Endpoint {
+        return func(ctx context.Context, request interface{}) (interface{}, error) {
+                req := request.(countRequest)
+                v := svc.Count(ctx, req.S)
+                return countResponse{v}, nil
+        }
+}
+</code></pre><p>接下来就到了transport层，这里我们需要将服务暴露出去，以便提供给外部调用，底层协议可以根据需要选择，这里采用http和json。</p>
+<pre><code>import (
+        &quot;context&quot;
+        &quot;encoding/json&quot;
+        &quot;log&quot;
+        &quot;net/http&quot;
+
+        httptransport &quot;github.com/go-kit/kit/transport/http&quot;
+)
+
+func main() {
+        svc := stringService{}
+
+        uppercaseHandler := httptransport.NewServer(
+                makeUppercaseEndpoint(svc),
+                decodeUppercaseRequest,
+                encodeResponse,
+        )
+
+        countHandler := httptransport.NewServer(
+                makeCountEndpoint(svc),
+                decodeCountRequest,
+                encodeResponse,
+        )
+
+        http.Handle(&quot;/uppercase&quot;, uppercaseHandler)
+        http.Handle(&quot;/count&quot;, countHandler)
+        log.Fatal(http.ListenAndServe(&quot;:8080&quot;, nil))
+}
+
+func decodeUppercaseRequest(_ context.Context, r *http.Request) (interface{}, error) {
+        var request uppercaseRequest
+        if err := json.NewDecoder(r.Body).Decode(&amp;request); err != nil {
+                return nil, err
+        }
+        return request, nil
+}
+
+func decodeCountRequest(_ context.Context, r *http.Request) (interface{}, error) {
+        var request countRequest
+        if err := json.NewDecoder(r.Body).Decode(&amp;request); err != nil {
+                return nil, err
+        }
+        return request, nil
+}
+
+func encodeResponse(_ context.Context, w http.ResponseWriter, response interface{}) error {
+        return json.NewEncoder(w).Encode(response)
+}
+</code></pre><p>至此，一个简单的基于go-kit的micro service已经全部开发完成了。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/04/14/2018-04-14-gokit-learning-one/" data-id="cjo9s9ub0005ibw6xmrqe1bqk" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Go/">Go</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2018-04-14-gokit-introduction" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/04/14/2018-04-14-gokit-introduction/" class="article-date">
+  <time datetime="2018-04-14T00:00:00.000Z" itemprop="datePublished">2018-04-14</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Go/">Go</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/04/14/2018-04-14-gokit-introduction/">go-kit简介</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="gokit是什么"><a href="#gokit是什么" class="headerlink" title="gokit是什么"></a>gokit是什么</h3><p>Gokit是一系列的工具的集合，能够帮助你快速的构建健壮的，可靠的，可维护的微服务。它提供了一系列构建微服务的成熟的模式和惯用法，背后有着一群经验丰富的开发者支持，并且已经在生产环境中被广泛的使用。</p>
+<h3 id="gokit的架构"><a href="#gokit的架构" class="headerlink" title="gokit的架构"></a>gokit的架构</h3><p>gokit不同于传统的MVC的框架，它只是一系列工具的组合，他有着自己的层次结构，主要有三层，分别是transport，endpoint和service层。</p>
+<h3 id="transport层"><a href="#transport层" class="headerlink" title="transport层"></a>transport层</h3><p>这是一个抽象的层级，对应真实世界中的http/grpc/thrift等，通过gokit你可以在同一个微服务中同时支持http和grpc。</p>
+<h3 id="endpoint层"><a href="#endpoint层" class="headerlink" title="endpoint层"></a>endpoint层</h3><p>endpoint层对应于controller中的action，主要是实现安全逻辑的地方，如果你要同时支持http和grpc，那么你将需要创建两个方法同时路由到同一个endpoint。</p>
+<h3 id="service层"><a href="#service层" class="headerlink" title="service层"></a>service层</h3><p>service是具体的业务逻辑实现的层级，在这里，你应该使用接口，并且通过实现这些接口来构建具体的业务逻辑。一个service通常聚合了多个endpoints，在service层，你应该使用clean architecture或者六边形模型，也就是说你的service层不需要知道enpoint以及transport层的具体实现，也不需要关心具体的http头部或者grpc的错误状态码。</p>
+<h3 id="middleware"><a href="#middleware" class="headerlink" title="middleware"></a>middleware</h3><p>middleware实现了装饰器模式，通过middleware你可以包装你的service或者endpoint，通常你需要构建一个middleware链来实现如日志，rate limit，负载均衡和分布式追踪。</p>
+<h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><ol>
+<li><p>太过复杂 如果你要添加一个API那么你将需要做如下的工作。</p>
+<ol>
+<li>声明一个interface，并定义相关的方法</li>
+<li>实现这个interface</li>
+<li>endpoint工厂方法</li>
+<li>transport方法</li>
+<li>request encoder，request decoder， response encoder response decoder</li>
+<li>把endpoint添加到server</li>
+<li>把endpoint添加到client</li>
+</ol>
+</li>
+<li>难以理解 各种分层，每一层都有特定的用处。</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/04/14/2018-04-14-gokit-introduction/" data-id="cjo9s9uaz005fbw6x13rzpipu" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Go/">Go</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2018-04-14-golang-context" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/04/14/2018-04-14-golang-context/" class="article-date">
+  <time datetime="2018-04-14T00:00:00.000Z" itemprop="datePublished">2018-04-14</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Go/">Go</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/04/14/2018-04-14-golang-context/">golang中context包详解</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在开发go web服务器的时候，通常一个request是在特定的goroutine中完成，请求处理程序经常启动额外的goroutine来访问数据库或者RPC等后端服务，处理请求的一系列goroutine通常需要获取终端用户的标识，授权令牌以及确定请求什么时候终止。当请求终止的时候，这一系列的goroutine都应该被通知到并退出，以便系统能够回收资源。</p>
+<p>context包就是为了在goroutine之间传递信息用的，能够使得在一系列的处理请求的goroutine中很方便的传递信息。</p>
+<p>对服务器的传入请求应创建一个上下文，对服务器的传出调用应接受上下文。它们之间的函数调用链必须传播上下文，可以用使用WithCancel，WithDeadline，WithTimeout或WithValue创建的派生上下文替换它。当上下文被取消时，从它派生的所有上下文也被取消。</p>
+<p>WithCancel，WithDeadline和WithTimeout函数采用Context（父级）并返回派生的Context（子级）和CancelFunc。调用CancelFunc将取消子对象及其子对象，删除父对子对象的引用，并停止任何关联的定时器。未能调用CancelFunc会泄漏子项及其子项，直至父项被取消或计时器激发。 go vet工具检查在所有控制流路径上使用CancelFuncs。</p>
+<p>使用上下文的程序应该遵循这些规则来保持包之间的接口一致，并使静态分析工具能够检查上下文传播：</p>
+<p>不要将上下文存储在结构类型中;相反，将一个Context明确地传递给每个需要它的函数。上下文应该是第一个参数，通常命名为ctx：</p>
+<p>即使函数允许，也不要传递零上下文。如果您不确定要使用哪个上下文，请传递context.TODO。</p>
+<p>使用上下文值仅适用于传输进程和API的请求范围数据，而不用于将可选参数传递给函数。</p>
+<p>相同的上下文可以传递给在不同goroutine中运行的函数;上下文对于多个goroutine同时使用是安全的。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">//上下文包含截止期限，取消信号和请求范围值</span><br><span class="line">//跨越API边界。它的方法对于多个同时使用是安全的</span><br><span class="line">// goroutines。</span><br><span class="line">type Context interface &#123;</span><br><span class="line">    // 当一个Context被取消或者超时的时候返回一个关闭的通道</span><br><span class="line">    Done() &lt;-chan struct&#123;&#125;</span><br><span class="line"></span><br><span class="line">    // 当Done通道关闭后，返回这个context被取消的原因</span><br><span class="line">    Err() error</span><br><span class="line"></span><br><span class="line">    // 当设置了取消时间的时候，返回什么时候被取消</span><br><span class="line">    Deadline() (deadline time.Time, ok bool)</span><br><span class="line"></span><br><span class="line">    // 返回键值对，如果没有返回nil</span><br><span class="line">    Value(key interface&#123;&#125;) interface&#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Done方法返回一个通道，该通道作为代表上下文运行的函数的取消信号：当通道关闭时，函数应放弃其工作并返回。 Err方法返回一个错误，指出Context被取消的原因。</p>
+<p>由于与完成通道仅接收相同的原因，上下文没有取消方法：接收取消信号的功能通常不是发送信号的功能。特别是，当父操作为子操作启动子程序时，这些子操作不应该能够取消父操作。相反，WithCancel函数（如下所述）提供了一种方法来取消新的上下文值。</p>
+<p>上下文对于多个goroutine同时使用是安全的。代码可以将单个Context传递给任意数量的goroutine，并取消该Context来发信号通知所有这些。</p>
+<p>Deadline方法允许函数确定他们是否应该开始工作;如果剩下的时间太少，这可能不值得。代码也可以使用最后期限来设置I / O操作的超时时间。</p>
+<p>值允许上下文携带请求范围的数据。该数据必须安全，可供多个goroutine同时使用。</p>
+<h3 id="WithCancel"><a href="#WithCancel" class="headerlink" title="WithCancel"></a>WithCancel</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">func WithCancel(parent Context) (ctx Context, cancel CancelFunc)</span><br></pre></td></tr></table></figure>
+<p>WithCancel返回一个携带新的Done通道的父亲的副本。当返回的cancel方法被调用或者父级context的Done通道被关闭时，返回的context的Done通道会被关闭。</p>
+<p>取消这个context会释放与它相关的资源，因此只要在这个Context中运行的操作完成，代码就应该立即调用cancel。</p>
+<h3 id="WithDeadline"><a href="#WithDeadline" class="headerlink" title="WithDeadline"></a>WithDeadline</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">func WithDeadline(parent Context, d time.Time) (Context, CancelFunc)</span><br></pre></td></tr></table></figure>
+<p>WithDeadline返回父上下文的副本，并将截止日期调整为不晚于d。如果父母的截止日期早于d，WithDeadline（parent，d）在语义上等同于父母。当截止日期到期，返回的取消功能被调用时，或父上下文的完成通道关闭时，返回的上下文的完成通道关闭，以先发生者为准。</p>
+<p>取消这个上下文会释放与它相关的资源，因此只要在这个Context中运行的操作完成，代码就应该立即调用cancel。</p>
+<h3 id="WithTimeout"><a href="#WithTimeout" class="headerlink" title="WithTimeout"></a>WithTimeout</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">func WithTimeout(parent Context, timeout time.Duration) (Context, CancelFunc)</span><br></pre></td></tr></table></figure>
+<p>WithTimeout返回WithDeadline（parent，time.Now（）。Add（timeout））。</p>
+<p>取消这个上下文可以释放与它相关的资源，因此只要在这个Context中运行的操作完成，代码就应该立即调用cancel</p>
+<h3 id="WithValue"><a href="#WithValue" class="headerlink" title="WithValue"></a>WithValue</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">func WithValue(parent Context, key, val interface&#123;&#125;) Context</span><br></pre></td></tr></table></figure>
+<p>WithValue返回父键的副本，其中与键关联的值是val。</p>
+<p>使用上下文值仅适用于传输进程和API的请求范围数据，而不用于将可选参数传递给函数。</p>
+<p>提供的密钥必须具有可比性，不应该是字符串类型或任何其他内置类型，以避免使用上下文的包之间发生冲突。 WithValue的用户应该为键定义他们自己的类型。为了避免在分配给接口时分配{}，上下文键通常具有具体类型struct {}。或者，导出的上下文关键字变量的静态类型应该是指针或接口。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/04/14/2018-04-14-golang-context/" data-id="cjo9s9ub70067bw6xuqhufpm2" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Go/">Go</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2018-03-31-golang-handle-and-handlefunc" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/03/31/2018-03-31-golang-handle-and-handlefunc/" class="article-date">
+  <time datetime="2018-03-31T00:00:00.000Z" itemprop="datePublished">2018-03-31</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Go/">Go</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/03/31/2018-03-31-golang-handle-and-handlefunc/">Golang中的Handle和HandleFunc</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在golang的标准库文档中有这么一段示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">http.Handle(&quot;/foo&quot;, fooHandler)</span><br><span class="line"></span><br><span class="line">http.HandleFunc(&quot;/bar&quot;, func(w http.ResponseWriter, r *http.Request) &#123;</span><br><span class="line">	fmt.Fprintf(w, &quot;Hello, %q&quot;, html.EscapeString(r.URL.Path))</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">log.Fatal(http.ListenAndServe(&quot;:8080&quot;, nil))</span><br></pre></td></tr></table></figure>
+<p>Handle和HandleFunc都接收两个参数，第一个都是将要访问的路由，是一个string类型。不同的是第二个参数，前者接受一个实现了Handler interface的type，后者是一个Handler的方法。<br>之所以要有Handle是为了当逻辑比较复杂时可以在请求的过程中加入一些状态，一个实现了Handler类型的type可以很容易的做到这一点。但是这样做是很繁琐的，首先要定义一个类型，然后实现Handler接口，也就是编写<br>ServeHttp方法，试想以下，每次都要这样做要做很多额外的工作。所以golang标准库做了一层封装，也就是HandleFunc方法, 对于简单的场景，使用handleFunc开发效率更高一些。</p>
+<p>在server.go的源码中可以看到handlerFunc的具体实现：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">type HandlerFunc func(ResponseWriter, *Request)</span><br><span class="line"></span><br><span class="line">// ServeHTTP calls f(w, r).</span><br><span class="line">func (f HandlerFunc) ServeHTTP(w ResponseWriter, r *Request) &#123;</span><br><span class="line">    f(w, r)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>首先自定义一个类型为func的type，添加一个ServeHttp的方法，并在方法体中调用自身，这实际上是一个wrapper，主要是为了方便。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/03/31/2018-03-31-golang-handle-and-handlefunc/" data-id="cjo9s9uax005cbw6xilafw6i3" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Go/">Go</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2018-03-30-golang-http-router" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/03/30/2018-03-30-golang-http-router/" class="article-date">
+  <time datetime="2018-03-30T00:00:00.000Z" itemprop="datePublished">2018-03-30</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Go/">Go</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/03/30/2018-03-30-golang-http-router/">Golang中的router</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>一个web应用程序要接受来及外部的url请求，一个重要的工作是对url进行解析，并将这次请求转给对应的逻辑代码进行处理，这里就是路由机制大展身手的地方了。</p>
+<p>golang中有一个ServeMux类型，该类型同样实现了ServeHttp方法，因而可以直接作为参数传入http.LisenAndServe方法。iServeMux类型是HTTP请求的多路转接器。它会将每一个接收的请求的URL与一个注册模式的列表进行匹配，并调用和URL最匹配的模式的处理器。</p>
+<p>下面来看一下具体的应用：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">	&quot;io&quot;</span><br><span class="line">	&quot;net/http&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">func helloHandler(w http.ResponseWriter, r *http.Request) &#123;</span><br><span class="line">	io.WriteString(w, &quot;Hello, world!\n&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func echoHandler(w http.ResponseWriter, r *http.Request) &#123;</span><br><span class="line">	io.WriteString(w, r.URL.Path)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	mux := http.NewServeMux()</span><br><span class="line">	mux.HandleFunc(&quot;/hello&quot;, helloHandler)</span><br><span class="line">	mux.HandleFunc(&quot;/&quot;, echoHandler)</span><br><span class="line"></span><br><span class="line">	http.ListenAndServe(&quot;:8080&quot;, mux)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>首先通过http.NewServeMux()创建并返回一个新的*ServeMux,然后相应的路由和handler都注册到它上面。<br>路由的匹配规则如下：</p>
+<ol>
+<li>匹配根路径或者以根路径开始的子树，如’/‘和’/images/‘, 注意”/images/“后面的”/“,这代表一条子路径，可以匹配任何以”/images/“开始的路径，如果没有”/“则代表叶子，是一个固定的路径。</li>
+<li>较长的路径匹配的优先级会高于较短的路径，如果同时注册了两个路由”/images/“和”/images/avatar”,请求的url是”<a href="http://localhost:8080/images/avatar/&quot;,那么会优先匹配后一条路由而不管这两条路由注册的先后顺序。" target="_blank" rel="noopener">http://localhost:8080/images/avatar/&quot;,那么会优先匹配后一条路由而不管这两条路由注册的先后顺序。</a></li>
+<li>任何路径中包含”.”或”..”元素的请求重定向到等价的没有这两种元素的URL。</li>
+</ol>
+<p>go自带的路由实现了一些基本的功能，但是并不完善：</p>
+<ol>
+<li>没法处理query paramter如”/user/:id”</li>
+<li>没法限定请求的http方法， 如”/user”, 用get，post，put，delete等都可以匹配到<h4 id="ServeMux源码"><a href="#ServeMux源码" class="headerlink" title="ServeMux源码"></a>ServeMux源码</h4></li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">type ServeMux struct &#123;</span><br><span class="line">	mu    sync.RWMutex</span><br><span class="line">	m     map[string]muxEntry</span><br><span class="line">	hosts bool // whether any patterns contain hostnames</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type muxEntry struct &#123;</span><br><span class="line">	h       Handler</span><br><span class="line">	pattern string</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>首先定义ServeMux类型，是一个结构体，包括一个读写锁，一个路由注册器，和一个标示路由是否携带主机名的hosts bool变量。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">// Handle registers the handler for the given pattern.</span><br><span class="line">// If a handler already exists for pattern, Handle panics.</span><br><span class="line">func (mux *ServeMux) Handle(pattern string, handler Handler) &#123;</span><br><span class="line">	mux.mu.Lock()</span><br><span class="line">	defer mux.mu.Unlock()</span><br><span class="line"></span><br><span class="line">  // 边界情况处理</span><br><span class="line">	if pattern == &quot;&quot; &#123;</span><br><span class="line">		panic(&quot;http: invalid pattern&quot;)</span><br><span class="line">	&#125;</span><br><span class="line">	if handler == nil &#123;</span><br><span class="line">		panic(&quot;http: nil handler&quot;)</span><br><span class="line">	&#125;</span><br><span class="line">  // 如果对应的路由已经注册，那么将触发panic</span><br><span class="line">	if _, exist := mux.m[pattern]; exist &#123;</span><br><span class="line">		panic(&quot;http: multiple registrations for &quot; + pattern)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">  // 如果还没有任何路由注册过，则创建一个map</span><br><span class="line">	if mux.m == nil &#123;</span><br><span class="line">		mux.m = make(map[string]muxEntry)</span><br><span class="line">	&#125;</span><br><span class="line">  // 将路由写入map</span><br><span class="line">	mux.m[pattern] = muxEntry&#123;h: handler, pattern: pattern&#125;</span><br><span class="line"></span><br><span class="line">  // 如果路由不以&quot;/&quot;开头，则说明有主机名</span><br><span class="line">	if pattern[0] != &apos;/&apos; &#123;</span><br><span class="line">		mux.hosts = true</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// HandleFunc封装Handle,处理方式和&quot;net/http&quot; 一致。</span><br><span class="line">func (mux *ServeMux) HandleFunc(pattern string, handler func(ResponseWriter, *Request)) &#123;</span><br><span class="line">	mux.Handle(pattern, HandlerFunc(handler))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">// ServeHTTP将请求转发给最匹配的handler处理</span><br><span class="line">func (mux *ServeMux) ServeHTTP(w ResponseWriter, r *Request) &#123;</span><br><span class="line">	if r.RequestURI == &quot;*&quot; &#123;</span><br><span class="line">		if r.ProtoAtLeast(1, 1) &#123;</span><br><span class="line">			w.Header().Set(&quot;Connection&quot;, &quot;close&quot;)</span><br><span class="line">		&#125;</span><br><span class="line">		w.WriteHeader(StatusBadRequest)</span><br><span class="line">		return</span><br><span class="line">	&#125;</span><br><span class="line">	h, _ := mux.Handler(r)</span><br><span class="line">	h.ServeHTTP(w, r)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">// Handler 返回根据路由匹配的Handler,</span><br><span class="line">// 它永远返回一个非空的Handler，如果请求的路由是非标准化的，那么将会对其进行转换。</span><br><span class="line">// 如果路由带有端口号，则在匹配的时候忽略。</span><br><span class="line">//</span><br><span class="line">// 如果是connect请求，则不会对host和path做处理。</span><br><span class="line">// 如果没有匹配的，则返回&quot;&quot;</span><br><span class="line">func (mux *ServeMux) Handler(r *Request) (h Handler, pattern string) &#123;</span><br><span class="line"></span><br><span class="line">	// CONNECT requests are not canonicalized.</span><br><span class="line">	if r.Method == &quot;CONNECT&quot; &#123;</span><br><span class="line">		// If r.URL.Path is /tree and its handler is not registered,</span><br><span class="line">		// the /tree -&gt; /tree/ redirect applies to CONNECT requests</span><br><span class="line">		// but the path canonicalization does not.</span><br><span class="line">		if u, ok := mux.redirectToPathSlash(r.URL.Host, r.URL.Path, r.URL); ok &#123;</span><br><span class="line">			return RedirectHandler(u.String(), StatusMovedPermanently), u.Path</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		return mux.handler(r.Host, r.URL.Path)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">  // 在交给mux.hanlder处理之前，先删除port，清理path</span><br><span class="line">	host := stripHostPort(r.Host)</span><br><span class="line">	path := cleanPath(r.URL.Path)</span><br><span class="line"></span><br><span class="line">  // 如果&quot;/tree&quot;没有注册，则返回一个带有3XX code的Handler，交给&quot;/tree/&quot;</span><br><span class="line">	if u, ok := mux.redirectToPathSlash(host, path, r.URL); ok &#123;</span><br><span class="line">		return RedirectHandler(u.String(), StatusMovedPermanently), u.Path</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">  // 如果处理的后的路径和原始路径不一致，交给RedirectHandler处理</span><br><span class="line">	if path != r.URL.Path &#123;</span><br><span class="line">		_, pattern = mux.handler(host, path)</span><br><span class="line">		url := *r.URL</span><br><span class="line">		url.Path = path</span><br><span class="line">		return RedirectHandler(url.String(), StatusMovedPermanently), pattern</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">  // 否则由mux.handler处理</span><br><span class="line">	return mux.handler(host, r.URL.Path)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">// handler是Handler的主要处理逻辑，对path做标准化处理。</span><br><span class="line">func (mux *ServeMux) handler(host, path string) (h Handler, pattern string) &#123;</span><br><span class="line">	mux.mu.RLock()</span><br><span class="line">	defer mux.mu.RUnlock()</span><br><span class="line"></span><br><span class="line">  // 定义了hosts的路由有更高的优先级</span><br><span class="line">	if mux.hosts &#123;</span><br><span class="line">		h, pattern = mux.match(host + path)</span><br><span class="line">	&#125;</span><br><span class="line">  // 如果没有匹配到，则交给后续处理</span><br><span class="line">	if h == nil &#123;</span><br><span class="line">		h, pattern = mux.match(path)</span><br><span class="line">	&#125;</span><br><span class="line">	if h == nil &#123;</span><br><span class="line">		h, pattern = NotFoundHandler(), &quot;&quot;</span><br><span class="line">	&#125;</span><br><span class="line">	return</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line">// Return the canonical path for p, eliminating . and .. elements.</span><br><span class="line">func cleanPath(p string) string &#123;</span><br><span class="line">	if p == &quot;&quot; &#123;</span><br><span class="line">		return &quot;/&quot;</span><br><span class="line">	&#125;</span><br><span class="line">	if p[0] != &apos;/&apos; &#123;</span><br><span class="line">		p = &quot;/&quot; + p</span><br><span class="line">	&#125;</span><br><span class="line">	np := path.Clean(p)</span><br><span class="line">	// path.Clean removes trailing slash except for root;</span><br><span class="line">	// put the trailing slash back if necessary.</span><br><span class="line">	if p[len(p)-1] == &apos;/&apos; &amp;&amp; np != &quot;/&quot; &#123;</span><br><span class="line">		np += &quot;/&quot;</span><br><span class="line">	&#125;</span><br><span class="line">	return np</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 删除port</span><br><span class="line">func stripHostPort(h string) string &#123;</span><br><span class="line">	// If no port on host, return unchanged</span><br><span class="line">	if strings.IndexByte(h, &apos;:&apos;) == -1 &#123;</span><br><span class="line">		return h</span><br><span class="line">	&#125;</span><br><span class="line">	host, _, err := net.SplitHostPort(h)</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		return h // on error, return unchanged</span><br><span class="line">	&#125;</span><br><span class="line">	return host</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 路由越精确优先级越高</span><br><span class="line">func (mux *ServeMux) match(path string) (h Handler, pattern string) &#123;</span><br><span class="line">	// Check for exact match first.</span><br><span class="line">	v, ok := mux.m[path]</span><br><span class="line">	if ok &#123;</span><br><span class="line">		return v.h, v.pattern</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">  // 找最长的路径</span><br><span class="line">	var n = 0</span><br><span class="line">	for k, v := range mux.m &#123;</span><br><span class="line">		if !pathMatch(k, path) &#123;</span><br><span class="line">			continue</span><br><span class="line">		&#125;</span><br><span class="line">		if h == nil || len(k) &gt; n &#123;</span><br><span class="line">			n = len(k)</span><br><span class="line">			h = v.h</span><br><span class="line">			pattern = v.pattern</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	return</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/03/30/2018-03-30-golang-http-router/" data-id="cjo9s9uav0058bw6xypfpoe71" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Go/">Go</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2018-03-25-golang-eacape-analysis" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/03/25/2018-03-25-golang-eacape-analysis/" class="article-date">
+  <time datetime="2018-03-25T00:00:00.000Z" itemprop="datePublished">2018-03-25</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Go/">Go</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/03/25/2018-03-25-golang-eacape-analysis/">Golang逃逸分析</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>首先我们来看一下什么是逃逸分析</p>
+<blockquote>
+<p>在编译程序优化理论中，逃逸分析是一种确定指针动态范围的方法——分析在程序的哪些地方可以访问到指针。它涉及到指针分析和形状分析。 当一个变量(或对象)在子程序中被分配时，一个指向变量的指针可能逃逸到其它执行线程中，或者去调用子程序。如果使用尾递归优化（通常在函数编程语言中是需要的），对象也可能逃逸到被调用的子程序中。如果一种语言支持第一类型的延续性在Scheme和Standard ML of New Jersey中同样如此），部分调用栈也可能发生逃逸。 如果一个子程序分配一个对象并返回一个该对象的指针，该对象可能在程序中的任何一个地方被访问到——这样指针就成功“逃逸”了。如果指针存储在全局变量或者其它数据结构中，它们也可能发生逃逸，这种情况是当前程序中的指针逃逸。 逃逸分析需要确定指针所有可以存储的地方，保证指针的生命周期只在当前进程或线程中。</p>
+</blockquote>
+<p>在Go语言中，编译器能够智能的分析出一个变量是否该分配在栈上还是堆上，分配在栈上的变量能够在函数声明周期结束之后立即被销毁吗，分配在堆上的在后期可以被GC过程销毁。由此可见，分配在栈上的变量是不会增加GC的负担的。</p>
+<p>对于go来讲，如果一个变量的引用作为函数的返回值返回，那么将发生逃逸，因为它在函数返回后，仍然可能在其他的地方被其他的对象所引用。以下是可能发生逃逸的操作：</p>
+<ol>
+<li>函数调用另外的函数。</li>
+<li>引用被赋值给结构体成员，</li>
+<li>slice和map</li>
+<li>cgo对变量的指针引用。</li>
+</ol>
+<p>可以通过在编译时加上<code>-m -l</code>参数来进行逃逸分析，其中-m将会输出逃逸分析相关信息，-l防止编译器进行自动的方法内联。</p>
+<p>参考资料：</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/03/25/2018-03-25-golang-eacape-analysis/" data-id="cjo9s9uas0055bw6xrr2izb3p" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Go/">Go</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2018-03-17-golang-sync-pool" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/03/17/2018-03-17-golang-sync-pool/" class="article-date">
+  <time datetime="2018-03-17T00:00:00.000Z" itemprop="datePublished">2018-03-17</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Go/">Go</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/03/17/2018-03-17-golang-sync-pool/">Golang中sync.Pool详解</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>我们通常用golang来构建高并发场景下的应用，但是由于golang内建的GC机制会影响应用的性能，为了减少GC，golang提供了对象重用的机制，也就是sync.Pool对象池。<br>sync.Pool是可伸缩的，并发安全的。其大小仅受限于内存的大小，可以被看作是一个存放可重用对象的值的容器。<br>设计的目的是存放已经分配的但是暂时不用的对象，在需要用到的时候直接从pool中取。</p>
+<p>任何存放区其中的值可以在任何时候被删除而不通知，在高负载下可以动态的扩容，在不活跃时对象池会收缩。</p>
+<p>sync.Pool首先声明了两个结构体</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">// Local per-P Pool appendix.</span><br><span class="line">type poolLocalInternal struct &#123;</span><br><span class="line">	private interface&#123;&#125;   // Can be used only by the respective P.</span><br><span class="line">	shared  []interface&#123;&#125; // Can be used by any P.</span><br><span class="line">	Mutex                 // Protects shared.</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type poolLocal struct &#123;</span><br><span class="line">	poolLocalInternal</span><br><span class="line"></span><br><span class="line">	// Prevents false sharing on widespread platforms with</span><br><span class="line">	// 128 mod (cache line size) = 0 .</span><br><span class="line">	pad [128 - unsafe.Sizeof(poolLocalInternal&#123;&#125;)%128]byte</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>为了使得在多个goroutine中高效的使用goroutine，sync.Pool为每个P(对应CPU)都分配一个本地池，当执行Get或者Put操作的时候，会先将goroutine和某个P的子池关联，再对该子池进行操作。<br>每个P的子池分为私有对象和共享列表对象，私有对象只能被特定的P访问，共享列表对象可以被任何P访问。因为同一时刻一个P只能执行一个goroutine，所以无需加锁，但是对共享列表对象进行操作时，因为可能有多个goroutine同时操作，所以需要加锁。</p>
+<p>值得注意的是poolLocal结构体中有个pad成员，目的是为了防止false sharing。cache使用中常见的一个问题是false sharing。当不同的线程同时读写同一cache line上不同数据时就可能发生false sharing。false sharing会导致多核处理器上严重的系统性能下降。具体的可以参考<a href="http://ifeve.com/falsesharing/" title="http://ifeve.com/falsesharing/" target="_blank" rel="noopener">伪共享(False Sharing)</a>。</p>
+<p>类型sync.Pool有两个公开的方法，一个是Get，一个是Put, 我们先来看一下Put的源码。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">// Put adds x to the pool.</span><br><span class="line">func (p *Pool) Put(x interface&#123;&#125;) &#123;</span><br><span class="line">	if x == nil &#123;</span><br><span class="line">		return</span><br><span class="line">	&#125;</span><br><span class="line">	if race.Enabled &#123;</span><br><span class="line">		if fastrand()%4 == 0 &#123;</span><br><span class="line">			// Randomly drop x on floor.</span><br><span class="line">			return</span><br><span class="line">		&#125;</span><br><span class="line">		race.ReleaseMerge(poolRaceAddr(x))</span><br><span class="line">		race.Disable()</span><br><span class="line">	&#125;</span><br><span class="line">	l := p.pin()</span><br><span class="line">	if l.private == nil &#123;</span><br><span class="line">		l.private = x</span><br><span class="line">		x = nil</span><br><span class="line">	&#125;</span><br><span class="line">	runtime_procUnpin()</span><br><span class="line">	if x != nil &#123;</span><br><span class="line">		l.Lock()</span><br><span class="line">		l.shared = append(l.shared, x)</span><br><span class="line">		l.Unlock()</span><br><span class="line">	&#125;</span><br><span class="line">	if race.Enabled &#123;</span><br><span class="line">		race.Enable()</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>如果放入的值为空，直接return.</li>
+<li>检查当前goroutine的是否设置对象池私有值，如果没有则将x赋值给其私有成员，并将x设置为nil。</li>
+<li>如果当前goroutine私有值已经被设置，那么将该值追加到共享列表。</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">func (p *Pool) Get() interface&#123;&#125; &#123;</span><br><span class="line">	if race.Enabled &#123;</span><br><span class="line">		race.Disable()</span><br><span class="line">	&#125;</span><br><span class="line">	l := p.pin()</span><br><span class="line">	x := l.private</span><br><span class="line">	l.private = nil</span><br><span class="line">	runtime_procUnpin()</span><br><span class="line">	if x == nil &#123;</span><br><span class="line">		l.Lock()</span><br><span class="line">		last := len(l.shared) - 1</span><br><span class="line">		if last &gt;= 0 &#123;</span><br><span class="line">			x = l.shared[last]</span><br><span class="line">			l.shared = l.shared[:last]</span><br><span class="line">		&#125;</span><br><span class="line">		l.Unlock()</span><br><span class="line">		if x == nil &#123;</span><br><span class="line">			x = p.getSlow()</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	if race.Enabled &#123;</span><br><span class="line">		race.Enable()</span><br><span class="line">		if x != nil &#123;</span><br><span class="line">			race.Acquire(poolRaceAddr(x))</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	if x == nil &amp;&amp; p.New != nil &#123;</span><br><span class="line">		x = p.New()</span><br><span class="line">	&#125;</span><br><span class="line">	return x</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>尝试从本地P对应的那个本地池中获取一个对象值, 并从本地池冲删除该值。</li>
+<li>如果获取失败，那么从共享池中获取, 并从共享队列中删除该值。</li>
+<li>如果获取失败，那么从其他P的共享池中偷一个过来，并删除共享池中的该值(p.getSlow())。</li>
+<li>如果仍然失败，那么直接通过New()分配一个返回值，注意这个分配的值不会被放入池中。New()返回用户注册的New函数的值，如果用户未注册New，那么返回nil。</li>
+</ol>
+<p>最后我们来看一下init函数。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">func init() &#123;</span><br><span class="line">    runtime_registerPoolCleanup(poolCleanup)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到在init的时候注册了一个PoolCleanup函数，他会清除掉sync.Pool中的所有的缓存的对象，这个注册函数会在每次GC的时候运行，所以sync.Pool中的值只在两次GC中间的时段有效。</p>
+<p>通过以上的解读，我们可以看到，Get方法并不会对获取到的对象值做任何的保证，因为放入本地池中的值有可能会在任何时候被删除，但是不通知调用者。放入共享池中的值有可能被其他的goroutine偷走。<br>所以对象池比较适合用来存储一些临时切状态无关的数据，但是不适合用来存储数据库连接的实例，因为存入对象池重的值有可能会在垃圾回收时被删除掉，这违反了数据库连接池建立的初衷。</p>
+<p>参考资料：</p>
+<ul>
+<li><a href="http://blog.csdn.net/yongjian_lian/article/details/42058893" title="go语言的官方包sync.Pool的实现原理和适用场景" target="_blank" rel="noopener">go语言的官方包sync.Pool的实现原理和适用场景</a></li>
+<li><a href="https://golang.org/src/sync/pool.go" title="sync.Pool源码" target="_blank" rel="noopener">sync.Pool源码</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/03/17/2018-03-17-golang-sync-pool/" data-id="cjo9s9uaq0051bw6xyh1o8pm3" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Go/">Go</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2018-03-13-golang-channels" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/03/13/2018-03-13-golang-channels/" class="article-date">
+  <time datetime="2018-03-13T00:00:00.000Z" itemprop="datePublished">2018-03-13</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Go/">Go</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/03/13/2018-03-13-golang-channels/">Golang中channels详解</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="什么是channel"><a href="#什么是channel" class="headerlink" title="什么是channel"></a>什么是channel</h3><p>GO语言并发编程模型参考了了CSP理论，也就是所谓的通过传递消息来共享内容，而不是共享内存。你可以把channel想像成一根水管，发送者将消息从水管的一端发进去，接受者从水管的另一端取出来。<br>channel是有类型的，一端定义了channel的类型，那么发送者将只能发送特定类型的数据到该channel。<br>例如定义<code>chan T</code>，那么该chan将只能接受类型为T的数据。</p>
+<h3 id="发送和接收"><a href="#发送和接收" class="headerlink" title="发送和接收"></a>发送和接收</h3><p>channel的发送和读取的语法如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">data := &lt;- a //从channel中读取数据</span><br><span class="line">a &lt;- data //将数据发送到channel</span><br></pre></td></tr></table></figure>
+<p>需要注意的是，声明一个channel变量并不能直接使用，因为该变量的值是nil，无论是向nil的channel发送数据还是从nil的channel接收数据都将引发一个panic。</p>
+<p>channel的读取和发送都是阻塞的，除非有另外的goroutine向channel的一端发送数据，或者从channel中读取数据。channel的这种特性能够帮助开发者不显示的使用锁来完成同步操作。</p>
+<h3 id="bufferd-channel-VS-unbuffers-channel"><a href="#bufferd-channel-VS-unbuffers-channel" class="headerlink" title="bufferd channel VS unbuffers channel"></a>bufferd channel VS unbuffers channel</h3><p>channel可以有两种初始化的方式，分别是初始化成带缓冲的和不带缓冲的。下面将介绍这两种方式的差异。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">var a chan int</span><br><span class="line">var b chan int</span><br><span class="line">a = make(chan int) // 不带缓冲的chan</span><br><span class="line">b = make(chan int, 3) //带缓冲的chan</span><br></pre></td></tr></table></figure>
+<p>对于带缓冲的channel，只要channel未满，我们可以一直往里面写数据，但是无缓冲的channel则不行，下面的一段程序可以验证上面的结论。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">import &quot;fmt&quot;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">  a := make(chan int)</span><br><span class="line">  b := make(chan int, 3)</span><br><span class="line">  b &lt;- 1</span><br><span class="line">  b &lt;- 2</span><br><span class="line">  b &lt;- 3</span><br><span class="line">  fmt.Println(&lt;-b)</span><br><span class="line">  fmt.Println(&lt;-b)</span><br><span class="line">  fmt.Println(&lt;-b)</span><br><span class="line">  go func() &#123;</span><br><span class="line">    fmt.Println(&lt;-a)</span><br><span class="line">  &#125;</span><br><span class="line">  a &lt;- 1</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="channel-with-select"><a href="#channel-with-select" class="headerlink" title="channel with select"></a>channel with select</h3><p>可以通过select模式来实现多个chan的收发操作，还可以定义一个timer来实现超时的逻辑处理。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">select &#123;</span><br><span class="line">case x := &lt;- a:</span><br><span class="line">  //do something</span><br><span class="line">case y, ok := &lt;- b:</span><br><span class="line">  //do something</span><br><span class="line">case c &lt;- z:</span><br><span class="line">  //do something</span><br><span class="line">case &lt;- time.After(....):</span><br><span class="line">  //do something</span><br><span class="line">default:</span><br><span class="line">  //do something</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="for-range-chan-和-close"><a href="#for-range-chan-和-close" class="headerlink" title="for..range chan 和 close"></a>for..range chan 和 close</h3><p>channel也可以像slice一样通过for range来遍历，只要没关闭channel，for语句将一直阻塞。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">for c, ok := range b &#123;</span><br><span class="line">  ....</span><br><span class="line">  //do something</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面代码中的ok可以用来标示channel是否已经关闭。我们偶尔也会见到下面的用法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">for range b &#123;</span><br><span class="line">  ....</span><br><span class="line">  //do something</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里只要b不关闭，并且有数据发送到b，就可以一直执行for loop中的逻辑。<br>当一个带缓冲的channel被关闭后，我们仍然可以接收已经发送到该channel的数据直到完全取出所有的数据 ，<br>取完所有的数据之后再进行读取，将会得到声明的channel的类型的零值。<br>关闭一个不带缓冲的channel后，也可以从该channel读取数据，读取的是声明的channel的类型的零值。<br>无论是带缓冲的还是不带缓冲的channel，一旦关闭之后，就不能再向其发送数据了。<br>我们可以通过：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">if c, ok := &lt;-b; ok &#123;</span><br><span class="line">  //do something</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>来判断channel是否关闭。</p>
+<h3 id="directional-channel-VS-undirectional-channel"><a href="#directional-channel-VS-undirectional-channel" class="headerlink" title="directional channel VS undirectional channel"></a>directional channel VS undirectional channel</h3><p>通常我们使用时不会声明一个带方向的chan，因为只能接收或者只能发送的channel并没有实际的用处。<br>带方向的chan一般是用在方法的签名中，更多的时候是做一个约定，在代码review的时候可以更容易的看出该chan是用来读取还是用来接收。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/03/13/2018-03-13-golang-channels/" data-id="cjo9s9uaf004ybw6xdunu7pka" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Go/">Go</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2018-03-11-manage-goroutines" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/03/11/2018-03-11-manage-goroutines/" class="article-date">
+  <time datetime="2018-03-11T00:00:00.000Z" itemprop="datePublished">2018-03-11</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Go/">Go</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/03/11/2018-03-11-manage-goroutines/">Golang中goroutine的管理 </a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近在研究nsq的源码，首先看了下官方的一些文档，看到了一些对于goroutine管理方面的技巧，这里记录一下，备查。</p>
+<p>使用go关键字能够很容易的创建一个goroutine，但是对于goroutine的管理和清理却并不那么容易。goroutine带来的死锁问题也是不可回避的，这通常是由于顺序处理不当造成的。<br>goroutine也能造成内存泄漏，这在长时间运行的系统中会造成很大的影响。</p>
+<h3 id="sync-WaitGroup"><a href="#sync-WaitGroup" class="headerlink" title="sync.WaitGroup"></a>sync.WaitGroup</h3><p>waitGroup可以用来记录goroutine的数量，并且提供一种方式来等待所有的goroutine退出, nsq包装了waitGroup，方便后续的调用。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">type WaitGroupWrapper struct &#123;</span><br><span class="line">	sync.WaitGroup</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (w *WaitGroupWrapper) Wrap(cb func()) &#123;</span><br><span class="line">	w.Add(1)</span><br><span class="line">	go func() &#123;</span><br><span class="line">		cb()</span><br><span class="line">		w.Done()</span><br><span class="line">	&#125;()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// can be used as follows:</span><br><span class="line">wg := WaitGroupWrapper&#123;&#125;</span><br><span class="line">wg.Wrap(func() &#123; n.idPump() &#125;)</span><br><span class="line">...</span><br><span class="line">wg.Wait()</span><br></pre></td></tr></table></figure>
+<h3 id="Exit-Signal"><a href="#Exit-Signal" class="headerlink" title="Exit Signal"></a>Exit Signal</h3><p>一种最简单的方式就是给每个goroutine传递一个chan，当关闭这个chan的时候，所有的goroutine都能够收到通知，这样就能知道什么时候该退出了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">func work() &#123;</span><br><span class="line">    exitChan := make(chan int)</span><br><span class="line">    go task1(exitChan)</span><br><span class="line">    go task2(exitChan)</span><br><span class="line">    time.Sleep(5 * time.Second)</span><br><span class="line">    close(exitChan)</span><br><span class="line">&#125;</span><br><span class="line">func task1(exitChan chan int) &#123;</span><br><span class="line">    &lt;-exitChan</span><br><span class="line">    log.Printf(&quot;task1 exiting&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func task2(exitChan chan int) &#123;</span><br><span class="line">    &lt;-exitChan</span><br><span class="line">    log.Printf(&quot;task2 exiting&quot;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="退出时的同步"><a href="#退出时的同步" class="headerlink" title="退出时的同步"></a>退出时的同步</h3><p>实现一个可靠的，无死锁的，所有传递中的消息的退出顺序是相当困难的, 下面是一些TIPS：</p>
+<ul>
+<li>理想的情况是负责发送数据到 go-chan 的 goroutine 也应负责关闭它。</li>
+<li>如果 message 不能丢失，确保相关的 go-chan 被清空（尤其是无缓冲的！），以保证发送者可以继续发送数据。</li>
+<li>另外，如果消息是不重要的，发送给一个单一的 go-chan 应转换为一个 select 附加一个退出信号（如上所述），以避免阻塞。</li>
+<li><p>一般的顺序应该是</p>
+<ul>
+<li>停止接受新的连接</li>
+<li>发送退出信号给 child goroutines</li>
+<li>利用 WaitGroup 的 wait 等待 goroutine 退出</li>
+<li>恢复缓冲数据</li>
+<li>刷新所有东西到硬盘</li>
+</ul>
+</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/03/11/2018-03-11-manage-goroutines/" data-id="cjo9s9uad004ubw6xtgm8zf0w" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Go/">Go</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2018-02-14-golang-types" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/02/14/2018-02-14-golang-types/" class="article-date">
+  <time datetime="2018-02-14T00:00:00.000Z" itemprop="datePublished">2018-02-14</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Go/">Go</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/02/14/2018-02-14-golang-types/">Golang中类型系统详解</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近看到一篇关于指导go语言新手怎么学习的<a href="https://blog.rubylearning.com/best-practices-for-a-new-go-developer-8660384302fc" title="文章" target="_blank" rel="noopener">文章</a>，里面讲到了named type, unnamed type，恰好这一块有点印象，但是记忆已经不是太清晰了，所以本文总结一下，加深理解和记忆。</p>
+<h3 id="1-Named-Type-VS-Unnamed-Type"><a href="#1-Named-Type-VS-Unnamed-Type" class="headerlink" title="1.Named Type VS Unnamed Type"></a>1.Named Type VS Unnamed Type</h3><p>golang提供了一些基础类型(pre-delared)如boolean, numeric, string。基础类型可以组合成组合类型，这些类型有数组，切片，指针，结构体，map以及channel。</p>
+<p>通过关键字type定义的类型叫做named type，前文描述的组合类型叫做unamed type。值得提出的一点就是基础类型也是named type。</p>
+<p>可以为named type添加方法集，但是为unamed type添加方法集将会造成编译不通过。新定义的类型不会继承named type或者unamed type的方法集。</p>
+<h3 id="2-底层类型"><a href="#2-底层类型" class="headerlink" title="2.底层类型"></a>2.底层类型</h3><p>named type的底层类型是基础类型或者组合类型，基础类型和组合类型的底层类型是它们自己。</p>
+<h3 id="3-赋值"><a href="#3-赋值" class="headerlink" title="3.赋值"></a>3.赋值</h3><p>go是静态类型的，每个变量都有一个静态类型，在编译时，一个变量只有一种类型，不能被隐式的转换。<br>如果named type的底层类型是基础类型，那么通过named type声明的变量和基础类型声明的变量之间不可以赋值，即使这两者的底层类型是一致的。<br>unamed type和组合类型之间是可以相互赋值的。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/02/14/2018-02-14-golang-types/" data-id="cjo9s9uab004qbw6x6tkl5b3b" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Go/">Go</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+
+
+  <nav id="page-nav">
+    
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
+  </nav>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/CSS/">CSS</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/DDD/">DDD</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Git/">Git</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Go/">Go</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/HTTP/">HTTP</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/JavaScript/">JavaScript</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Learning-C/">Learning C</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Rails/">Rails</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Ruby/">Ruby</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Server/">Server</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/TCP-IP/">TCP/IP</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Test/">Test</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/best-practices/">best-practices</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/design-pattern/">design-pattern</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/postgresql/">postgresql</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/weixin/">weixin</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/分布式/">分布式</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/">C</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSS/">CSS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DDD/">DDD</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Go/">Go</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP/">HTTP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/">JavaScript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Rails/">Rails</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Rspec/">Rspec</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Ruby/">Ruby</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Server/">Server</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCP-IP/">TCP/IP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/postgresql/">postgresql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/weixin/">weixin</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式/">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/测试/">测试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/C/" style="font-size: 12.86px;">C</a> <a href="/tags/CSS/" style="font-size: 10px;">CSS</a> <a href="/tags/DDD/" style="font-size: 10px;">DDD</a> <a href="/tags/Git/" style="font-size: 11.43px;">Git</a> <a href="/tags/Go/" style="font-size: 18.57px;">Go</a> <a href="/tags/HTTP/" style="font-size: 10px;">HTTP</a> <a href="/tags/JavaScript/" style="font-size: 17.14px;">JavaScript</a> <a href="/tags/Rails/" style="font-size: 14.29px;">Rails</a> <a href="/tags/Rspec/" style="font-size: 10px;">Rspec</a> <a href="/tags/Ruby/" style="font-size: 20px;">Ruby</a> <a href="/tags/Server/" style="font-size: 10px;">Server</a> <a href="/tags/TCP-IP/" style="font-size: 10px;">TCP/IP</a> <a href="/tags/postgresql/" style="font-size: 12.86px;">postgresql</a> <a href="/tags/react/" style="font-size: 10px;">react</a> <a href="/tags/weixin/" style="font-size: 11.43px;">weixin</a> <a href="/tags/分布式/" style="font-size: 10px;">分布式</a> <a href="/tags/测试/" style="font-size: 10px;">测试</a> <a href="/tags/设计模式/" style="font-size: 15.71px;">设计模式</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/04/14/2018-04-14-gokit-learning-one/">go-kit学习笔记(一)</a>
+          </li>
+        
+          <li>
+            <a href="/2018/04/14/2018-04-14-gokit-introduction/">go-kit简介</a>
+          </li>
+        
+          <li>
+            <a href="/2018/04/14/2018-04-14-golang-context/">golang中context包详解</a>
+          </li>
+        
+          <li>
+            <a href="/2018/03/31/2018-03-31-golang-handle-and-handlefunc/">Golang中的Handle和HandleFunc</a>
+          </li>
+        
+          <li>
+            <a href="/2018/03/30/2018-03-30-golang-http-router/">Golang中的router</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

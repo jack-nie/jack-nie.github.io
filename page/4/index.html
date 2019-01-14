@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="Hexo">
+<meta property="og:url" content="http://yoursite.com/page/4/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:locale" content="default">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Hexo">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-2015-11-07-understanding-javascript&#39;s-variable-scope-and-hoisting" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/11/07/2015-11-07-understanding-javascript's-variable-scope-and-hoisting/" class="article-date">
+  <time datetime="2015-11-06T16:00:00.000Z" itemprop="datePublished">2015-11-07</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/JavaScript/">JavaScript</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/11/07/2015-11-07-understanding-javascript's-variable-scope-and-hoisting/">理解JavaScript中的变量作用域及声明提前</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>   在编程语言中，作用域控制着变量及参数的可见性与生命周期,能够减少名称冲突以及提供必要的自动内存管理。如果想要更好的理解及运用JavaScript,那么理解其作用域就显得很有必要，本文将深入探讨这一主题。<br>   变量的作用域定义了在该变量的上下文中对于该变量的可见性,JavaScript中的变量有全局变量和局部变量之分。</p>
+<h3 id="局部变量"><a href="#局部变量" class="headerlink" title="局部变量"></a>局部变量</h3><p>   大多数语言都有块级作用域，在一个代码块中在所定义的代码块之外是不可见的，在代码块中定义的变量在代码块执行结束之后就会被释放掉。但是实际上JavaScript并不支持块级作用域，这常常会造成混淆。对于JavaScript来说，它拥有函数级的作用域，函数内部的变量只在其内部及内部定义的函数可见。<br>   JavaScript Code:<br>   var greet = “Hello world!”;<br>   function sayHi() {<br>     var greet = “Hello inner!”;<br>     console.log(greet);//“Hello inner!”<br>   }</p>
+<p>   console.log(greet);//“Hello world!”</p>
+<h3 id="JavaScript没有块级作用域"><a href="#JavaScript没有块级作用域" class="headerlink" title="#JavaScript没有块级作用域"></a>#JavaScript没有块级作用域</h3><p>  让我们来看下面的一个例子：</p>
+<p>   JavaScript Code:<br>     var greet = “Hello world!”<br>     if (greet) {<br>       greet = “hello inner!”<br>       console.log(greet);//“Hello inner”<br>     }<br>     console.log(greet)://“Hello inner”<br>   我们可以看到代码块外部定义的变量的值已经被改变。</p>
+<h3 id="全局变量"><a href="#全局变量" class="headerlink" title="#全局变量"></a>#全局变量</h3><p>  所有在函数外部定义的变量都是全局变量，对整个应用可见，如果在函数体内定义变量，但是没有使用<code>var</code>关键字，那么它也将成为全局变量。</p>
+<p>   JavaScript Code:<br>     var greetOuter = “Hello world!”;<br>     greetAnother = “Hello another!”<br>     function sayHi() {<br>       greet = “Hello inner!”<br>       console.log(greetOuter);//“Hello world!”<br>       console.log(greetAnother);//“Hello another!”<br>       console.log(greet);//“Hello inner!”<br>     }<br>     console.log(greet);//“Hello inner!”</p>
+<h3 id="setTimeout中的变量实在全局作用域中执行的"><a href="#setTimeout中的变量实在全局作用域中执行的" class="headerlink" title="#setTimeout中的变量实在全局作用域中执行的"></a>#<code>setTimeout</code>中的变量实在全局作用域中执行的</h3><p>   需要注意的是<code>setTimeout</code>中的所有函数都是在全局作用域中执行的。</p>
+<p>   JavaScript Code:<br>   // setTimeout中的<code>this</code>对象指向全局变量<code>window</code><br>   var highValue = 200;<br>   var constantVal = 2;<br>     var myObj = {<br>     highValue: 20,<br>     constantVal: 5,<br>     calculateIt: function () {<br>       setTimeout (function  () {<br>         console.log(this.constantVal * this.highValue);<br>       }, 2000);<br>     }<br>   }<br>   myObj.calculateIt(); // 400</p>
+<h3 id="声明提前"><a href="#声明提前" class="headerlink" title="声明提前"></a>声明提前</h3><p>  JavaScript的函数作用域是指在函数体内声明的所有变量在函数体内始终可见，也就是说，在函数体内变量在声明之前已经可以使用，JavaScript的这个特性被称为声明提前。JavaScript中的所有变量声明都被提升至函数体的顶部，但是不包括赋值。声明提前的这一步操作是在JavaScript引擎预编译时进行的，是在代码开始执行之前。</p>
+<pre><code>JavaScript Code:
+var greet = &quot;Hello world!&quot;;
+function sayHi() {
+  console.log(greet);//&quot;undefined&quot;
+  var greet = &quot;Hello inner&quot;;
+  console.log(greet);//&quot;Hello inner&quot;
+}
+</code></pre><p>   由于声明提前的存在，<code>greet</code>的声明被提升到了函数体的顶部，在函数体内的局部变量拥有更高的优先级，因此覆盖掉了同名的全局变量。声明提前只是提升了变量的声明，但是赋值操作并没有提前，还停留在原来的位置，所以函数体内的第一行语句输出为<code>undefined</code>。</p>
+<p>   另外，需要指出的一点是，函数声明会比变量声明拥有更高的优先级，在提升的过程中会覆盖掉同名的变量声明，但是函数表达式则没有这一特性。</p>
+<p>   由于声明提前的存在以及JavaScript没有块级作用域，所以推荐的做法是将变量的声明放在函数体的顶部，可以真实的反应变量的作用域。</p>
+<p>参考文献:</p>
+<ul>
+<li><a href="http://javascriptissexy.com/javascript-variable-scope-and-hoisting-explained/" title="JavaScript Variable Scope and Hoisting Explained" target="_blank" rel="noopener">JavaScript Variable Scope and Hoisting Explained</a></li>
+<li><a href="http://www.amazon.cn/O-Reilly%25252525252525252525E7%25252525252525252525B2%25252525252525252525BE%25252525252525252525E5%2525252525252525252593%2525252525252525252581%25252525252525252525E5%252525252525252525259B%25252525252525252525BE%25252525252525252525E4%25252525252525252525B9%25252525252525252525A6%25252525252525252525E7%25252525252525252525B3%25252525252525252525BB%25252525252525252525E5%2525252525252525252588%2525252525252525252597-JavaScript%25252525252525252525E6%252525252525252525259D%2525252525252525252583%25252525252525252525E5%25252525252525252525A8%2525252525252525252581%25252525252525252525E6%252525252525252525258C%2525252525252525252587%25252525252525252525E5%252525252525252525258D%2525252525252525252597-%25252525252525252525E5%25252525252525252525BC%2525252525252525252597%25252525252525252525E5%2525252525252525252585%25252525252525252525B0%25252525252525252525E7%25252525252525252525BA%25252525252525252525B3%25252525252525252525E6%25252525252525252525A0%25252525252525252525B9/dp/B007VISQ1Y?SubscriptionId=AKIAJMGEVRIO53UGJCYQ&amp;tag=16-28-282__-23&amp;linkCode=sp1&amp;camp=2025&amp;creative=165953&amp;creativeASIN=B007VISQ1Y" title="JavaScript权威指南(第6版)" target="_blank" rel="noopener">JavaScript权威指南</a></li>
+<li><a href="http://www.amazon.cn/JavaScript%2525252525252525E8%2525252525252525AF%2525252525252525AD%2525252525252525E8%2525252525252525A8%252525252525252580%2525252525252525E7%2525252525252525B2%2525252525252525BE%2525252525252525E7%2525252525252525B2%2525252525252525B9-%2525252525252525E9%252525252525252581%252525252525252593%2525252525252525E6%2525252525252525A0%2525252525252525BC%2525252525252525E6%25252525252525258B%252525252525252589%2525252525252525E6%252525252525252596%2525252525252525AF%2525252525252525E2%252525252525252580%2525252525252525A2%2525252525252525E5%252525252525252585%25252525252525258B%2525252525252525E7%2525252525252525BD%252525252525252597%2525252525252525E5%252525252525252585%25252525252525258B%2525252525252525E7%2525252525252525A6%25252525252525258F%2525252525252525E5%2525252525252525BE%2525252525252525B7/dp/B0097CON2S?SubscriptionId=AKIAJMGEVRIO53UGJCYQ&amp;tag=16-28-282__-23&amp;linkCode=sp1&amp;camp=2025&amp;creative=165953&amp;creativeASIN=B0097CON2S" title="JavaScript语言精粹(修订版)" target="_blank" rel="noopener">JavaScript语言精粹</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/11/07/2015-11-07-understanding-javascript's-variable-scope-and-hoisting/" data-id="cjo9s9u8e002ibw6xhahcsns2" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JavaScript/">JavaScript</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2015-11-07-understanding-javascript&#39;s-this-key-words" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/11/07/2015-11-07-understanding-javascript's-this-key-words/" class="article-date">
+  <time datetime="2015-11-06T16:00:00.000Z" itemprop="datePublished">2015-11-07</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/JavaScript/">JavaScript</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/11/07/2015-11-07-understanding-javascript's-this-key-words/">理解JavaScript中的this关键字</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>   JavaScript函数调用中关于对象的引用一直是一个令人头疼的问题，造成这种困扰的很大一部分的原因是<code>this</code>关键字造成的。本文将深入探讨<code>this</code>关键字的各种用法，以及在不同情景中的表现。<br>   <code>this</code>是一个关键字，不是变量，也不是属性名，JavaScript的语法不允许给<code>this</code>赋值，它没有作用域的限制。</p>
+<h3 id="普通的函数调用"><a href="#普通的函数调用" class="headerlink" title="普通的函数调用"></a>普通的函数调用</h3><p>  在JavaScript中，每一个函数调用都会包含一个<code>this</code>值。对于普通的函数调用<code>this</code>指向全局对象，在严格模式下,<code>this</code>则为<code>undefined</code>。<br>  以函数形式调用的函数通常不用指定<code>this</code>关键字，不过可以使用<code>this</code>来判断当前是否处于严格模式中。</p>
+<pre><code>var strict = (function() { return !this; }());
+</code></pre><p>  普通函数调用的例子：</p>
+<pre><code>JavaScript Code:
+function sayHi(name) {
+  console.log(this + &quot; says hello &quot; + name);
+}
+sayHi(&quot;Jack&quot;);//[object Window] says hello Jack
+sayHi.call(&quot;Jones&quot;, &quot;Jack&quot;);//Jones says hello Jack
+window.sayHi(&quot;Jack&quot;);//[object Window] says hello Jack
+sayHi.call(window,&quot;Jack&quot;);//[object Window] says hello Jack
+</code></pre><h3 id="嵌套的函数调用"><a href="#嵌套的函数调用" class="headerlink" title="嵌套的函数调用"></a>嵌套的函数调用</h3><p>  嵌套的函数不会从调用它的函数中继承<code>this</code>,如果嵌套函数作为方法调用，那么<code>this</code>指向调用它的对象。如果嵌套函数作为函数调用，那么<code>this</code><br>  的值是全局对象或者<code>undefined</code>,这取决与处于何种模式下（严格模式、非严格模式）。如果想访问外部函数的<code>this</code>值,则需要将<code>this</code>的值保存到一个变量中。</p>
+<pre><code>JavaScript Code:
+var person = {
+  getName: function() {
+    var that = this;
+    console.log(this === person);//true
+    f();
+    function f() {
+      console.log(this === person);//false
+      console.log(that === person);//true
+    }
+  }
+};
+</code></pre><h3 id="成员函数调用"><a href="#成员函数调用" class="headerlink" title="成员函数调用"></a>成员函数调用</h3><p>  一种常见的情形是成员函数的使用，通过该对象来调用。<br>   JavaScript Code:<br>    var person = {<br>      name: “Jack”;<br>      sayHi: function(thing) {<br>        console.log(this.name + “ says hello “ + thing);<br>      }<br>    };<br>    person.sayHi(“world!”);//Jack says hello world!</p>
+<p>函数<code>sayHi</code>如何同<code>person</code>对象关联并不影响<code>this</code>的指向，我们来看一个动态关联的例子：</p>
+<pre><code>JavaScript Code:
+var person = { name: &quot;Jack&quot;};
+function sayHi(thing) {
+    console.log(this.name + &quot; says hello &quot; + thing);
+}
+person.sayHi = sayHi;
+person.sayHi(&quot;world!&quot;);//Jack says hello world!
+sayHi(&quot;world!&quot;);//[object window] says hello world!
+</code></pre><h3 id="间接调用"><a href="#间接调用" class="headerlink" title="间接调用"></a>间接调用</h3><p>我们可以通过<code>call</code>、<code>apply</code>来间接的调用函数，这两个都允许显示的指定调用所需的<code>this</code>值，也就是说任何函数都可以作为任何对象的方法来调用，即使这个函数不是某对象的方法。这两个方法的不同之处在于<code>call</code>使用自有的实参列表作为函数的实参，<code>apply</code>接受一个数组。</p>
+<pre><code>JavaScript Code:
+function sayHi(name) {
+  console.log(this + &quot; says hello &quot; + name);
+}
+sayHi.call(&quot;Jones&quot;, &quot;Jack&quot;);//Jones says hello Jack
+sayHi.call(window,&quot;Jack&quot;);//[object Window] says hello Jack
+sayHi.apply(&quot;Jones&quot;, [&quot;Jack&quot;]);//Jones says hello Jack
+</code></pre><p>有时候我们希望能够引用一个有着持久化<code>this</code>值的函数，那么我们可以使用<code>bind</code>函数。</p>
+<pre><code>JavaScript Code:
+function bind(func, obj) {
+  if (func.bind) {
+    return func.bind(obj);
+  } else {
+    return function() {
+      func.apply(obj, arguments);
+    };
+  }
+}
+var bindSayHi = bind(person.sayHi, person);
+bindSayHi(&quot;world!&quot;);//Jack says hello world!
+</code></pre><h3 id="jQuery中的this"><a href="#jQuery中的this" class="headerlink" title="jQuery中的this"></a>jQuery中的this</h3><pre><code>JavaScript Code:
+$(&quot;button&quot;).click(function(event) {
+  console.log($(this).prop(&quot;name&quot;));
+});
+</code></pre><p><code>$(this)</code>等同于<code>jQuery</code>中的<code>this</code>关键字，它被用在一个匿名函数内部，该函数在<code>button</code>的<code>click</code>方法中执行。<code>jQuery</code>将<code>$(this)</code>绑定到调用<code>click</code>方法的对象上，所以<code>$(this)</code>指向<code>$(&quot;button&quot;)</code>对象，即使<code>$(this)</code>被用在匿名函数内部，外部<code>this</code>对其不可见。</p>
+<p>参考文献:</p>
+<ul>
+<li><a href="http://javascriptissexy.com/understand-javascripts-this-with-clarity-and-master-it/" title="Understand JavaScript’s “this” With Clarity, and Master It" target="_blank" rel="noopener">Understand JavaScript’s “this” With Clarity, and Master It</a></li>
+<li><a href="http://yehudakatz.com/2011/08/11/understanding-javascript-function-invocation-and-this/" title="Understanding JavaScript Function Invocation and &#39;this&#39;" target="_blank" rel="noopener">Understanding JavaScript Function Invocation and “this”</a></li>
+<li><a href="http://www.amazon.cn/O-Reilly%25252525252525252525E7%25252525252525252525B2%25252525252525252525BE%25252525252525252525E5%2525252525252525252593%2525252525252525252581%25252525252525252525E5%252525252525252525259B%25252525252525252525BE%25252525252525252525E4%25252525252525252525B9%25252525252525252525A6%25252525252525252525E7%25252525252525252525B3%25252525252525252525BB%25252525252525252525E5%2525252525252525252588%2525252525252525252597-JavaScript%25252525252525252525E6%252525252525252525259D%2525252525252525252583%25252525252525252525E5%25252525252525252525A8%2525252525252525252581%25252525252525252525E6%252525252525252525258C%2525252525252525252587%25252525252525252525E5%252525252525252525258D%2525252525252525252597-%25252525252525252525E5%25252525252525252525BC%2525252525252525252597%25252525252525252525E5%2525252525252525252585%25252525252525252525B0%25252525252525252525E7%25252525252525252525BA%25252525252525252525B3%25252525252525252525E6%25252525252525252525A0%25252525252525252525B9/dp/B007VISQ1Y?SubscriptionId=AKIAJMGEVRIO53UGJCYQ&amp;tag=16-28-282__-23&amp;linkCode=sp1&amp;camp=2025&amp;creative=165953&amp;creativeASIN=B007VISQ1Y" title="JavaScript权威指南(第6版)" target="_blank" rel="noopener">JavaScript权威指南</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/11/07/2015-11-07-understanding-javascript's-this-key-words/" data-id="cjo9s9u8b002ebw6xxmn9pk1o" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JavaScript/">JavaScript</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2015-11-07-understanding-javascript&#39;s-closures" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/11/07/2015-11-07-understanding-javascript's-closures/" class="article-date">
+  <time datetime="2015-11-06T16:00:00.000Z" itemprop="datePublished">2015-11-07</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/JavaScript/">JavaScript</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/11/07/2015-11-07-understanding-javascript's-closures/">理解JavaScript中的闭包</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>   通俗的讲闭包就是在函数内部定义函数，内部的函数可以访问其外部函数的作用域。函数的变量可以被隐藏与作用域链之内，看起来像是变量被函数包裹了起来，因此被称作闭包。<br>   从技术的角度讲，所有的JavaScript函数都是闭包，它们都是对象，它们都关联到作用域链。<br>   理解闭包，需要首先了解JavaScript的词法作用域规则，函数的执行依赖变量作用域，这个作用域是在函数定义时绑定的，而不是在函数调用时绑定的。JavaScript函数对象的内部状态不仅包含函数的代码逻辑，还包含了当前的作用域链。<br>   我们来看一下下面的在这个例子：</p>
+<pre><code>JavaScript Code:
+  var scope = &quot;global scope&quot;
+  function checkScope() {
+    var scope = &quot;local scope&quot;;
+    function f() {return scope;}
+    return f;
+  }
+  checkScope()();
+</code></pre><p>运行代码可以发现,输出值为”local scope”,这意味着闭包可以访问外部函数的变量，即使外部函数已经执行完毕。</p>
+<p>闭包存储的是对外部变量的引用，而不是真实的值。当闭包被调用之前就改变了外部函数的变量的值的时候，情况会变得很有趣。通过这一特性，我们可以在JavaScript实现私有变量。</p>
+<pre><code>JavaScript Code:
+function car() {
+  var status = &quot;driving&quot;;
+  return {
+    getStatus: function() {
+      return status;
+    },
+
+    setStatus: function(newStatus) {
+      status = newStatus;
+    }
+  }
+}
+
+var audi = car();
+audi.getStatus();
+audi.setStatus(&quot;stop&quot;);
+audi.getStatus();
+</code></pre><p>通过分析可以发现，内部函数访问的外部函数的实际变量，而不是拷贝。为了深刻的理解这一特性，我们来看一下下面的例子：</p>
+<pre><code>JavaScript Code:
+var handlers = function(nodes) {
+  var i;
+  for (i = 0; i &lt; nodes.length; i += 1) {
+    nodes[i].onClick = function(e) {
+      console.log(i);
+    };
+  }
+};
+</code></pre><p>这段函数的本意是当用户点击某一节点的时候，打印出该节点的序号，但是事实是每次都返回节点的数目的值。这是因为事件处理器绑定了变量<code>i</code>本身，而不是在函数构造时的<code>i</code>的值。</p>
+<p>修复这段代码的方式是循环外部构造一个函数，然后在循环体内调用它。</p>
+<pre><code>JavaScript Code:
+var handlers = function(nodes) {
+  var helper = function(i) {
+    return function(e) {
+      console.log(i);
+    };
+  };
+
+  var i;
+  for (i = 0, i &lt; nodes.length, i += 1) {
+    nodes[i].onClick = helper(i);
+  }
+};
+</code></pre><p>这样，我们就能得到正确的结果了，当然还有一种改进的方式就是在循环体内构造一个立即调用的函数。<br>但是在循环中构造函数会带来不必要的计算，还会引起混淆，所以不建议这么做。</p>
+<p>参考文献:</p>
+<ul>
+<li><a href="http://javascriptissexy.com/understand-javascript-closures-with-ease/" title="Understand JavaScript Closures With Ease" target="_blank" rel="noopener">Understand JavaScript Closures With Ease</a></li>
+<li><a href="http://www.amazon.cn/O-Reilly%25252525252525252525E7%25252525252525252525B2%25252525252525252525BE%25252525252525252525E5%2525252525252525252593%2525252525252525252581%25252525252525252525E5%252525252525252525259B%25252525252525252525BE%25252525252525252525E4%25252525252525252525B9%25252525252525252525A6%25252525252525252525E7%25252525252525252525B3%25252525252525252525BB%25252525252525252525E5%2525252525252525252588%2525252525252525252597-JavaScript%25252525252525252525E6%252525252525252525259D%2525252525252525252583%25252525252525252525E5%25252525252525252525A8%2525252525252525252581%25252525252525252525E6%252525252525252525258C%2525252525252525252587%25252525252525252525E5%252525252525252525258D%2525252525252525252597-%25252525252525252525E5%25252525252525252525BC%2525252525252525252597%25252525252525252525E5%2525252525252525252585%25252525252525252525B0%25252525252525252525E7%25252525252525252525BA%25252525252525252525B3%25252525252525252525E6%25252525252525252525A0%25252525252525252525B9/dp/B007VISQ1Y?SubscriptionId=AKIAJMGEVRIO53UGJCYQ&amp;tag=16-28-282__-23&amp;linkCode=sp1&amp;camp=2025&amp;creative=165953&amp;creativeASIN=B007VISQ1Y" title="JavaScript权威指南(第6版)" target="_blank" rel="noopener">JavaScript权威指南</a></li>
+<li><a href="http://www.amazon.cn/JavaScript%2525252525252525E8%2525252525252525AF%2525252525252525AD%2525252525252525E8%2525252525252525A8%252525252525252580%2525252525252525E7%2525252525252525B2%2525252525252525BE%2525252525252525E7%2525252525252525B2%2525252525252525B9-%2525252525252525E9%252525252525252581%252525252525252593%2525252525252525E6%2525252525252525A0%2525252525252525BC%2525252525252525E6%25252525252525258B%252525252525252589%2525252525252525E6%252525252525252596%2525252525252525AF%2525252525252525E2%252525252525252580%2525252525252525A2%2525252525252525E5%252525252525252585%25252525252525258B%2525252525252525E7%2525252525252525BD%252525252525252597%2525252525252525E5%252525252525252585%25252525252525258B%2525252525252525E7%2525252525252525A6%25252525252525258F%2525252525252525E5%2525252525252525BE%2525252525252525B7/dp/B0097CON2S?SubscriptionId=AKIAJMGEVRIO53UGJCYQ&amp;tag=16-28-282__-23&amp;linkCode=sp1&amp;camp=2025&amp;creative=165953&amp;creativeASIN=B0097CON2S" title="JavaScript语言精粹(修订版)" target="_blank" rel="noopener">JavaScript语言精粹</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/11/07/2015-11-07-understanding-javascript's-closures/" data-id="cjo9s9u8a002abw6xfoiaowg5" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JavaScript/">JavaScript</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2015-10-29-understanding-rails&#39;s-delegate-module" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/10/29/2015-10-29-understanding-rails's-delegate-module/" class="article-date">
+  <time datetime="2015-10-28T16:00:00.000Z" itemprop="datePublished">2015-10-29</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Ruby/">Ruby</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/10/29/2015-10-29-understanding-rails's-delegate-module/">理解Rails中的delegate模块</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Rails中有一个非常炫酷的<code>associations</code>特性能够帮助我们很方便的创建链式方法，它看起来像是这样子的：</p>
+<pre><code>Ruby code:
+product.provider.name
+provider.address.city
+company.building.city
+</code></pre><p>但是，这破坏了<a href="http://jack-nie.github.io/best-practices/understanding-the-law-of-demeter.html" title="得墨忒耳" target="_blank" rel="noopener">“得墨忒耳”</a>法则，我们更希望通过如下方式进行调用：</p>
+<pre><code>Ruby code:
+product.provider_name
+provider.address_city #or provider.city
+company.city
+</code></pre><p>为了实现这样的调用方式，通常我们需要在对应的<code>model</code>中定义一些方法：<br>　　<br>    Ruby code:<br>    class Product &lt; ActiveRecord::Base<br>      belongs_to :provider</p>
+<pre><code>  def provider_name
+    provider.name
+  end
+
+  # More methods to access the provider&apos;s attributes
+end
+
+class Provider &lt; ActiveRecord::Base
+  has_many :products
+
+  # Has a name attribute
+end
+</code></pre><p>这是一个很好的解决方案，但是当我们有许多的属性时，就要定义更多的方法，这会增加代码的体积，也会更容易的引入bug。更进一步的我们可以引入ruby的动态特性。</p>
+<pre><code>Ruby code:
+%w[name age address].each do |attr|
+  define_method &quot;provider_#{attr}&quot; do
+    provider.send(&quot;#{attr}&quot;)
+  end
+end
+</code></pre><p>很酷的解决方案，但是仍然不够简洁，我们可以利用Rails给我们提供的轮子<code>Delegate</code>提供更加优雅的解决方案。</p>
+<pre><code>Ruby code:
+class Product &lt; ActiveRecord::Base
+  belongs_to :provider
+
+  delegate :name, to: :provider, prefix: true
+end
+
+class Provider &lt; ActiveRecord::Base
+  has_many :products
+
+  # Has a name attribute
+end
+</code></pre><p>这样，我们就可以实现前文所述的调用方式了，关于<code>Delegate</code>,必须以hash结尾。<br>若定义了<code>prefix: true</code>,则需要在调用时加上委托对象前缀，当然也可以自定义前缀。同时也提供了一个<code>allow_nil</code>的选项，如果定义为<code>true</code>,则被委托的对象不存在时，不会抛出异常。除此之外，还提供对实例变量、类变量、常量甚至类本身的代理。需要指出的是如果对实例变量委托，那么即使定义了<code>allow_nil: true</code>，也会抛出异常。需要了解更多，在<a href="http://apidock.com/rails/Module/delegate" title="文档" target="_blank" rel="noopener">文档</a>中有更加详细的说明。</p>
+<p>参考文献:</p>
+<ul>
+<li><a href="http://samurails.com/tutorial/rails-delegate-dont-break-the-law-of-demeter" title="Ruby on Rails Delegate : Don’t break the Law of Demeter !" target="_blank" rel="noopener">Ruby on Rails Delegate : Don’t break the Law of Demeter !</a></li>
+<li><a href="http://apidock.com/rails/Module/delegate" title="delegate" target="_blank" rel="noopener">delegate </a></li>
+<li><a href="http://simonecarletti.com/blog/2009/12/inside-ruby-on-rails-delegate/" title="Understanding Ruby and Rails: Delegate" target="_blank" rel="noopener">Understanding Ruby and Rails: Delegate</a></li>
+<li><a href="https://github.com/rails/rails/blob/8ba491acc31bf08cf63a83ea0a3c314c52cd020f/activesupport/lib/active_support/core_ext/module/delegation.rb#L104" title="delegate" target="_blank" rel="noopener">delegate源码 </a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/10/29/2015-10-29-understanding-rails's-delegate-module/" data-id="cjo9s9u870026bw6x37xcfgu1" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Rails/">Rails</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Ruby/">Ruby</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2015-10-24-git-merge-multi-commits" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/10/24/2015-10-24-git-merge-multi-commits/" class="article-date">
+  <time datetime="2015-10-23T16:00:00.000Z" itemprop="datePublished">2015-10-24</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Git/">Git</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/10/24/2015-10-24-git-merge-multi-commits/">Git合并多次提交</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在工作中，有时候会遇到多次针对一个问题的多次提交，因而会产生很多的提交记录，这让人看起来很不爽。<br>那么怎么样才能将多次的提交合并呢？答案是通过rebase命令。</p>
+<p>当你执行了<code>git rebase --interactive HEAD~2 master</code>命令后，将会出现如下的交互式画面：</p>
+<pre><code>Code:
+pick e30746d modify ruby case statement
+pick d870d17 fix display problems
+
+# Rebase 15e28f4..d870d17 onto 15e28f4
+#
+# Commands:
+#  p, pick = use commit
+#  r, reword = use commit, but edit the commit message
+#  e, edit = use commit, but stop for amending
+#  s, squash = use commit, but meld into previous commit
+#  f, fixup = like &quot;squash&quot;, but discard this commit&apos;s log message
+#  x, exec = run command (the rest of the line) using shell
+</code></pre><p>注释掉的部分是git给出的操作提示，这里选择<code>squash</code>选项来替换掉<code>pick</code>，需要注意的是，最上方的那一行<code>pick</code><br>需要保留，否则会出现<code>Cannot &#39;squash&#39; without a previous commit</code>的错误提示。如果你不小心替换掉了，那么<br>需要使用<code>git rebase --abort</code>再来一遍。</p>
+<p>退出编辑器之后，将会进入到下一个界面，如下所示：</p>
+<pre><code>Code:
+# This is a combination of 2 commits.
+# The first commit&apos;s message is:
+
+modify ruby case statement
+
+# This is the 2nd commit message:
+
+fix display problems
+</code></pre><p>没有被注释掉的部分是前两次的提交记录，可以选择保留，也可以选择删掉重写，然后退出就可以了。<br>之后就可以通过<code>git log --oneline --decorate</code>查看提交记录，发现前几次的提交已经合并掉了。</p>
+<p>另外一种合并的方式：</p>
+<pre><code>code:
+$ git reset HEAD~5
+$ git add .
+$ git commit -am &quot;Here&apos;s the bug fix that closes #28&quot;
+$ git push --force
+</code></pre><p>如果你想修复之前的提交，又不想有多次记录，那么可以在修复的这次提交中使用：</p>
+<pre><code>Code:
+git commit --fixup bbb2222
+git rebase --interactive --autosquash bbb1111
+#bbb1111为你需要修复的提交的前一次提交
+</code></pre><p>参考文献:</p>
+<ul>
+<li><a href="https://robots.thoughtbot.com/autosquashing-git-commits" title="Auto-squashing Git Commits" target="_blank" rel="noopener">Auto-squashing Git Commits</a></li>
+<li><a href="http://stackoverflow.com/questions/2563632/how-can-i-merge-two-commits-into-one" title="How can I merge two commits into one?" target="_blank" rel="noopener">How can I merge two commits into one?</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/10/24/2015-10-24-git-merge-multi-commits/" data-id="cjo9s9u850022bw6xwxu3qywt" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Git/">Git</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2015-10-24-accelerated-rails-downloads" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/10/24/2015-10-24-accelerated-rails-downloads/" class="article-date">
+  <time datetime="2015-10-23T16:00:00.000Z" itemprop="datePublished">2015-10-24</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Ruby/">Ruby</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/10/24/2015-10-24-accelerated-rails-downloads/">【翻译】利用Nginx加速Rails下载</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Rails有一个选项可以用来启用<code>X-Accel-Redirect</code>，但是这并不是全部。为了能够使其工作，还需要对Nginx进行一些配置，这稍微有点繁琐。下面说一下我是怎么做的。</p>
+<h3 id="问题：高效的传送文件"><a href="#问题：高效的传送文件" class="headerlink" title="问题：高效的传送文件"></a>问题：高效的传送文件</h3><p>扩展Rails应用全部都是有关与减少请求数，使得等待的时间越短越好。将耗费时间的请求使用异步的方式在后台运行，分发静态资源请求到CDN,使用缓存降低响应时间。</p>
+<p>但是有一类情景需要耗费比较长的时间，但是并不适合与一上的任意一种情况，那就是通过Rails应用传递大文件。你可能需要解决这个问题，因为文件需要加密(例如Rails session),或者是动态生成的。在这些情景下，你不能提前将其上传到CDN,异步传送可能会造成不好的用户体验。</p>
+<p>那么如何才能传送大文件的过程中不阻塞Rails应用呢？</p>
+<h3 id="Nginx和SEND-FILE是如何工作的？"><a href="#Nginx和SEND-FILE是如何工作的？" class="headerlink" title="Nginx和SEND_FILE是如何工作的？"></a>Nginx和<code>SEND_FILE</code>是如何工作的？</h3><p>如果你正在使用Nginx,那么解决方案就是使用<code>X-Accel-Redirect</code>,它是这样工作的。</p>
+<ol>
+<li>Rails控制器调用<code>send_file</code>方法，准备一个将要被下载的文件。对于一个生成好的文件，通常会被放在<code>&lt;rails root&gt;/tmp</code>文件夹下。</li>
+<li>Rack检测<code>X-Accel-Mapping</code>头部是否存在于请求中。如果存在，它就通过这种映射将<code>send_file</code>路径转换成Nginx能够理解的URI。</li>
+<li>Rack发送一个包含<code>X-Accel-Redirect</code>头的空响应给Nginx，这个头部告诉Nginx”请加载这个URI，并将其作为响应”。从Rails应用的角度来讲，在这一点上响应已经完成了，并且能够继续接受其他的请求。</li>
+<li>Nginx完成当前请求并处理一段时间，内部通过<code>X-Accel-Redirect</code>头部提供的URI进行重定向。</li>
+<li>Nginx查询配置文件(例如location指令)来找到URI指向的文件。假定该文件存在，它将会高效的将文件传送给客户端。</li>
+</ol>
+<p>如你所见，一个简单的<code>sned_file</code>只有在一系列的步骤都设置正确才会成功，下面是让其正确工作的步骤。</p>
+<h3 id="设置Rails"><a href="#设置Rails" class="headerlink" title="设置Rails"></a>设置Rails</h3><p>首先，Rails需要被告知使用<code>X-Accel-Redirect</code>特性。否则Rails自身将会使用一个更加基础也更加慢的方式来处理I/O流。</p>
+<p>为了启用Nginx加速，反注释掉<code>config/environments/production.rb</code>中的代码：</p>
+<pre><code>config.action_dispatch.x_sendfile_header = &quot;X-Accel-Redirect&quot; # for NGINX
+</code></pre><h3 id="设置Nginx路径来伺服文件"><a href="#设置Nginx路径来伺服文件" class="headerlink" title="设置Nginx路径来伺服文件"></a>设置Nginx路径来伺服文件</h3><p>如果不做配置，Nginx并不能伺服文件系统中的任何文件，我们需要设置<code>document root</code>和一个URI来访问到将要传送的文件。为了防止和Rails的路由产生冲突，我选择使用<code>__send_file_accel</code>作为URI。</p>
+<p><code>document root</code>需要仔细选择以让Rails应用能够轻松的访问到。我的项目使用了 Capistrano, Rails应用被部署在<code>/home/deployer/apps/my_app/releases</code>,所以很自然的root路径为：</p>
+<pre><code>code:
+# Allow NGINX to serve any file in /home/deployer/apps/my_app/releases
+# via a special internal-only location.
+location /__send_file_accel {
+    internal;
+    alias /home/deployer/apps/my_app/releases;
+}
+</code></pre><h3 id="发送X-Accel-Mapping头"><a href="#发送X-Accel-Mapping头" class="headerlink" title="发送X-Accel-Mapping头"></a>发送<code>X-Accel-Mapping</code>头</h3><p>假设我们有以下的文件将要传送：</p>
+<pre><code>/home/deployer/apps/my_app/releases/20151003173639/tmp/file.zip
+</code></pre><p>这意味者Nginx将会收到以下头部：</p>
+<pre><code>X-Accel-Redirect: /__send_file_accel/20151003173639/tmp/file.zip
+</code></pre><p>Rails(更精确地将Rack)需要直到怎么进行转换，下面是通过Nginx发送给Rails的正确头部(比如将其放在Unicorn的反向代理文件中):</p>
+<pre><code>code:
+proxy_set_header X-Sendfile-Type X-Accel-Redirect;
+proxy_set_header X-Accel-Mapping /home/deployer/apps/my_app/releases/=/__send_file_accel/;
+</code></pre><h3 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h3><p>下面是一个通过Rails控制器传送文件的小例子：</p>
+<pre><code>send_file Rails.root.join(&quot;tmp&quot;, &quot;file.zip&quot;)
+</code></pre><p>在下载的过程中，你将会在Rails的<code>production.log</code>中看到如下的内容：</p>
+<pre><code>code:
+Sent file /home/deployer/apps/nginx-test/releases/20151011032644/tmp/file.zip (0.2ms)
+Completed 200 OK in 2ms (ActiveRecord: 0.0ms)
+</code></pre><p>在响应头中，你将会看到是Rails还是Nginx在传送文件的线索。如果响应头部中包含<code>X-Request-Id</code>,这就意味这是Rails在伺服。</p>
+<pre><code>code:
+X-Request-Id: a4d62cdb-569b-4120-b1ff-e2adbf77039a
+X-Runtime: 0.005559
+</code></pre><p>如果所有的配置都正确的话，你将不会看到以上内容，也就是说Nginx在传递文件，而不是Rails。</p>
+<p>这就是所有的步骤，你现在将传递文件的责任从Rails传递给Nginx了。</p>
+<p>参考文献:</p>
+<ul>
+<li><a href="https://mattbrictson.com/accelerated-rails-downloads?utm_source=rubyweekly&amp;utm_medium=email" title="Accelerated Rails Downloads with NGINX" target="_blank" rel="noopener">Accelerated Rails Downloads with NGINX</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/10/24/2015-10-24-accelerated-rails-downloads/" data-id="cjo9s9u83001ybw6x86brids8" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Rails/">Rails</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2015-09-19-factory-method-pattern" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/09/19/2015-09-19-factory-method-pattern/" class="article-date">
+  <time datetime="2015-09-18T16:00:00.000Z" itemprop="datePublished">2015-09-19</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/design-pattern/">design-pattern</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/09/19/2015-09-19-factory-method-pattern/">工厂方法模式</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="意图"><a href="#意图" class="headerlink" title="意图"></a>意图</h3><p>定义一个用于创建对象的接口，让子类决定实例化哪一个类，Factory Method使一个类的实例化延迟到其子类。</p>
+<p>工厂方法模式是面向对象设计中最为常用的模式，这种模式是创建对象的最好方式之一。在工厂方法模式中，我们创建对象不需要向客户暴露创建的逻辑，转而使用通用的接口去引用一个新创建的对象。</p>
+<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><p>下面是一个具体的实现。</p>
+<pre><code>class Car
+  def run
+    raise NotImplementedError, &quot;must implement run method in subclass&quot;
+  end
+end
+
+class BMW &lt; Car
+  def run
+    p &quot;BMW on the way!&quot;
+  end
+end
+
+class Audi &lt; Car
+  def run
+    p &quot;Audi on the way!&quot;
+  end
+end
+
+class CarFactory
+  def make_car car
+    car.safe_constantize.new
+  end
+end
+
+class DriveCar
+  def drive
+    car = CarFactory.new.make_car &quot;BMW&quot;
+    car.run
+  end
+end
+</code></pre><p>   在上面的实现中，我们首先中创建一个<code>Car</code>, 其中定义了必须被子类复写的方法。然后创建两个子类，<code>BMW</code>, <code>Audi</code>类。这两个类都覆写了父类<code>run</code>方法, 然后定义一个<code>CarFactory</code>用来返回特定的车辆实例。工厂方法不在将与特定应用有关的类绑定到代码中。</p>
+<h3 id="适用性"><a href="#适用性" class="headerlink" title="适用性"></a>适用性</h3><ul>
+<li>当一个类不知道它所要创建的对象的类的时候。</li>
+<li>当一个类希望由它的子类来指定要创建的对象的时候。</li>
+<li>当类将创建的对象的职责委托给多个帮助子类中的某一个，并且你希望将哪一个帮助子类是代理者的这一信息局部化的时候。</li>
+</ul>
+<p>参考文献:</p>
+<ul>
+<li><a href="https://practicingruby.com/articles/creational-design-patterns" title="Creational Design Patterns" target="_blank" rel="noopener">Creational Design Patterns</a></li>
+<li><a href="http://www.amazon.cn/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6%E4%B8%9B%E4%B9%A6-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%8F%AF%E5%A4%8D%E7%94%A8%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E8%BD%AF%E4%BB%B6%E7%9A%84%E5%9F%BA%E7%A1%80-Erich-Gamma/dp/B001130JN8" title="计算机科学丛书：设计模式 可复用面向对象软件的基础" target="_blank" rel="noopener">计算机科学丛书：设计模式 可复用面向对象软件的基础</a></li>
+<li><a href="https://www.binpress.com/tutorial/the-factory-design-pattern-explained-by-example/142" title="The factory design pattern explained by example" target="_blank" rel="noopener">The factory design pattern explained by example</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/09/19/2015-09-19-factory-method-pattern/" data-id="cjo9s9u82001ubw6xyenloo6q" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Ruby/">Ruby</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2015-09-17-abstract-factory-pattern" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/09/17/2015-09-17-abstract-factory-pattern/" class="article-date">
+  <time datetime="2015-09-16T16:00:00.000Z" itemprop="datePublished">2015-09-17</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/design-pattern/">design-pattern</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/09/17/2015-09-17-abstract-factory-pattern/">抽象工厂模式</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="意图"><a href="#意图" class="headerlink" title="意图"></a>意图</h3><p>抽象工厂模式提供一系列相关或者相互依赖的对象的接口，而无需指定它们具体的类。客户类不需要直接构建对象，它会调用该接口提供的方法。</p>
+<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><p>下面是一个具体的实现。</p>
+<pre><code>class AbstractMazeFactory
+  def make_maze
+    raise NotImplementedError, &quot;You should implement this method&quot;
+  end
+
+  def make_wall
+    raise NotImplementedError, &quot;You should implement this method&quot;
+  end
+
+  def make_room
+    raise NotImplementedError, &quot;You should implement this method&quot;
+  end
+end
+
+class MazeFactory &lt; AbstractMazeFactory
+   def make_maze
+     Maze.new
+   end
+
+   def make_wall wall
+     wall.camelize.constantlize.new
+   end
+
+   def make_room
+     Room.new
+   end
+end
+
+class Room
+  def room_number
+    p &quot;i am room number 1&quot;
+  end
+end
+
+class Maze
+  def maze
+    p &quot;maze builded complete&quot;
+  end
+end
+
+class AbstractWall
+  def feature
+    raise NotImplementedError, &quot;You should implement this method&quot;
+  end
+end
+
+class IronWall &lt; AbstractWall
+  def feature
+    p &quot;I am an Iron Wall&quot;
+  end
+end
+
+class BrickWall &lt; AbstractWall
+  def feature
+    p &quot;I am a Brick Wall&quot;
+  end
+end
+
+class ClayWall &lt; AbatractWall
+  def feature
+    p &quot;I am a Clay Wall&quot;
+  end
+end
+
+class Client
+  def make_maze
+    maze_factory = MazeFactory.new
+    room = maze_factory.make_room
+    room.room_number
+    iron_wall = maze_factory.make_wall &quot;iron_wall&quot;
+    iron_wall.feature
+    brick_wall = maze_factory.make_wall &quot;brick_wall&quot;
+    brick_wall.feature
+    clay_wall =  maze_factory.make_wall &quot;clay_wall&quot;
+    clay_wall.feature
+    maze = maze_factory.make_maze
+    maze.maze
+  end
+end
+</code></pre><p>  在上面的实现中，我们首先中创建一个<code>AbstractMazeFactory</code>,其中定义了必须被子类复写的方法。然后创建一个<code>MazeFactory</code>类，<br>  复写父类所有的方法，并返回<code>Room</code>,<code>Maze</code>及<code>Wall</code>子类的实例。最后利用<code>Client</code>类构造出一个迷宫。</p>
+<h3 id="适用性"><a href="#适用性" class="headerlink" title="适用性"></a>适用性</h3><ul>
+<li>一个系统要独立于它的产品的创建、组合或者实现时。</li>
+<li>一个系统要由多个产品系列中的一个来配置时。</li>
+<li>当你强调一系列相关的产品的对象的设计以便进行联合使用时。</li>
+<li>当你提供一个产品类库，而只想显示它的接口而不是实现时。</li>
+</ul>
+<h3 id="优缺点"><a href="#优缺点" class="headerlink" title="优缺点"></a>优缺点</h3><ul>
+<li>它分离了具体的类。</li>
+<li>它使得易于交换产品序列。</li>
+<li>它有利于产品的一致性。</li>
+<li>它难以支持新种类的产品</li>
+</ul>
+<p>参考文献:</p>
+<ul>
+<li><a href="https://practicingruby.com/articles/creational-design-patterns" title="Creational Design Patterns" target="_blank" rel="noopener">Creational Design Patterns</a></li>
+<li><a href="http://www.devinterface.com/blog/en/2010/06/design-patterns-in-ruby-abstract-factory/" title="Design Patterns in Ruby: Abstract Factory" target="_blank" rel="noopener">Design Patterns in Ruby: Abstract Factory</a></li>
+<li><a href="http://www.amazon.cn/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6%E4%B8%9B%E4%B9%A6-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%8F%AF%E5%A4%8D%E7%94%A8%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E8%BD%AF%E4%BB%B6%E7%9A%84%E5%9F%BA%E7%A1%80-Erich-Gamma/dp/B001130JN8" title="计算机科学丛书：设计模式 可复用面向对象软件的基础" target="_blank" rel="noopener">计算机科学丛书：设计模式 可复用面向对象软件的基础</a></li>
+<li><a href="https://www.binpress.com/tutorial/the-factory-design-pattern-explained-by-example/142" title="The factory design pattern explained by example" target="_blank" rel="noopener">The factory design pattern explained by example</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/09/17/2015-09-17-abstract-factory-pattern/" data-id="cjo9s9u81001qbw6xn1jcdczn" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Ruby/">Ruby</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2015-09-05-git-clean" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/09/05/2015-09-05-git-clean/" class="article-date">
+  <time datetime="2015-09-04T16:00:00.000Z" itemprop="datePublished">2015-09-05</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Git/">Git</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/09/05/2015-09-05-git-clean/">Git Clean</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今天从版本库pull一个项目，然后出现了如下错误</p>
+<pre><code>error: The following untracked working tree files would be overwritten by merge:
+</code></pre><p>经过一番google之后，找到了如下解决方案：</p>
+<pre><code>git clean  -d  -fx &quot;&quot;
+</code></pre><p>在运行了上面的命令之后，造成了更严重的后果，所有的未被追踪的文件和被忽略的文件全部都被删除了。。。查阅文档之后在发现这条命令干了以下的事情：</p>
+<ul>
+<li>-x 被忽略的文件和没有加入到git版本库的文件都会被删除</li>
+<li>-d 删除没有被追踪的文件和文件夹</li>
+<li>-f 强制执行</li>
+</ul>
+<p>为了避免再次发生这样的事情，应该先运行一下如下命令，看对文件会造成什么影响。</p>
+<pre><code>git clean -dfx --dry-run
+</code></pre><ul>
+<li>#-n, –dry-run 不会删除任何文件，只是告诉你会发生什么</li>
+<li>#-q 只报告错误，不会报告被成功删除的文件</li>
+<li>#-e<pattern> 会忽略<code>.gitignore</code>文件中定义的文件，同时包括<code>$GIT_DIR/info/exclude</code>。还有自定义的忽略规则。</pattern></li>
+<li>#-X 移除git忽略的文件，但会保存已经创建的文件。</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/09/05/2015-09-05-git-clean/" data-id="cjo9s9u7z001mbw6xwojc2qhx" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Git/">Git</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2015-09-03-change-detection-in-angular-2" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/08/24/2015-09-03-change-detection-in-angular-2/" class="article-date">
+  <time datetime="2015-08-23T16:00:00.000Z" itemprop="datePublished">2015-08-24</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/JavaScript/">JavaScript</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/08/24/2015-09-03-change-detection-in-angular-2/">【翻译】Angular2 变更检测</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>本文讲深入探讨Angular2中的变更检测系统。</p>
+<h3 id="概览"><a href="#概览" class="headerlink" title="概览"></a>概览</h3><p>一个Angular2的应用是由组件组成的树。<br><img src="/assets/images/tumblr_njb2puhhEa1qc0howo1_1280.png" alt="Alt &quot;angular2&quot;"><br>一个Angular2应用是一个反应式的系统，变更检测是其核心。<br><img src="/assets/images/tumblr_njb2puhhEa1qc0howo2_1280.png" alt="Alt &quot;angular2&quot;"><br>每一个组件都有一个变更检测器，用来检测在末班中定义的绑定。一个绑定的例子：<code></code>和<code>[todo]=&#39;t&#39;</code>。变更检测器使用深度优先策略遍历绑定。在Angular2中并没有一个通用的机制来实现双向绑定（但是你仍然可以实现双向绑定和<code>ng-model</code>，你可以通过阅读<a href="http://victorsavkin.com/post/119943127151/angular-2-template-syntax" target="_blank" rel="noopener">“这篇”</a>文章了解更多)。这也是为什么变更检测是没有环的树，这使得该系统拥有更好的性能。更重要的是Angular2能够保证更好的预测系统的行为和更容易推理。</p>
+<p>Angular2到底有多快？<br>变更检测器默认遍历树的每一个节点以检测其是否变化，这种行为会在每一个浏览器事件发生时被触发。虽然看起来性能非常的低，但是实际上Angular2能够在几毫秒的时间内进行成百上千的简单检测（具体的数量依赖于不同的浏览器平台）。怎么实现这一令人印象深刻的结果是另一篇文章将要探讨的内容。</p>
+<p>因为Javascript并没有提供对象变化突变保障，所以Angular2表现的很保守，每次都会进行所有的检测。但是我们知道可以通过使用不可变对象或者可观察对象来持有属性。Angular2以前不可以利用这种特性，现在可以了。</p>
+<h3 id="不可变对象"><a href="#不可变对象" class="headerlink" title="不可变对象"></a>不可变对象</h3><p>如果一个组件仅仅依赖与其绑定，并且绑定是不可变的，那么该组件只有在其中的一个绑定发生了变化时才变化。因此，我们可以跳过变更探测树的子树直到该事件发生。当事件发生时，我们只用检测子树一次，然后就关闭它直到下一次变化发生。</p>
+<p><img src="/assets/images/tumblr_njb2puhhEa1qc0howo3_1280.png" alt="Alt &quot;angular2&quot;"></p>
+<p>如果我们非常激进的处理不可变对象，大多数时间变更检测树的很大一部分都可以被关闭。<br><img src="/assets/images/tumblr_njb2puhhEa1qc0howo4_1280.png" alt="Alt &quot;angular2&quot;"><br>实现这一功能，只需要将变更检测的策略设置为<code>ON_PUSH</code>。</p>
+<pre><code>@Component({changeDetection:ON_PUSH})
+class ImmutableTodoCmp {
+  todo:Todo;
+}
+</code></pre><h3 id="可观察对象"><a href="#可观察对象" class="headerlink" title="可观察对象"></a>可观察对象</h3><p>如果一个组件仅仅依赖于其绑定，并且该绑定是一个可观察对象，那么该组件只有在绑定触发了一个事件时才会变化。所以我们能够跳过变更检测树的子树直到改事件发生。当改事件发生时，我们只用检测子树一次，然后关闭它直到下乙烯事件发生。</p>
+<p>虽然看起来和不可变对象的例子很像，实际上他们之间是有很大的区别的。如果你拥有一个由拥有不可变绑定对象的组件组成的树，一个变化需要从根节点开始遍历组件。这并不是我们处理可观察对象的方式。</p>
+<p>让我们使用一个小例子来说明这一问题。</p>
+<pre><code>type ObservableTodo = Observable&lt;Todo&gt;;
+type ObservableTodos = Observable&lt;Array&lt;ObservableTodo&gt;&gt;;
+
+@Component({selector:’todos’})
+class ObservableTodosCmp {
+  todos:ObservableTodos;
+  //...
+}
+</code></pre><p>模板示例：</p>
+<pre><code>&lt;todo *ng-for=&quot;var t of todos&quot; todo = &quot;t&quot;&gt;&lt;/todo&gt;
+</code></pre><p> ObservableTodoCmp:</p>
+<pre><code>@Component({selector:’todo’})
+  class ObservableTodoCmp {
+    todo:ObservableTodo;
+    //...
+  }
+</code></pre><p>如你所见，Todos组件只用有一个对由todos数组组成的可观察对象的引用，所以它检测不到单个todos组件的变化。</p>
+<p>处理的方式是在可观察对象todo触发一个事件时，检查从根到该变化的todo组件的路径。变更检测系统能够确保这种事情的发生。</p>
+<p>假设我们的系统仅仅使用可观察对象，当系统启动时，Angular2将会检测检测所有的对象。<br><img src="/assets/images/tumblr_njb2puhhEa1qc0howo5_1280.png" alt="Alt &quot;angular2&quot;"><br>所以经过了第一步之后，状态将会变成如下所示的样子。<br><img src="/assets/images/tumblr_njb2puhhEa1qc0howo6_1280.png" alt="Alt &quot;angular2&quot;"></p>
+<p>让我们假设todo可观测对象触发了一个事件，那么系统状态装回转变成如下所示的样子。<br><img src="/assets/images/tumblr_njb2puhhEa1qc0howo7_1280.png" alt="Alt &quot;angular2&quot;"></p>
+<p>当检测完了App_ChangeDetector, Todos_ChangeDetector和Todo_ChangeDetector之后，将会回到如下所示的状态。<br><img src="/assets/images/tumblr_njb2puhhEa1qc0howo6_1280.png" alt="Alt &quot;angular2&quot;"></p>
+<p>假设这些变化极少发生，组件组成一颗平衡树，那么使用可观测对象将会使变更检测的复杂度由O(N)变为O(logN)，其中N是系统中绑定对象的数量。</p>
+<h3 id="可观测对象会造成级联更新么？"><a href="#可观测对象会造成级联更新么？" class="headerlink" title="可观测对象会造成级联更新么？"></a>可观测对象会造成级联更新么？</h3><p>可观测对象的名声不太好，是因为他们会造成级联更新。任何一个有个大规模系统设计经验并且用到了可观测模型的开发者将会明白我在说什么。一个可观测对象的更新会造成一系列的可观测对象触发更新。沿着这条路经的某个view也会随着更新，这种系统会很难进行推测。</p>
+<p>在Angular2中使用可观测对象将不会造成这种问题。通过一个可观察对象触发的事件只是标示从该组件到根的路径作为下次将要检测的路径。所以更新的顺序和是否使用客人观察对象没有关系。这是非常重要的，使得使用可观察对象变成一个非常简单的优化，不会改变你处理系统的方式。</p>
+<h3 id="是否需要到处使用可观察对象-不可变对象"><a href="#是否需要到处使用可观察对象-不可变对象" class="headerlink" title="是否需要到处使用可观察对象/不可变对象"></a>是否需要到处使用可观察对象/不可变对象</h3><p>不，你不需要。你可以在你的系统中部分的使用可观察对象（比如一些巨大的表），这一部分将会获得性能上的改进。更进一步，你可以任意组合不同类型的组件，并且获得他们所有的好处。例如，一个可观测组件可以包含一个不可变组件，同时自身也可以包含一个可观察对象。即使在这种情况下，对象检测系统会使得蔓延式变化所需要的检测的数量最小化。</p>
+<h3 id="没有特殊情况"><a href="#没有特殊情况" class="headerlink" title="没有特殊情况"></a>没有特殊情况</h3><p>对可变化对象和可观察对象的支持并没有固化在变更检测系统中。这种类型的组件并没有什么特殊之处，所以你可以书写你自己的指令，以一种更只能的方式来使用变更检测。例如，想象一下一条指令每个几秒就更新一下它的内容。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ul>
+<li>一个Angular2应用是一个响应式的系统。</li>
+<li>变更检测系统从根到叶子节点传播绑定。</li>
+<li>不像Angular1.×，变化检测图是一个有向树。结果是，改系统拥有更好的性能和可预测。</li>
+<li>默认情况下，变更检测系统遍历整个树，但是如果你使用不可变对象或者可观察对象，你将利用其优势，当他们真正变化时，你只需要检测树的一部分。</li>
+<li>这些优化可以随意组合，不会破坏变更检测提供的保证。</li>
+</ul>
+<p>原文：</p>
+<ul>
+<li><a href="http://victorsavkin.com/post/110170125256/change-detection-in-angular-2" title="CHANGE DETECTION IN ANGULAR 2" target="_blank" rel="noopener">CHANGE DETECTION IN ANGULAR 2</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/08/24/2015-09-03-change-detection-in-angular-2/" data-id="cjo9s9u7y001jbw6xkklbva4t" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JavaScript/">JavaScript</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+
+
+  <nav id="page-nav">
+    
+    <a class="extend prev" rel="prev" href="/page/3/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/5/">Next &raquo;</a>
+  </nav>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/CSS/">CSS</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/DDD/">DDD</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Git/">Git</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Go/">Go</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/HTTP/">HTTP</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/JavaScript/">JavaScript</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Learning-C/">Learning C</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Rails/">Rails</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Ruby/">Ruby</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Server/">Server</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/TCP-IP/">TCP/IP</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Test/">Test</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/best-practices/">best-practices</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/design-pattern/">design-pattern</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/postgresql/">postgresql</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/weixin/">weixin</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/分布式/">分布式</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/">C</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSS/">CSS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DDD/">DDD</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Go/">Go</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP/">HTTP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/">JavaScript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Rails/">Rails</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Rspec/">Rspec</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Ruby/">Ruby</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Server/">Server</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCP-IP/">TCP/IP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/postgresql/">postgresql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/weixin/">weixin</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式/">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/测试/">测试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/C/" style="font-size: 12.86px;">C</a> <a href="/tags/CSS/" style="font-size: 10px;">CSS</a> <a href="/tags/DDD/" style="font-size: 10px;">DDD</a> <a href="/tags/Git/" style="font-size: 11.43px;">Git</a> <a href="/tags/Go/" style="font-size: 18.57px;">Go</a> <a href="/tags/HTTP/" style="font-size: 10px;">HTTP</a> <a href="/tags/JavaScript/" style="font-size: 17.14px;">JavaScript</a> <a href="/tags/Rails/" style="font-size: 14.29px;">Rails</a> <a href="/tags/Rspec/" style="font-size: 10px;">Rspec</a> <a href="/tags/Ruby/" style="font-size: 20px;">Ruby</a> <a href="/tags/Server/" style="font-size: 10px;">Server</a> <a href="/tags/TCP-IP/" style="font-size: 10px;">TCP/IP</a> <a href="/tags/postgresql/" style="font-size: 12.86px;">postgresql</a> <a href="/tags/react/" style="font-size: 10px;">react</a> <a href="/tags/weixin/" style="font-size: 11.43px;">weixin</a> <a href="/tags/分布式/" style="font-size: 10px;">分布式</a> <a href="/tags/测试/" style="font-size: 10px;">测试</a> <a href="/tags/设计模式/" style="font-size: 15.71px;">设计模式</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/04/14/2018-04-14-gokit-learning-one/">go-kit学习笔记(一)</a>
+          </li>
+        
+          <li>
+            <a href="/2018/04/14/2018-04-14-gokit-introduction/">go-kit简介</a>
+          </li>
+        
+          <li>
+            <a href="/2018/04/14/2018-04-14-golang-context/">golang中context包详解</a>
+          </li>
+        
+          <li>
+            <a href="/2018/03/31/2018-03-31-golang-handle-and-handlefunc/">Golang中的Handle和HandleFunc</a>
+          </li>
+        
+          <li>
+            <a href="/2018/03/30/2018-03-30-golang-http-router/">Golang中的router</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>【翻译】Angular2 变更检测 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Angular2 core concepts">
+<meta name="keywords" content="angular2,JavaScript">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【翻译】Angular2 变更检测">
+<meta property="og:url" content="http://yoursite.com/2015/08/24/2015-09-03-change-detection-in-angular-2/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="Angular2 core concepts">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://yoursite.com/assets/images/tumblr_njb2puhhEa1qc0howo1_1280.png">
+<meta property="og:image" content="http://yoursite.com/assets/images/tumblr_njb2puhhEa1qc0howo2_1280.png">
+<meta property="og:image" content="http://yoursite.com/assets/images/tumblr_njb2puhhEa1qc0howo3_1280.png">
+<meta property="og:image" content="http://yoursite.com/assets/images/tumblr_njb2puhhEa1qc0howo4_1280.png">
+<meta property="og:image" content="http://yoursite.com/assets/images/tumblr_njb2puhhEa1qc0howo5_1280.png">
+<meta property="og:image" content="http://yoursite.com/assets/images/tumblr_njb2puhhEa1qc0howo6_1280.png">
+<meta property="og:image" content="http://yoursite.com/assets/images/tumblr_njb2puhhEa1qc0howo7_1280.png">
+<meta property="og:image" content="http://yoursite.com/assets/images/tumblr_njb2puhhEa1qc0howo6_1280.png">
+<meta property="og:updated_time" content="2018-11-09T09:04:23.902Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="【翻译】Angular2 变更检测">
+<meta name="twitter:description" content="Angular2 core concepts">
+<meta name="twitter:image" content="http://yoursite.com/assets/images/tumblr_njb2puhhEa1qc0howo1_1280.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-2015-09-03-change-detection-in-angular-2" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/08/24/2015-09-03-change-detection-in-angular-2/" class="article-date">
+  <time datetime="2015-08-23T16:00:00.000Z" itemprop="datePublished">2015-08-24</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/JavaScript/">JavaScript</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      【翻译】Angular2 变更检测
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>本文讲深入探讨Angular2中的变更检测系统。</p>
+<h3 id="概览"><a href="#概览" class="headerlink" title="概览"></a>概览</h3><p>一个Angular2的应用是由组件组成的树。<br><img src="/assets/images/tumblr_njb2puhhEa1qc0howo1_1280.png" alt="Alt &quot;angular2&quot;"><br>一个Angular2应用是一个反应式的系统，变更检测是其核心。<br><img src="/assets/images/tumblr_njb2puhhEa1qc0howo2_1280.png" alt="Alt &quot;angular2&quot;"><br>每一个组件都有一个变更检测器，用来检测在末班中定义的绑定。一个绑定的例子：<code></code>和<code>[todo]=&#39;t&#39;</code>。变更检测器使用深度优先策略遍历绑定。在Angular2中并没有一个通用的机制来实现双向绑定（但是你仍然可以实现双向绑定和<code>ng-model</code>，你可以通过阅读<a href="http://victorsavkin.com/post/119943127151/angular-2-template-syntax" target="_blank" rel="noopener">“这篇”</a>文章了解更多)。这也是为什么变更检测是没有环的树，这使得该系统拥有更好的性能。更重要的是Angular2能够保证更好的预测系统的行为和更容易推理。</p>
+<p>Angular2到底有多快？<br>变更检测器默认遍历树的每一个节点以检测其是否变化，这种行为会在每一个浏览器事件发生时被触发。虽然看起来性能非常的低，但是实际上Angular2能够在几毫秒的时间内进行成百上千的简单检测（具体的数量依赖于不同的浏览器平台）。怎么实现这一令人印象深刻的结果是另一篇文章将要探讨的内容。</p>
+<p>因为Javascript并没有提供对象变化突变保障，所以Angular2表现的很保守，每次都会进行所有的检测。但是我们知道可以通过使用不可变对象或者可观察对象来持有属性。Angular2以前不可以利用这种特性，现在可以了。</p>
+<h3 id="不可变对象"><a href="#不可变对象" class="headerlink" title="不可变对象"></a>不可变对象</h3><p>如果一个组件仅仅依赖与其绑定，并且绑定是不可变的，那么该组件只有在其中的一个绑定发生了变化时才变化。因此，我们可以跳过变更探测树的子树直到该事件发生。当事件发生时，我们只用检测子树一次，然后就关闭它直到下一次变化发生。</p>
+<p><img src="/assets/images/tumblr_njb2puhhEa1qc0howo3_1280.png" alt="Alt &quot;angular2&quot;"></p>
+<p>如果我们非常激进的处理不可变对象，大多数时间变更检测树的很大一部分都可以被关闭。<br><img src="/assets/images/tumblr_njb2puhhEa1qc0howo4_1280.png" alt="Alt &quot;angular2&quot;"><br>实现这一功能，只需要将变更检测的策略设置为<code>ON_PUSH</code>。</p>
+<pre><code>@Component({changeDetection:ON_PUSH})
+class ImmutableTodoCmp {
+  todo:Todo;
+}
+</code></pre><h3 id="可观察对象"><a href="#可观察对象" class="headerlink" title="可观察对象"></a>可观察对象</h3><p>如果一个组件仅仅依赖于其绑定，并且该绑定是一个可观察对象，那么该组件只有在绑定触发了一个事件时才会变化。所以我们能够跳过变更检测树的子树直到改事件发生。当改事件发生时，我们只用检测子树一次，然后关闭它直到下乙烯事件发生。</p>
+<p>虽然看起来和不可变对象的例子很像，实际上他们之间是有很大的区别的。如果你拥有一个由拥有不可变绑定对象的组件组成的树，一个变化需要从根节点开始遍历组件。这并不是我们处理可观察对象的方式。</p>
+<p>让我们使用一个小例子来说明这一问题。</p>
+<pre><code>type ObservableTodo = Observable&lt;Todo&gt;;
+type ObservableTodos = Observable&lt;Array&lt;ObservableTodo&gt;&gt;;
+
+@Component({selector:’todos’})
+class ObservableTodosCmp {
+  todos:ObservableTodos;
+  //...
+}
+</code></pre><p>模板示例：</p>
+<pre><code>&lt;todo *ng-for=&quot;var t of todos&quot; todo = &quot;t&quot;&gt;&lt;/todo&gt;
+</code></pre><p> ObservableTodoCmp:</p>
+<pre><code>@Component({selector:’todo’})
+  class ObservableTodoCmp {
+    todo:ObservableTodo;
+    //...
+  }
+</code></pre><p>如你所见，Todos组件只用有一个对由todos数组组成的可观察对象的引用，所以它检测不到单个todos组件的变化。</p>
+<p>处理的方式是在可观察对象todo触发一个事件时，检查从根到该变化的todo组件的路径。变更检测系统能够确保这种事情的发生。</p>
+<p>假设我们的系统仅仅使用可观察对象，当系统启动时，Angular2将会检测检测所有的对象。<br><img src="/assets/images/tumblr_njb2puhhEa1qc0howo5_1280.png" alt="Alt &quot;angular2&quot;"><br>所以经过了第一步之后，状态将会变成如下所示的样子。<br><img src="/assets/images/tumblr_njb2puhhEa1qc0howo6_1280.png" alt="Alt &quot;angular2&quot;"></p>
+<p>让我们假设todo可观测对象触发了一个事件，那么系统状态装回转变成如下所示的样子。<br><img src="/assets/images/tumblr_njb2puhhEa1qc0howo7_1280.png" alt="Alt &quot;angular2&quot;"></p>
+<p>当检测完了App_ChangeDetector, Todos_ChangeDetector和Todo_ChangeDetector之后，将会回到如下所示的状态。<br><img src="/assets/images/tumblr_njb2puhhEa1qc0howo6_1280.png" alt="Alt &quot;angular2&quot;"></p>
+<p>假设这些变化极少发生，组件组成一颗平衡树，那么使用可观测对象将会使变更检测的复杂度由O(N)变为O(logN)，其中N是系统中绑定对象的数量。</p>
+<h3 id="可观测对象会造成级联更新么？"><a href="#可观测对象会造成级联更新么？" class="headerlink" title="可观测对象会造成级联更新么？"></a>可观测对象会造成级联更新么？</h3><p>可观测对象的名声不太好，是因为他们会造成级联更新。任何一个有个大规模系统设计经验并且用到了可观测模型的开发者将会明白我在说什么。一个可观测对象的更新会造成一系列的可观测对象触发更新。沿着这条路经的某个view也会随着更新，这种系统会很难进行推测。</p>
+<p>在Angular2中使用可观测对象将不会造成这种问题。通过一个可观察对象触发的事件只是标示从该组件到根的路径作为下次将要检测的路径。所以更新的顺序和是否使用客人观察对象没有关系。这是非常重要的，使得使用可观察对象变成一个非常简单的优化，不会改变你处理系统的方式。</p>
+<h3 id="是否需要到处使用可观察对象-不可变对象"><a href="#是否需要到处使用可观察对象-不可变对象" class="headerlink" title="是否需要到处使用可观察对象/不可变对象"></a>是否需要到处使用可观察对象/不可变对象</h3><p>不，你不需要。你可以在你的系统中部分的使用可观察对象（比如一些巨大的表），这一部分将会获得性能上的改进。更进一步，你可以任意组合不同类型的组件，并且获得他们所有的好处。例如，一个可观测组件可以包含一个不可变组件，同时自身也可以包含一个可观察对象。即使在这种情况下，对象检测系统会使得蔓延式变化所需要的检测的数量最小化。</p>
+<h3 id="没有特殊情况"><a href="#没有特殊情况" class="headerlink" title="没有特殊情况"></a>没有特殊情况</h3><p>对可变化对象和可观察对象的支持并没有固化在变更检测系统中。这种类型的组件并没有什么特殊之处，所以你可以书写你自己的指令，以一种更只能的方式来使用变更检测。例如，想象一下一条指令每个几秒就更新一下它的内容。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ul>
+<li>一个Angular2应用是一个响应式的系统。</li>
+<li>变更检测系统从根到叶子节点传播绑定。</li>
+<li>不像Angular1.×，变化检测图是一个有向树。结果是，改系统拥有更好的性能和可预测。</li>
+<li>默认情况下，变更检测系统遍历整个树，但是如果你使用不可变对象或者可观察对象，你将利用其优势，当他们真正变化时，你只需要检测树的一部分。</li>
+<li>这些优化可以随意组合，不会破坏变更检测提供的保证。</li>
+</ul>
+<p>原文：</p>
+<ul>
+<li><a href="http://victorsavkin.com/post/110170125256/change-detection-in-angular-2" title="CHANGE DETECTION IN ANGULAR 2" target="_blank" rel="noopener">CHANGE DETECTION IN ANGULAR 2</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/08/24/2015-09-03-change-detection-in-angular-2/" data-id="cjo9s9u7y001jbw6xkklbva4t" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JavaScript/">JavaScript</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/09/05/2015-09-05-git-clean/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Git Clean
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/08/08/2015-08-08-using-weixin-jssdk-upload-and-download-pictures/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">使用微信jssdk上传和下载图片</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/CSS/">CSS</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/DDD/">DDD</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Git/">Git</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Go/">Go</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/HTTP/">HTTP</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/JavaScript/">JavaScript</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Learning-C/">Learning C</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Rails/">Rails</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Ruby/">Ruby</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Server/">Server</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/TCP-IP/">TCP/IP</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Test/">Test</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/best-practices/">best-practices</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/design-pattern/">design-pattern</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/postgresql/">postgresql</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/weixin/">weixin</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/分布式/">分布式</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/">C</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSS/">CSS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DDD/">DDD</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Go/">Go</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP/">HTTP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/">JavaScript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Rails/">Rails</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Rspec/">Rspec</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Ruby/">Ruby</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Server/">Server</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCP-IP/">TCP/IP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/postgresql/">postgresql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/weixin/">weixin</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式/">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/测试/">测试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/C/" style="font-size: 12.86px;">C</a> <a href="/tags/CSS/" style="font-size: 10px;">CSS</a> <a href="/tags/DDD/" style="font-size: 10px;">DDD</a> <a href="/tags/Git/" style="font-size: 11.43px;">Git</a> <a href="/tags/Go/" style="font-size: 18.57px;">Go</a> <a href="/tags/HTTP/" style="font-size: 10px;">HTTP</a> <a href="/tags/JavaScript/" style="font-size: 17.14px;">JavaScript</a> <a href="/tags/Rails/" style="font-size: 14.29px;">Rails</a> <a href="/tags/Rspec/" style="font-size: 10px;">Rspec</a> <a href="/tags/Ruby/" style="font-size: 20px;">Ruby</a> <a href="/tags/Server/" style="font-size: 10px;">Server</a> <a href="/tags/TCP-IP/" style="font-size: 10px;">TCP/IP</a> <a href="/tags/postgresql/" style="font-size: 12.86px;">postgresql</a> <a href="/tags/react/" style="font-size: 10px;">react</a> <a href="/tags/weixin/" style="font-size: 11.43px;">weixin</a> <a href="/tags/分布式/" style="font-size: 10px;">分布式</a> <a href="/tags/测试/" style="font-size: 10px;">测试</a> <a href="/tags/设计模式/" style="font-size: 15.71px;">设计模式</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/04/14/2018-04-14-gokit-learning-one/">go-kit学习笔记(一)</a>
+          </li>
+        
+          <li>
+            <a href="/2018/04/14/2018-04-14-gokit-introduction/">go-kit简介</a>
+          </li>
+        
+          <li>
+            <a href="/2018/04/14/2018-04-14-golang-context/">golang中context包详解</a>
+          </li>
+        
+          <li>
+            <a href="/2018/03/31/2018-03-31-golang-handle-and-handlefunc/">Golang中的Handle和HandleFunc</a>
+          </li>
+        
+          <li>
+            <a href="/2018/03/30/2018-03-30-golang-http-router/">Golang中的router</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

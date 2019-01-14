@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="Hexo">
+<meta property="og:url" content="http://yoursite.com/page/5/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:locale" content="default">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Hexo">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-2015-08-08-using-weixin-jssdk-upload-and-download-pictures" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/08/08/2015-08-08-using-weixin-jssdk-upload-and-download-pictures/" class="article-date">
+  <time datetime="2015-08-07T16:00:00.000Z" itemprop="datePublished">2015-08-08</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/weixin/">weixin</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/08/08/2015-08-08-using-weixin-jssdk-upload-and-download-pictures/">使用微信jssdk上传和下载图片</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>前段时间在工作中需要实现图片的上传和下载的功能，今天做一下总结。<br>微信发布了js-sdk工具包，极大地方便了开发人员基于微信api开发一些微信相关的功能。<br>基于该api，开发人员可以限定用户上传图片的方式是基于手机的拍照功能还是直接上传手机中原有的图片，<br>这项功能对于那些保证上传的图片的真实性有一定的帮助。</p>
+<h3 id="JS-SDK引入"><a href="#JS-SDK引入" class="headerlink" title="JS-SDK引入"></a>JS-SDK引入</h3><p>要使用该工具包，需要在用到weixin API的页面引入js-sdk，引入的方式如下：</p>
+<pre><code>&lt;script  type=&quot;text/javascript&quot; src=&quot;http://res.wx.qq.com/open/js/jweixin-1.0.0.js&quot; &gt;&lt;/script&gt;
+</code></pre><h3 id="微信appId和微信appSecret"><a href="#微信appId和微信appSecret" class="headerlink" title="微信appId和微信appSecret"></a>微信appId和微信appSecret</h3><p>关于如何获取微信appId和Secret，微信js-sdk官方文档有比较详细的说明，这里就不赘述了。<br>微信appId和appSecret的引入可以直接在需要用到的地方直接引入，也可以写入ENV变量中，<br>用到的时候直接使用ENV[“appId”]和ENV[“appSecret”]直接取出来。这样做的好处是可以集中管理，<br>防止在写入的时候犯下拼写错误的低级错误，同时也有利于发布开源项目时隐藏私有的敏感信息。</p>
+<p>首先在config目录下创建一个local_env.yml的文件，用来存放appId和appSecret，该文件也可一用来存放一些其<br>他比较敏感的数据。yml文件接受键值对的写法，非常适合保存配置信息。</p>
+<pre><code>Ruby Code:
+appId: &quot;your appId&quot;
+appSecret: &quot;your appSecret&quot;
+</code></pre><p>然后在<code>application.rb</code>文件中加入如下代码，用来读取’local_env.yml’中的配置信息。</p>
+<pre><code>Ruby Code:
+class Application &lt; Rails::Application
+  config.before_configuration do
+    env_file = File.join(Rails.root, &quot;config&quot;, &quot;local_env.yml&quot;)
+    YAML.load(File.open(env_file)).each do |k, v|
+      ENV[k.to_s] = v
+    end if File.exists?(env_file)
+  end
+end
+</code></pre><h3 id="appToken的获取"><a href="#appToken的获取" class="headerlink" title="appToken的获取"></a>appToken的获取</h3><p>这里appToken的获取需要用到第三方的Gem–weixin_authorize,在gem中加入:</p>
+<pre><code>gem &apos;wenxin_authrize&apos;
+</code></pre><p>然后执行’bundle isntall’, 最后获取client的实例：</p>
+<pre><code>$client = WeinAuthrize::Client.new(ENV[&apos;appId&apos;], ENV[&apos;appSecret&apos;])
+</code></pre><h3 id="从微信端下载图片到本地"><a href="#从微信端下载图片到本地" class="headerlink" title="从微信端下载图片到本地"></a>从微信端下载图片到本地</h3><p>这一步的关键是要获取到上传到微信服务器的<code>serverId</code>，这个参数可以在微信的上传接口<code>uploadImage</code>中获取，然后<br>通过<code>carrierWave</code>插件的<code>remote_xxx_url</code>方法下载到本地。其中xxx代表的是通过<code>carrierWave</code>插件mount过的字段。</p>
+<h3 id="微信配置项"><a href="#微信配置项" class="headerlink" title="微信配置项"></a>微信配置项</h3><p>这里主要讲一下jsApiList这个选项，这里是你接下来在该页面中将要用到的微信接口。<br>本例中主要用到<code>chooseImage</code>和<code>uploadImage</code>两个接口。</p>
+<pre><code>Ruby Code:
+&lt;% sign_package = $client.get_jssign_package(request.url) %&gt;
+wx.config({
+  debug: false,
+  appId: &quot;&lt;%= sign_package[&apos;appId&apos;] %&gt;&quot;,
+  timestamp: &quot;&lt;%= sign_package[&apos;timestamp&apos;] %&gt;&quot;,
+  nonceStr: &quot;&lt;%= sign_package[&apos;nonceStr&apos;] %&gt;&quot;,
+  signature: &quot;&lt;%= sign_package[&apos;signature&apos;] %&gt;&quot;,
+  jsApiList: [
+    &apos;chooseImage&apos;,
+    &apos;uploadImage&apos;
+  ]
+});
+</code></pre><h3 id="主要代码"><a href="#主要代码" class="headerlink" title="主要代码"></a>主要代码</h3><pre><code>Ruby Code:
+&lt;script  type=&quot;text/javascript&quot; src=&quot;http://res.wx.qq.com/open/js/jweixin-1.0.0.js&quot; &gt;&lt;/script&gt;
+&lt;% sign_package = $client.get_jssign_package(request.url) %&gt;
+&lt;script&gt;
+  wx.config({
+    debug: false,
+    appId: &quot;&lt;%= sign_package[&apos;appId&apos;] %&gt;&quot;,
+    timestamp: &quot;&lt;%= sign_package[&apos;timestamp&apos;] %&gt;&quot;,
+    nonceStr: &quot;&lt;%= sign_package[&apos;nonceStr&apos;] %&gt;&quot;,
+    signature: &quot;&lt;%= sign_package[&apos;signature&apos;] %&gt;&quot;,
+    jsApiList: [
+      &apos;chooseImage&apos;,
+      &apos;uploadImage&apos;
+    ]
+  });
+  wx.ready(function () {
+
+    var images = {
+    localIdFront: [],
+    localIdBack:[],
+    combinedId: [],
+    serverId: []
+    };
+
+    $(&apos;#frontImageList&apos;).click(function () {
+
+        wx.chooseImage({
+          count: 1,
+          sizeType: [&apos;compressed&apos;],
+          sourceType: [&apos;camera&apos;],
+          success: function (res) {
+            images.localIdFront = res.localIds;
+            var image = document.createElement(&quot;img&quot;);
+            image.src = res.localIds;
+            image.id  = &quot;front_img_uploaded&quot;;
+            var front = document.querySelector(&quot;#front_img_uploaded&quot;);
+            front.parentNode.replaceChild(image, front);
+          }
+        });
+    });
+
+
+    $(&apos;#backImageList&apos;).click(function () {
+
+        wx.chooseImage({
+          count: 1,
+          sizeType: [&apos;compressed&apos;],
+          sourceType: [&apos;camera&apos;],
+          success: function (res) {
+            images.localIdBack = res.localIds;
+            var image = document.createElement(&quot;img&quot;);
+            image.src = res.localIds;
+            image.id  = &quot;back_img_uploaded&quot;;
+            var back = document.querySelector(&quot;#back_img_uploaded&quot;);
+            back.parentNode.replaceChild(image, back);
+          }
+        });
+    });
+
+  $(&quot;#submit_and_upload_image&quot;).click( function() {
+    if (images.localIdFront.length === 0 || images.localIdBack.length === 0 ) {
+      alert(&apos;请先拍摄身份证正面和反面&apos;);
+      return;
+    }
+    var i = 0, length = images.localIdFront.length + images.localIdBack.length;
+    images.serverId = [];
+    images.combinedId.push(images.localIdFront);
+    images.combinedId.push(images.localIdBack);
+    function upload() {
+      wx.uploadImage({
+        localId: images.combinedId[i][0],
+        success: function (res) {
+          i++;
+          images.serverId.push(res.serverId);
+          if (i &lt; length) {
+            upload();
+          }
+          if (i == 2 ){
+            downloadBackImages(images.serverId[0], images.serverId[1]);
+          }
+        },
+        fail: function (res) {
+          alert(JSON.stringify(res));
+        }
+      });
+    }
+    upload();
+
+  });
+
+  function downloadBackImages(mediaIdOne, mediaIdTwo) {
+    $.ajax({
+      url: &apos;&lt;%= download_identity_image_user_path %&gt;&apos;,
+      data: { mediaIdOne: mediaIdOne, mediaIdTwo: mediaIdTwo }
+      }).done(function(html ) {
+        window.location.href = &quot;&lt;%= redirect_to_path %&gt;&quot;;
+      }).fail(function(jqXHR, textStatus) {
+        alert(&quot;提交失败!&quot;);
+      });
+  }
+
+  });
+&lt;/script&gt;
+</code></pre>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/08/08/2015-08-08-using-weixin-jssdk-upload-and-download-pictures/" data-id="cjo9s9u7u001ebw6x1x7hgul4" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/weixin/">weixin</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2015-08-08-jenkenis-server-configuration" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/08/08/2015-08-08-jenkenis-server-configuration/" class="article-date">
+  <time datetime="2015-08-07T16:00:00.000Z" itemprop="datePublished">2015-08-08</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Server/">Server</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/08/08/2015-08-08-jenkenis-server-configuration/"> Jenkins CI服务器搭建</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="Java环境配置"><a href="#Java环境配置" class="headerlink" title="Java环境配置"></a>Java环境配置</h3><p>首先检查服务器上安装的Java的版本,如果低于1.7,需要将旧版本的Java移除,然后安装新的版本.</p>
+<pre><code>Ruby Code:
+sudo yum remove java
+sudo yum install java-1.7.0-openjdk
+</code></pre><p>然后执行 java -version,如果你看到如下输出,则说明Java环境已经安装好了.</p>
+<pre><code>Ruby Code:
+java version &quot;1.7.0_79&quot;
+OpenJDK Runtime Environment (rhel-2.5.5.1.el6_6-x86_64 u79-b14)
+OpenJDK 64-Bit Server VM (build 24.79-b02, mixed mode)
+</code></pre><h3 id="Jenkins-安装"><a href="#Jenkins-安装" class="headerlink" title="Jenkins 安装"></a>Jenkins 安装</h3><pre><code>Ruby Code:
+sudo wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins-ci.org/redhat/jenkins.repo
+sudo rpm --import https://jenkins-ci.org/redhat/jenkins-ci.org.key (http://pkg.jenkins-ci.org/redhat/jenkins-ci.org.key)
+sudo yum install jenkins
+</code></pre><p>启动Jenkins服务</p>
+<pre><code>Ruby Code:
+chkconfig jenkins on
+sudo service jenkins start
+</code></pre><p>这个时候可以在服务器上通过执行一下命令,验证Jenkins服务器是否安装好了.</p>
+<pre><code>curl -Xget http://localhost:8080
+</code></pre><h3 id="NodeJs安装"><a href="#NodeJs安装" class="headerlink" title="NodeJs安装"></a>NodeJs安装</h3><p>Rails Asset Pipeline要求Javascript Runtime， 这里通过安装NodeJS来提供</p>
+<pre><code>Ruby Code:
+wget http://nodejs.org/dist/v0.8.18/node-v0.8.18.tar.gz
+tar xf node-v0.8.18.tar.gz
+cd node-v0.8.18
+./configure
+make
+sudo make install
+</code></pre><h3 id="Nginx代理配置"><a href="#Nginx代理配置" class="headerlink" title="Nginx代理配置"></a>Nginx代理配置</h3><p>这一步主要是为了可以通过80端口访问Jenkins.</p>
+<p>由于服务器上面已经安装好了Nginx,所以可以不用安装Nginx,直接对其进行配置即可.</p>
+<pre><code>Ruby Code:
+cd /etc/nginx/sites-available
+touch jenkins.conf
+</code></pre><p>用编辑器打开刚刚创建好的jenkins.conf文件,加入如下代码.</p>
+<pre><code>Ruby Code:
+upstream app_server {
+    server 127.0.0.1:8080 fail_timeout=0;
+}
+
+server {
+    listen 80;
+    server_name exapmle.com;
+
+    location / {
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $http_host;
+        proxy_set_header Host $host:$server_port;
+        proxy_redirect off;
+        proxy_pass http://localhost:8080;
+        proxy_redirect http://example.com:8080/ http://example.com/;
+        port_in_redirect off;
+    }
+}
+</code></pre><p>然后执行</p>
+<pre><code>Ruby Code:
+cd /etc/nginx/sites-enabled/
+ln -s ../sites-available/jenkins.conf
+</code></pre><p>加载该配置文件</p>
+<pre><code>sudo service nginx reload
+</code></pre><h3 id="手动安装Rails环境"><a href="#手动安装Rails环境" class="headerlink" title="手动安装Rails环境"></a>手动安装Rails环境</h3><p>安装Jenkins的时候，已经自动帮我们添加了jenkins用户，其Home目录位于<code>/var/lib/jenkins/</code>。但是不能登录。先修改用户属性让jenkins用户可登录，用bash作为默认shell.</p>
+<pre><code>sudo usermod -s /bin/bash jenkins
+</code></pre><p>以jenkins用户登录系统，安装rvm以及ruby 2.2.2</p>
+<pre><code>Ruby Code:
+sudo su - jenkins
+gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
+\curl -L https://get.rvm.io | bash -s stable
+rvm install 2.2.2
+gem install bundler
+</code></pre><p>如果在安装的过程中出现了<code>curl: (23) Failed writing body (0 != 16150)</code>的错误,则需要运行如下命令:</p>
+<pre><code>sudo chown -R jenkins:jenkins /usr/local/rvm
+</code></pre><p>或者查看磁盘空间,看是否已满!</p>
+<p>有些工程里用.rvmrc文件来指定rvm配置，比如使用哪一版本的ruby，在<code>/var/lib/jenkins/.rvmrc</code>加上以下这句，方便自动信任工程.rvmrc里的内容</p>
+<pre><code>export rvm_trust_rvmrcs_flag=1
+</code></pre><p>最后确保有以下类似内容<code>/var/lib/jenkins/.bashrc</code>，主要用来初始化rvm环境：</p>
+<pre><code>Ruby Code:
+PATH=$PATH:/usr/local/bin:$HOME/.rvm/bin # Add RVM to PATH for scripting
+if [[ -s &quot;$HOME/.rvm/scripts/rvm&quot; ]]; then . &quot;$HOME/.rvm/scripts/rvm&quot;; fi
+</code></pre><p>注意: 如果系统中已经安装了rvm和Ruby On Rails环境,则不需要再安装rvm.</p>
+<h3 id="Bitbucket设置"><a href="#Bitbucket设置" class="headerlink" title="Bitbucket设置"></a>Bitbucket设置</h3><p>为jenkins用户生成ssh key:</p>
+<pre><code>ssh-keygen -t rsa
+</code></pre><p>打开Bitbucket，找到你想运用Jenkins的repository，把刚刚生成的公钥（在<code>~/.ssh/id_rsa.pub</code>里）添加到相应repositroy的Deployment Keys。所谓Deployment Keys只有读取权限，没有push权限。<br>要添加Deployment Keys需要拥有该项目的管理员权限,进入项目主页,进入settings→Deployment Keys→ add keys即可看到如下表单,Label随便填,SSH key为刚刚生成的Key,填写完毕后点击Add key.<br>以jenkins用户运行一次以下命令，首次连接系统会问是否信任此host，回答yes将Bitbucket加入ssh信任host里。注意需要<em>将[username]和[repository]换成你Bitbucket上相应的用户及代码库。</em></p>
+<pre><code>git ls-remote -h git@bitbucket.org:[username]/[repository].git HEAD
+</code></pre><p>如果没有错误信息,则表明配置正确.</p>
+<h3 id="Jenkins安全设置"><a href="#Jenkins安全设置" class="headerlink" title="Jenkins安全设置"></a>Jenkins安全设置</h3><p>Jenkins刚安装完，是允许所有访问Jenkins的人进行所有操作的，这样当然不安全，不过Jenkins提供了相当全面的权限控制，稍微设置下即可。</p>
+<ul>
+<li>进入Manage Jenkins -&gt; Configure Global Security，选上Enable Security，在出现的选项中，再选上Jenkins’s own user database以及下面的Allow users to sign up和Logged-in users can do anything，保存</li>
+<li>返回Jenkins主页面，这时右上角会有sign up，点击进去注册一个新用户</li>
+<li>注册完成后再进入设置，把那个Allow users to sign up取消掉，不再让其他人注册</li>
+<li>进入这个用户的设置界面，会有API Token，点Show API Token，记下这个token，在Bitbucket的设置上会用到</li>
+</ul>
+<h3 id="Jenkins项目设置"><a href="#Jenkins项目设置" class="headerlink" title="Jenkins项目设置"></a>Jenkins项目设置</h3><p>进行这步之前,请确保已经为Jenkins安装了git插件, 插件的安装可通过Manage Jenkins → Manage Plugins 安装.</p>
+<ul>
+<li>点New job新建一个free style的。</li>
+<li>SCM那里选Git，在Repository URL里填上Bitbucket上这个工程的地址。</li>
+<li>Build Triggers那里选Trigger builds remotely，在Authentication Token填入随机字串，这个token待会在Bitbucket设置的时候会用到，记下。</li>
+</ul>
+<h3 id="Bitbucket项目设置"><a href="#Bitbucket项目设置" class="headerlink" title="Bitbucket项目设置"></a>Bitbucket项目设置</h3><ul>
+<li>进入工程的admin，选Services，在Service下拉框中选Jenkins，按以下填入：<ul>
+<li>Module name：留空</li>
+<li>Token：这就是在Jenkins的项目里，你自己填入随机字串的那个Authentication Token</li>
+<li>Project name：Jenkins上的工程名字</li>
+<li>Endpoint：http://[Jenkins User]:[API Token]@[hostname]/，如：<a href="http://admin:xxxxxxxxxxx@example.com/" target="_blank" rel="noopener">http://admin:xxxxxxxxxxx@example.com/</a></li>
+</ul>
+</li>
+</ul>
+<p>这样一来，每次你push代码到Bitbucket，它都会通知Jenkins去做你要让它帮你做的事情！<br><em>确保Authentication Token与API Token都跟你在Jenkins上的一致。</em></p>
+<p>Execute Shell在Jenkins那build下选择execute shell，在里面填入你让Jenkins帮你做的事！以下例子，是每次push代码到Bitbucket，Jenkins都会帮你在新代码下执行rspec测试.</p>
+<pre><code>Ruby Code:
+#!/bin/bash -x
+source /etc/profile.d/rvm.sh       # load rvm environment
+rvm use 2.2.0           # use ruby 2.2.0
+bundle install
+read -d &apos;&apos; database_yml &lt;&lt;&quot;EOF&quot;
+default: &amp;default
+  adapter: mysql2
+  encoding: utf8
+  pool: 5
+  username: &quot;username&quot;
+  password: &quot;password&quot;
+
+test:
+  &lt;&lt;: *default
+  database: p2p_test
+EOF
+echo &quot;$database_yml&quot; &gt; config/database.yml
+rake db:test:prepare RAILS_ENV=test
+rake spec
+</code></pre>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/08/08/2015-08-08-jenkenis-server-configuration/" data-id="cjo9s9u7s001bbw6xj61use8q" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Server/">Server</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2015-08-02-rubys-case-statement-advanced-techniques" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/08/02/2015-08-02-rubys-case-statement-advanced-techniques/" class="article-date">
+  <time datetime="2015-08-01T16:00:00.000Z" itemprop="datePublished">2015-08-02</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Ruby/">Ruby</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/08/02/2015-08-02-rubys-case-statement-advanced-techniques/">【翻译】Ruby’s case statement – advanced techniques</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>没有什么比case语句更加的简单和无聊了。这是沿袭自C语言，通常被用来代替一系列的if语句。实际上，Ruby中的case语句比你想象的要更加的丰富和更加的复杂，让我们来看一下下面的这个例子。</p>
+<pre><code>Ruby Code:
+case &quot;Hi there&quot;
+when String
+  pute &quot;case statements match class&quot;
+end
+# outputs: &quot;case statements match class&quot;
+</code></pre><p>这个例子表明case语句不仅匹配一个条目的值，并且还能匹配其class。这可能是因为Ruby内部使用了===操作符。</p>
+<h3 id="快速浏览-操作符"><a href="#快速浏览-操作符" class="headerlink" title="快速浏览===操作符"></a>快速浏览===操作符</h3><p>当你用Ruby写下x===y，你就是在询问y是属于x所代表的组吗？这是一个非常通用的语句，它的定义会依据你所处理的组别而改变。</p>
+<pre><code>Ruby Code:
+# Here, the Class.===(item) method is called, which returns true if item is an instance of the class
+
+String === &quot;hello&quot; # true
+String === 1 # false
+</code></pre><p>字符串，正则表达式以及区间都定义了各自的===方法，表现上大抵和你的预期相符合，你甚至可以在你自己的类中增加一个===方法。现在我们懂得了这些，我们可以变出各种各样的戏法。</p>
+<h3 id="case语句中的区间匹配"><a href="#case语句中的区间匹配" class="headerlink" title="case语句中的区间匹配"></a>case语句中的区间匹配</h3><p>你之所以能够在case语句中使用区间，是因为range === n 返回的是range.include?(n)。我为什么这肯定呢？这是因为<a href="http://ruby-doc.org/core-2.2.0/Range.html#method-i-3D-3D-3D" title="文档" target="_blank" rel="noopener">文档</a>中已经写明了。</p>
+<pre><code>Ruby Code:
+case 5
+when (1..10)
+  puts &quot;case statements match inclusion in a range&quot;
+end
+
+# outputs &quot;case statements match inclusion in a range&quot;
+</code></pre><h3 id="case语句中的正则表达式匹配"><a href="#case语句中的正则表达式匹配" class="headerlink" title="case语句中的正则表达式匹配"></a>case语句中的正则表达式匹配</h3><p>在case语句中使用正则也是可能的，因为/regexp/ === “string”返回true，当且仅当字符串匹配该正则表达式时。正则表达式的<a href="http://ruby-doc.org/core-2.2.0/Regexp.html#method-i-3D-3D-3D" title="文档" target="_blank" rel="noopener">文档</a>对其做出了解释。<br>    Ruby Code:<br>    case “FOOBAR”<br>    when /BAR$/<br>      puts “they can match regular expressions!”<br>    end</p>
+<pre><code># outputs &quot;they can match regular expressions!&quot;
+</code></pre><h3 id="匹配proc和lambda"><a href="#匹配proc和lambda" class="headerlink" title="匹配proc和lambda"></a>匹配proc和lambda</h3><p>这是非常奇怪的一类，当你使用Proc#===(item)，就和Proc#call(item)一样。这是定义的<a href="http://ruby-doc.org/core-2.2.0/Proc.html#method-i-3D-3D-3D" title="文档" target="_blank" rel="noopener">文档</a>，这个文档的意思是你可以通过动态匹配在case语句中使用proc和lambda。<br>    Ruby Code:<br>    case 40<br>    when -&gt; (n) { n.to_s == “40” }<br>      puts “lambdas!”<br>    end</p>
+<pre><code># outputs &quot;lambdas&quot;
+</code></pre><p>另外的写法：</p>
+<pre><code>Ruby Code:
+ odd  = proc(&amp;:odd?)
+ even = proc(&amp;:even?)
+  case number
+  when odd
+    puts &quot;Odd number&quot;
+  when even
+    puts &quot;Even number&quot;
+  end
+</code></pre><h3 id="编写你自己的匹配类"><a href="#编写你自己的匹配类" class="headerlink" title="编写你自己的匹配类"></a>编写你自己的匹配类</h3><p>就像我上文提到的那样，在你自己的类中增加一个自定义的case行为就和你定义一个===方法一样简单。使用这项技术能够讲一系列复杂的条件逻辑拆分成多个较小的类。<br>    Ruby Code:<br>    class Success<br>      def self.===(item)<br>        item.status &gt;= 200 &amp;&amp; item.status &lt; 300<br>      end<br>    end</p>
+<pre><code>class Empty
+  def self.===(item)
+    item.response_size == 0
+  end
+end
+
+case http_response
+when Empty
+  puts &quot;response was empty&quot;
+when Success
+  puts &quot;response was a success&quot;
+end
+</code></pre><h3 id="Extra"><a href="#Extra" class="headerlink" title="Extra"></a>Extra</h3><p>另外还可以在when语句中增加多个可以匹配的值。</p>
+<pre><code>Ruby code:
+print &quot;Enter your grade: &quot;
+grade = gets.chomp
+case grade
+when &quot;A&quot;, &quot;B&quot;
+  puts &apos;You pretty smart!&apos;
+when &quot;C&quot;, &quot;D&quot;
+  puts &apos;You pretty dumb!!&apos;
+else
+  puts &quot;You can&apos;t even use a computer!&quot;
+end
+</code></pre><h3 id="什么时候不该用case-when语句"><a href="#什么时候不该用case-when语句" class="headerlink" title="什么时候不该用case/when语句"></a>什么时候不该用case/when语句</h3><p>　　当你只有一些简单的1:1映射关系的时候，不该使用该方法。</p>
+<pre><code>Ruby code:
+  case country
+  when &quot;europe&quot;
+    &quot;http://eu.example.com&quot;
+  when &quot;america&quot;
+    &quot;http://us.example.com&quot;
+  end
+
+
+下面是比较好的写法：
+
+
+Ruby code:
+   SITES = {
+     &quot;europe&quot;  =&gt; &quot;http://eu.example.com&quot;,
+     &quot;america&quot; =&gt; &quot;http://us.example.com&quot;
+   }
+   SITES[country]
+</code></pre><p>原文：</p>
+<ul>
+<li><a href="http://blog.honeybadger.io/rubys-case-statement-advanced-techniques" title="Ruby’s case statement – advanced techniques" target="_blank" rel="noopener">Ruby’s case statement – advanced techniques</a></li>
+</ul>
+<p>参考：</p>
+<ul>
+<li><a href="http://www.blackbytes.info/2015/10/ruby-case/?utm_source=rubyweekly&amp;utm_medium=email" title="The Many Uses Of Ruby Case Statements" target="_blank" rel="noopener">The Many Uses Of Ruby Case Statements</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/08/02/2015-08-02-rubys-case-statement-advanced-techniques/" data-id="cjo9s9u7q0016bw6x9w5063fj" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Ruby/">Ruby</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2015-05-20-preload-eagerload-includes-and-joins" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/05/20/2015-05-20-preload-eagerload-includes-and-joins/" class="article-date">
+  <time datetime="2015-05-19T16:00:00.000Z" itemprop="datePublished">2015-05-20</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Ruby/">Ruby</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/05/20/2015-05-20-preload-eagerload-includes-and-joins/">【翻译】Preload, includes, eagerload and joins</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Rails提供了四种不同的方式来加载关联数据，本文将详细解析这四种方式的异同。</p>
+<h3 id="Preload"><a href="#Preload" class="headerlink" title="Preload"></a>Preload</h3><p>方法<code>preload</code>通过两条sql查询来加载关联数据。</p>
+<pre><code>Ruby Code:
+User.preload(:posts).to_a
+
+# =&gt;
+SELECT &quot;users&quot;.* FROM &quot;users&quot;
+SELECT &quot;posts&quot;.* FROM &quot;posts&quot;  WHERE &quot;posts&quot;.&quot;user_id&quot; IN (1)
+</code></pre><p>上面的查询是方法<code>includes</code>默认的加载数据的方式。因为<code>preload</code>总是产生两条sql查询，所以我们不能够在<code>where</code>条件中使用<code>posts</code>表，下面的查询将导致一个错误。</p>
+<pre><code>Ruby Code:
+User.preload(:posts).where(&quot;posts.desc=&apos;ruby is awesome&apos;&quot;)
+
+# =&gt;
+SQLite3::SQLException: no such column: posts.desc:
+SELECT &quot;users&quot;.* FROM &quot;users&quot;  WHERE (posts.desc=&apos;ruby is awesome&apos;)
+</code></pre><p>当然，我们可以通过如下方式来使用<code>where</code>条件。</p>
+<pre><code>Ruby Code:
+User.preload(:posts).where(&quot;users.name=&apos;Neeraj&apos;&quot;)
+
+# =&gt;
+SELECT &quot;users&quot;.* FROM &quot;users&quot;  WHERE (users.name=&apos;Neeraj&apos;)
+SELECT &quot;posts&quot;.* FROM &quot;posts&quot;  WHERE &quot;posts&quot;.&quot;user_id&quot; IN (3)
+</code></pre><h3 id="Includes"><a href="#Includes" class="headerlink" title="Includes"></a>Includes</h3><p>方法<code>includes</code>通过分离的sql查询加载关联数据时和<code>preload</code>的表现形式是一样的。但是<code>includes</code>比<code>preload</code>更加的智能，通过上面的例子可以看出通过<code>User.preload(:posts).where(&quot;posts.desc=&#39;ruby is awesome&#39;&quot;)</code>查询语句使用<code>preload</code>产生了一个错误。下面来看一下使用<code>includes</code>的情况。</p>
+<pre><code>Ruby Code:
+User.includes(:posts).where(&apos;posts.desc = &quot;ruby is awesome&quot;&apos;).to_a
+
+# =&gt;
+SELECT &quot;users&quot;.&quot;id&quot; AS t0_r0, &quot;users&quot;.&quot;name&quot; AS t0_r1, &quot;posts&quot;.&quot;id&quot; AS t1_r0,
+       &quot;posts&quot;.&quot;title&quot; AS t1_r1,
+       &quot;posts&quot;.&quot;user_id&quot; AS t1_r2, &quot;posts&quot;.&quot;desc&quot; AS t1_r3
+FROM &quot;users&quot; LEFT OUTER JOIN &quot;posts&quot; ON &quot;posts&quot;.&quot;user_id&quot; = &quot;users&quot;.&quot;id&quot;
+WHERE (posts.desc = &quot;ruby is awesome&quot;)
+</code></pre><p>可以看到，<code>includes</code>通过<code>LEFT OUTER JOIN</code>将两条sql查询转换成一条单独的sql语句查询。默认情况下，<code>includes</code>将产生两条单独的查询。假定在某些情况下，你需要强制使<code>includes</code>只产生一条单独的查询语句，可以通过<code>references</code>来达到目标。</p>
+<pre><code>Ruby Code:
+User.includes(:posts).references(:posts).to_a
+
+# =&gt;
+SELECT &quot;users&quot;.&quot;id&quot; AS t0_r0, &quot;users&quot;.&quot;name&quot; AS t0_r1, &quot;posts&quot;.&quot;id&quot; AS t1_r0,
+       &quot;posts&quot;.&quot;title&quot; AS t1_r1,
+       &quot;posts&quot;.&quot;user_id&quot; AS t1_r2, &quot;posts&quot;.&quot;desc&quot; AS t1_r3
+FROM &quot;users&quot; LEFT OUTER JOIN &quot;posts&quot; ON &quot;posts&quot;.&quot;user_id&quot; = &quot;users&quot;.&quot;id&quot;
+</code></pre><p>上面的例子中，只产生了一条sql查询。</p>
+<h3 id="Eager-load"><a href="#Eager-load" class="headerlink" title="Eager load"></a>Eager load</h3><p>立即加载使用<code>LEFT OUTER JOIN</code>产生一条sql语句来加载所有的关联数据。</p>
+<pre><code>Ruby Code:
+User.eager_load(:posts).to_a
+
+# =&gt;
+SELECT &quot;users&quot;.&quot;id&quot; AS t0_r0, &quot;users&quot;.&quot;name&quot; AS t0_r1, &quot;posts&quot;.&quot;id&quot; AS t1_r0,
+       &quot;posts&quot;.&quot;title&quot; AS t1_r1, &quot;posts&quot;.&quot;user_id&quot; AS t1_r2, &quot;posts&quot;.&quot;desc&quot; AS t1_r3
+FROM &quot;users&quot; LEFT OUTER JOIN &quot;posts&quot; ON &quot;posts&quot;.&quot;user_id&quot; = &quot;users&quot;.&quot;id&quot;
+</code></pre><p>当在<code>where</code>或者<code>order</code>子句中使用了来自表<code>posts</code>中的属性时，includes会强制只使用一条sql语句。</p>
+<h3 id="Joins"><a href="#Joins" class="headerlink" title="Joins"></a>Joins</h3><p>方法<code>joins</code>使用<code>inner join</code>来加载关联数据。</p>
+<pre><code>Ruby Code:
+User.joins(:posts)
+
+# =&gt;
+SELECT &quot;users&quot;.* FROM &quot;users&quot; INNER JOIN &quot;posts&quot; ON &quot;posts&quot;.&quot;user_id&quot; = &quot;users&quot;.&quot;id&quot;
+</code></pre><p>上面的案例中没有选择任何posts数据，上面的查询也有可能产生重复的结果，为了验证，让我们来创建一些示例数据。</p>
+<pre><code>Ruby Code:
+def self.setup
+  User.delete_all
+  Post.delete_all
+
+  u = User.create name: &apos;Neeraj&apos;
+  u.posts.create! title: &apos;ruby&apos;, desc: &apos;ruby is awesome&apos;
+  u.posts.create! title: &apos;rails&apos;, desc: &apos;rails is awesome&apos;
+  u.posts.create! title: &apos;JavaScript&apos;, desc: &apos;JavaScript is awesome&apos;
+
+  u = User.create name: &apos;Neil&apos;
+  u.posts.create! title: &apos;JavaScript&apos;, desc: &apos;Javascript is awesome&apos;
+
+  u = User.create name: &apos;Trisha&apos;
+end
+</code></pre><p>利用上面的示例数据，如果执行<code>User.joins(:posts)</code>将会得到如下的结果。</p>
+<pre><code>Ruby Code:
+#&lt;User id: 9, name: &quot;Neeraj&quot;&gt;
+#&lt;User id: 9, name: &quot;Neeraj&quot;&gt;
+#&lt;User id: 9, name: &quot;Neeraj&quot;&gt;
+#&lt;User id: 10, name: &quot;Neil&quot;&gt;
+</code></pre><p>可以通过使用<code>distinct</code>来消除重复的结果。</p>
+<pre><code>Ruby Code:
+User.joins(:posts).select(&apos;distinct users.*&apos;).to_a
+</code></pre><p>如果想利用来自<code>posts</code>表中的属性，我们需要选择他们。</p>
+<pre><code>Ruby Code:
+records = User.joins(:posts).select(&apos;distinct users.*, posts.title as posts_title&apos;).to_a
+records.each do |user|
+  puts user.name
+  puts user.posts_title
+end
+</code></pre><p>需要指出的一点是使用<code>joins</code>意味着如果你使用<code>user.posts</code>将会产生另外的一条SQL查询。</p>
+<p>原文：</p>
+<ul>
+<li><a href="http://blog.bigbinary.com/2013/07/01/preload-vs-eager-load-vs-joins-vs-includes.html" title="Preload, Eagerload, Includes and Joins" target="_blank" rel="noopener">Preload, Eagerload, Includes and Joins</a></li>
+</ul>
+<p>扩展阅读：</p>
+<ul>
+<li><a href="http://blog.arkency.com/2013/12/rails4-preloading/" title="3 ways to do eager loading (preloading) in Rails 3 &amp; 4" target="_blank" rel="noopener">3 ways to do eager loading (preloading) in Rails 3 &amp; 4</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/05/20/2015-05-20-preload-eagerload-includes-and-joins/" data-id="cjo9s9ubb006dbw6x2xarqorz" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Ruby/">Ruby</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2015-05-10-the-ruby-global-interpreter-lock" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/05/10/2015-05-10-the-ruby-global-interpreter-lock/" class="article-date">
+  <time datetime="2015-05-09T16:00:00.000Z" itemprop="datePublished">2015-05-10</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Ruby/">Ruby</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/05/10/2015-05-10-the-ruby-global-interpreter-lock/">【翻译】Ruby全局解释锁</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>本文中的所有代码于2012年2月使用Ruby 1.9.3执行，Ruby MRI指Ruby的C实现。</p>
+<p>Ruby MRI全局解释锁（GIL）经常被人误解。程序员听到”Global”或者”lock”会假设编写的并行代码不会以任何的并行方式执行。但是我希望这GIL最终将被移除(jRuby and Rubinius Hydra)。GIL并不是所有的都是糟糕，Ruby MRI的线程状态只能改善。</p>
+<p>我之所以说不那么糟糕是因为GIL仅仅应用于Ruby操作，这意味着仅仅应用于Ruby所做的工作。这是有意义的，因为它的存在是为了保护的Ruby虚拟机的完整性。</p>
+<p>但是除了Ruby操作，还有其他的什么工作呢？在一个典型的Web应用中，当你查询数据库、磁盘或者Memcached，Ruby并没有参与其中，这意味着你并没有调用GIL。让我们来看看这个简单的例子。</p>
+<h3 id="I-O-Operations"><a href="#I-O-Operations" class="headerlink" title="I/O Operations"></a>I/O Operations</h3><pre><code>Ruby code：
+require &apos;benchmark&apos;
+require &apos;mysql2&apos;
+
+x = Mysql2::Client.new
+y = Mysql2::Client.new
+
+Benchmark.bm do |b|
+  b.report(&apos;w/o&apos;) do
+    x.query(&quot;SELECT SLEEP(1)&quot;)
+    y.query(&quot;SELECT SLEEP(1)&quot;)
+  end
+
+  b.report(&apos;with&apos;) do
+    a = Thread.new{ x.query(&quot;SELECT SLEEP(1)&quot;) }
+    b = Thread.new{ y.query(&quot;SELECT SLEEP(1)&quot;) }
+    a.join
+    b.join
+  end
+end
+
+       user     system      total        real
+w/o  0.000000   0.000000   0.000000 (  2.002874)
+with  0.000000   0.000000   0.000000 (  1.001658)
+</code></pre><p>在这个例子中，Ruby将SQL查询传递给一个等待数据库响应的C程序。因为GIL并没有进行任何工作，所以在这段时间内，Ruby释放了GIL。查询数据库是一个I/O操作，GIL并不影响I/O操作。这意味着Ruby解释器在同一时间内能够执行多个线程。为了理解这些区别，让我们来看下一个例子。</p>
+<h3 id="Ruby-Operations"><a href="#Ruby-Operations" class="headerlink" title="Ruby Operations"></a>Ruby Operations</h3><pre><code>Ruby code：
+require &apos;benchmark&apos;
+
+Benchmark.bm do |x|
+  x.report(&apos;w/o&apos;) do
+    10_000_000.times{ 2+2 }
+  end
+
+  x.report(&apos;with&apos;) do
+    a = Thread.new{ 5_000_000.times{ 2+2 } }
+    b = Thread.new{ 5_000_000.times{ 2+2 } }
+    a.join
+    b.join
+  end
+end
+
+       user     system      total        real
+w/o  2.300000   0.000000   2.300000 (  2.312023)
+with  2.330000   0.000000   2.330000 (  2.338784)
+</code></pre><p>在这个例子中，Ruby需要执行运算并且修改数据，因为GIL被激活，所以多线程并没有带来任何好处。实际上，尝试将计算并行化将会产生两个线程的开销。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>Ruby GIL仅仅应用于非I/O操作，当移除GIL时，最后一个例子将能够充分的利用原生线程，Ruby的线程并不是一个不存在的状态。Ruby的线程是能够工作的，仅仅是还没有达到其他语言的级别。</p>
+<p>希望本文解释清楚了GIL和线程，在这一点上，事件驱动的Ruby，尽管存在GIL，线程和纤程仍旧为Ruby提供了丰富的并发功能。我相信在将来这将会得到改善-特别是线程。Github Gist中的代码同时包含了使用Ruby的sleep方法的另外一个例子。</p>
+<p>原文：</p>
+<ul>
+<li><a href="http://ablogaboutcode.com/2012/02/06/the-ruby-global-interpreter-lock/" title="The Ruby Global Interpreter Lock" target="_blank" rel="noopener">The Ruby Global Interpreter Lock</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/05/10/2015-05-10-the-ruby-global-interpreter-lock/" data-id="cjo9s9u7p0013bw6xiiib45j3" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Ruby/">Ruby</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2015-05-08-understanding-the-law-of-demeter" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/05/08/2015-05-08-understanding-the-law-of-demeter/" class="article-date">
+  <time datetime="2015-05-07T16:00:00.000Z" itemprop="datePublished">2015-05-08</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/best-practices/">best-practices</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/05/08/2015-05-08-understanding-the-law-of-demeter/">【翻译】理解得墨忒耳法则</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>得墨忒耳法则经常被陈述为”只同你最亲密的朋友交谈”。在面向对象语言中，使用一个点作为领域标识符，得墨忒耳法则并简述为”只使用一个点”。虽然这是很有启发性的，但是这是一个不那么好的规则，因为事情几乎没有那么简单。这经常很难向寻求一些列帮助他们提升技能的新手程序员解释。现实是，并没有什么简单的规则可以遵循，更多的时候是一种直觉。我能够想到的对得墨忒耳法则的最好的解释是”不要操作你可能不理解的对象”。</p>
+<p>为了解释这些，让我们从调用对象的角度来考虑事情，Ruby中的<code>self</code>，假设我们有一个<code>self.x.y</code>的表达式，那么我们不太可能告诉接收者x来调用y，因为这会变得更难理解y或者x更容易改变。</p>
+<p>最简单的例子是接收者就是调用者，这个例子等价于原始的更加严格的得墨忒耳法则。所以在<code>self.y</code>这个表达式中，<code>self</code>是调用者也是接收者。由于我们对自己的方法有很高程度的自信，我们可以调用x。</p>
+<p>更一般的情况下，给定<code>self.x.y.z</code>,如果我们对于x的信心程度低，我们不应高告诉x调用y。更进一步，从<code>self</code>的角度看，如果我们对y没有自信，那么我们不应该告诉y去调用z。</p>
+<h3 id="Ruby实例"><a href="#Ruby实例" class="headerlink" title="Ruby实例"></a>Ruby实例</h3><pre><code>[1,2,3,4].map{ |k| k*2 }.join(&apos;,&apos;)
+</code></pre><p>根据原始的定义，上面的代码违反了得墨忒耳法则，因为调用<code>Array#join</code>是同非亲密的朋友交流的例子。在这个例子中，[1,2,3,4]是<code>self</code>的亲密朋友。调用<code>Array#map</code>是可以的，但是这个操作的结果并不是亲密的朋友，所以我们不能让它做任何事情。</p>
+<p>修复这行代码将导致我们掉到一个坑里面，是高度的非生产性的。很可能会导致将一行简单优美的代码变得很复杂。实际上，这个简单的例子说明了在严格的得墨忒耳法则下，我们完全不能使用方法的链式调用。</p>
+<p>为了解决链式调用的问题，大多数人倾向于这样的警告”你的朋友的朋友也是你的朋友，如果他的类型和你的朋友一样”。在前一个例子中，<code>Array#map</code>操作返回了一个数组，我们也是从一个数组开始的，所以我们可以对这个结果进行操作。但是我们不能对<code>Array#join</code>操作返回的字符串进行操作，因为我们并不是从字符串开始的。</p>
+<p>然而，这个警告是不够的，在一些情况中这有太多的限制，其他的情况中限制又不够。</p>
+<h3 id="一个复杂的例子"><a href="#一个复杂的例子" class="headerlink" title="一个复杂的例子"></a>一个复杂的例子</h3><pre><code>Ruby Code:
+User
+  .where(active: true)
+  .map(&amp;:id)
+  .map{ |id| Group.where(owner_id: id) }
+  .map(&amp;:name)
+  .grep(&apos;Rails&apos;)
+</code></pre><p>这很轻微的违法了得墨忒耳法则，但是它确实违反了我早前介绍的模糊版本，这里问题是这确实是很复杂的代码。同代码相关联的<code>User</code>或者<code>Group</code>有很高的几率会改变，我们并不能确切的知道它们何时会发生改变。此外，这行代码假设我们对调用链的每一个操作都很有信心，我对这些感觉很不舒服。并不是调用链的每一个调用都很复杂，但是当我们使用Rails的grep操作时，我们已经丢失了对我们正在进行的工作的追踪。让我们来看一个能够表现这个问题的一个简单的例子。</p>
+<pre><code>Ruby Code:
+users = User.active
+Group.owned_by_any_of(users).with_name_matching(&apos;Rails&apos;)
+</code></pre><p>这就是得墨忒耳法则的优美之处，它提倡按照这种方式编写代码，而不是按照上一个例子。这和你用了多少个点无关，只和你代码中的对象的职责有关。调用者需要理解并且追踪多少个对象？调用者包含了多少逻辑？调用链的逻辑路径是否容易追踪？</p>
+<h3 id="一个不明输出的例子"><a href="#一个不明输出的例子" class="headerlink" title="一个不明输出的例子"></a>一个不明输出的例子</h3><pre><code>user.group.try(:name)
+</code></pre><p>如果你发现你自己按照这种方式编写代码，那么你就违反了得墨忒耳法则的所有版本，这行代码应该被简化。</p>
+<pre><code>user.group_name
+</code></pre><p>让我们来看一下轻微违反得墨忒耳法则的例子。</p>
+<pre><code>uer.group.name
+</code></pre><p>在这行代码中，你很可能明白你所处理的对象，事实上这行代码很容易理解，如果我们确信<code>group</code>存在，我们将会知道输出的结果是什么，使用这个表达式是非常好的。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>得墨忒耳法则并不是一个法则，它并不是简单的统计你代码中的点操作符的数量。它是关于培养一个对于的你创建的代码，你都能够理解每一个对象告诉其他的对象做什么的，应该基于该理解做出什么样的响应的感觉。</p>
+<p>原文：</p>
+<ul>
+<li><a href="http://ablogaboutcode.com/2012/02/27/understanding-the-law-of-demeter/" title="Understanding The Law of Demeter" target="_blank" rel="noopener">Understanding The Law of Demeter</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/05/08/2015-05-08-understanding-the-law-of-demeter/" data-id="cjo9s9u7m000ybw6xmcll5lbt" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Ruby/">Ruby</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2015-05-05-understands-the-GIL" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/05/05/2015-05-05-understands-the-GIL/" class="article-date">
+  <time datetime="2015-05-04T16:00:00.000Z" itemprop="datePublished">2015-05-05</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Ruby/">Ruby</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/05/05/2015-05-05-understands-the-GIL/">Ruby中的GIL初探</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>许多脚本语言都都使用GIL来简化其解释器的内部设计，那么GIL到底是什么呢？全局解释锁（GIL），有时候也叫做全局VM锁（GVL）。每一个Ruby线程需要在运行之前请求GIL。Ruby的GIL是个虚拟机层面的互斥机制即一个线程只有在活动状态下才能执行Ruby代码。这个很有必要，因为C扩展以及很多Ruby组件并不是线程安全的（包括集合和哈希表！）持有GIL,我们便能确保正在执行的Ruby代码是同时刻唯一的运行线程；这就避免了并发问题。</p>
+<p>Ruby的线程是 Native 线程，线程的调度是 OS 来实现的。但是由于 GIL 的存在，同一时间只有获取了这个锁的线程在跑， 也限制了有GIL的语言利用多核的能力。有 GIL 的限制并不代表你不能进行一些异步（通常意义上的异步）的操作。因为 GIL 不会被某个线程一直持有，所以其他的线程都有运行的机会，只是利用不上多核的能力 。就像以前，我们用单核 CPU 跑多线程程序类似。举个例子来说，如果你有8个线程运行在一台8核的机器上，在一个时间段内只有一个线程和一个cpu核是活动的，GIL主要是为了防止因竞态条件的发生而导致的数据完整性问题。GIL的关键所在就是确保两个线程不会同时查询和修改内存。两个线程可以同时查看内存，但如果过程中一个内存修改了内存另一个线程就需要等待下个操作数。这对于原子性、一致性的事物操作很必要：操作数获取的内存视图应该是一致的否则就会出现回滚。</p>
+<p>参考资料：</p>
+<ul>
+<li><a href="http://www.oschina.net/translate/rubys-gil-and-transactional-memory" title="Ruby 的 GIL 和事务性内存" target="_blank" rel="noopener">Ruby 的 GIL 和事务性内存</a></li>
+<li><a href="https://ruby-china.org/topics/6494" title="Ruby 2.0 新功能演示" target="_blank" rel="noopener">Ruby 2.0 新功能演示</a></li>
+<li><a href="http://researcher.watson.ibm.com/researcher/files/jp-ODAIRA/PPoPP2014_RubyGILHTM.pdf" title="Eliminating Global Interpreter Locks in Ruby" target="_blank" rel="noopener">Eliminating Global Interpreter Locks in Ruby</a></li>
+</ul>
+<p>深入阅读：</p>
+<ul>
+<li><a href="http://sysmagazine.com/posts/189320/" title="As GIL in Ruby worked. Part 1" target="_blank" rel="noopener">As GIL in Ruby worked. Part 1</a></li>
+<li><a href="http://sysmagazine.com/posts/189486/" title="As GIL in Ruby worked. Part 2" target="_blank" rel="noopener">As GIL in Ruby worked. Part 2</a></li>
+<li><a href="http://www.jstorimer.com/blogs/workingwithcode/8085491-nobody-understands-the-gil" title="Nobody understands the GIL" target="_blank" rel="noopener">Nobody understands the GIL</a></li>
+<li><a href="http://www.jstorimer.com/blogs/workingwithcode/8100871-nobody-understands-the-gil-part-2-implementation" title="Nobody understands the GIL Part 2: Implementation" target="_blank" rel="noopener">Nobody understands the GIL Part 2: Implementation</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/05/05/2015-05-05-understands-the-GIL/" data-id="cjo9s9u7h000rbw6xbdlohl6g" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Ruby/">Ruby</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2015-05-05-singleton-pattern" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/05/05/2015-05-05-singleton-pattern/" class="article-date">
+  <time datetime="2015-05-04T16:00:00.000Z" itemprop="datePublished">2015-05-05</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/design-pattern/">design-pattern</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/05/05/2015-05-05-singleton-pattern/">单例模式</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>单例模式的设计思想很直接，只允许有一个类的实例存在。这对于一个给定的类只允许有一个实例化对象的应用非常有用，比如日志功能，数据库访问等。</p>
+<p>关于单例模式更详细的解释如下。</p>
+<p>以下摘自必应网典：</p>
+<blockquote>
+<p>单例模式，也叫单子模式，是一种常用的软件设计模式。在应用这个模式时，单例对象的类必须保证只有一个实例存在。在它的核心结构中只包含一个被称为单例类的特殊类。许多时候整个系统只需要拥有一个的全局对象，这样有利于我们协调系统整体的行为，比如在某个服务器程序中，该服务器的配置信息存放在一个文件中，这些配置数据由一个单例对象统一读取，然后服务进程中的其他对象再通过这个单例对象获取这些配置信息。通过单例模式可以保证系统中一个类只有一个实例而且该实例易于外界访问，从而方便对实例个数的控制并节约系统资源。这种方式简化了在复杂环境下的配置管理。实现单例模式的思路是：一个类能返回对象一个引用(永远是同一个)和一个获得该实例的方法（必须是静态方法，通常使用getInstance这个名称）；当我们调用这个方法时，如果类持有的引用不为空就返回这个引用，如果类保持的引用为空就创建该类的实例并将实例的引用赋予该类保持的引用；同时我们还将该类的构造函数定义为私有方法，这样其他处的代码就无法通过调用该类的构造函数来实例化该类的对象，只有通过该类提供的静态方法来得到该类的唯一实例。单例模式在多线程的应用场合下必须小心使用。解决这个问题的办法是为指示类是否已经实例化的变量提供一个互斥锁(虽然这样会降低效率)。</p>
+</blockquote>
+<p>Ruby的标准库实现了singleton模块，可以用来实现单例模式。</p>
+<h3 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h3><p>假设我们要为我们的博客应用构建一个类，该类用来保存博客应用的配置数据，该配置的实例只允许有一个。当然，我们可以通过创建一个module来模仿单例，但是我们必须要保证它不能被被复制。</p>
+<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><p>首先通过<code>require</code>和<code>include</code>引入<code>singleton</code>模块。</p>
+<pre><code>Ruby Code:
+require &apos;singleton&apos;
+
+class BlogConfig
+  include Singleton
+end
+</code></pre><p>如果通过new方法来实例化该类，将会得到一个NoMethodError的异常，构造器被设置成私有的以防止其他的实例被创建。为了得到该类的实例，需要通过<code>instance</code>方法，当首次调用该方法时，该类的一个实例就被创建，再次调用，会返回已经创建好的实例。</p>
+<pre><code>Ruby Code:
+first, second = BlogConfig.instance, BlogConfig.instance
+first == second
+#=&gt; true
+</code></pre><h3 id="自己造轮子"><a href="#自己造轮子" class="headerlink" title="自己造轮子"></a>自己造轮子</h3><p>我们可以模仿Singleton模块自己创造一个。关键步骤在于将要include该模块的类的new方法设置为私有的，防止不小心调用了new方法。</p>
+<pre><code>Ruby Code:
+module Singleton
+  def self.included(base)
+    base.instance_variable_set(&quot;@instance&quot;, base.new)
+    base.extend(self)
+    base.private_class_method :new
+  end
+
+  def instance
+    instance_variable_get(&quot;@instance&quot;)
+  end
+end
+
+class Test
+  include Singleton
+  def say(val)
+    puts val
+  end
+end
+
+
+a = Test.instance
+b = Test.instance
+puts a.object_id
+puts b.object_id
+#=&gt; 23304264
+#=&gt; 23304264
+</code></pre><h3 id="单例的缺点"><a href="#单例的缺点" class="headerlink" title="单例的缺点"></a>单例的缺点</h3><ul>
+<li>单例通常提供对一些服务的全局访问。</li>
+<li>单例允许你限制对象的数量。</li>
+<li>单例提升了类之间的耦合程度。</li>
+<li>单例在整个程序的运行期间都保存了状态。</li>
+</ul>
+<p>参考资料：</p>
+<ul>
+<li><a href="http://www.sitepoint.com/design-patterns-in-ruby-observer-singleton/" title="Design Patterns in Ruby: Observer, Singleton" target="_blank" rel="noopener">Design Patterns in Ruby: Observer, Singleton</a></li>
+<li><a href="http://dalibornasevic.com/posts/9-ruby-singleton-pattern-again" title="Ruby Singleton Pattern" target="_blank" rel="noopener">Ruby Singleton Pattern</a></li>
+<li><a href="http://blogs.msdn.com/b/scottdensmore/archive/2004/05/25/140827.aspx" title="Why Singletons are Evil" target="_blank" rel="noopener">Why Singletons are Evil</a></li>
+</ul>
+<p>扩展阅读：</p>
+<ul>
+<li><a href="https://practicingruby.com/articles/ruby-and-the-singleton-pattern-dont-get-along" title="Ruby and the singleton pattern don&#39;t get along" target="_blank" rel="noopener">Ruby and the singleton pattern don’t get along</a></li>
+<li><a href="http://blog.8thlight.com/josh-cheek/2012/10/20/implementing-and-testing-the-singleton-pattern-in-ruby.html" title="Implementing and Testing the Singleton Pattern in Ruby" target="_blank" rel="noopener">Implementing and Testing the Singleton Pattern in Ruby</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/05/05/2015-05-05-singleton-pattern/" data-id="cjo9s9u7e000pbw6xap6aqwg0" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Ruby/">Ruby</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/设计模式/">设计模式</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2015-04-28-decorater-pattern" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/04/28/2015-04-28-decorater-pattern/" class="article-date">
+  <time datetime="2015-04-27T16:00:00.000Z" itemprop="datePublished">2015-04-28</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/design-pattern/">design-pattern</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/04/28/2015-04-28-decorater-pattern/">【翻译】装饰器模式</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>装饰器是一种设计模式，它的目的正如Gang of Four所描述的：</p>
+<blockquote>
+<p>装饰器模式，是面向对象编程领域中，一种动态地往一个类中添加新的行为的设计模式。就功能而言，装饰器模式相比生成子类更为灵活，这样可以给某个对象而不是整个类添加一些功能。</p>
+</blockquote>
+<p>通过使用修饰模式，可以在运行时扩充一个类的功能。原理是：增加一个修饰类包裹原来的类，包裹的方式一般是通过在将原来的对象作为修饰类的构造函数的参数。装饰类实现新的功能，但是，在不需要用到新功能的地方，它可以直接调用原来的类中的方法。修饰类必须和原来的类有相同的接口。修饰模式是类继承的另外一种选择。类继承在编译时候增加行为，而装饰模式是在运行时增加行为。</p>
+<h3 id="使用装饰器模式来代替继承"><a href="#使用装饰器模式来代替继承" class="headerlink" title="使用装饰器模式来代替继承"></a>使用装饰器模式来代替继承</h3><p>一个经常被用来说明装饰器模式的例子是“coffee with milk and sugar” ，下面是利用类继承来实现这个例子的代码。<br>    Ruby Code:<br>    class CoffeeWithSugar &lt; Coffee<br>      def cost<br>        super + 0.2<br>      end<br>    end</p>
+<pre><code>class CoffeeWithMilkAndSugar &lt; Coffee
+  def cost
+    super + 0.4 + 0.2
+  end
+end
+</code></pre><p>利用继承有如下缺点：</p>
+<ul>
+<li>做出的选择是固化的。</li>
+<li>客户端无法控制怎样和什么时候装饰一个组件。</li>
+<li>紧耦合。</li>
+<li>改变父类的接口意味着所有的子类也必须要改变。</li>
+</ul>
+<p>在Ruby中，include一个模块在某种意义上来说也是继承关系。<br>    Ruby Code:<br>    module Milk<br>      def cost_of_milk<br>        0.4 if milk?<br>      end<br>    end</p>
+<pre><code>class Coffee
+  include Milk
+  include Sugar
+
+  def cost
+    2 + cost_of_milk + cost_of_sugar
+  end
+end
+</code></pre><h3 id="装饰器是如何工作的"><a href="#装饰器是如何工作的" class="headerlink" title="装饰器是如何工作的"></a>装饰器是如何工作的</h3><p>用 Gang of Four的话来说，一个装饰器就是一个用来包裹一个组件的对象，它还有如下功能：</p>
+<ul>
+<li>符合组件的接口，所以它的存在对客户端是透明的。</li>
+<li>将请求转发（代理）给该组件。</li>
+<li>在请求转发之前或者之后执行一些额外的操作。</li>
+</ul>
+<p>这种方法比类继承更加的灵活，因为你可以有多种组合混合和匹配职责因为它的透明性，你可以递归的嵌套装饰器，所以它允许添加无限数量的职责。</p>
+<h3 id="Ruby中的替代实现"><a href="#Ruby中的替代实现" class="headerlink" title="Ruby中的替代实现"></a>Ruby中的替代实现</h3><p>我通过研究在Ruby中发现了4个常用的实现：</p>
+<ul>
+<li>Module + Extend + Super 装饰器</li>
+<li>Plain Old Ruby Object 装饰器</li>
+<li>Class + Method Missing 装饰器</li>
+<li>SimpleDelegator + Super + Getobj 装饰器</li>
+</ul>
+<p>可能还有其他的实现，但是这4个是最常见的。</p>
+<h3 id="Module-Extend-Super装饰器"><a href="#Module-Extend-Super装饰器" class="headerlink" title="Module + Extend + Super装饰器"></a>Module + Extend + Super装饰器</h3><p>在Design Patterns in Ruby一书中描述了此种实现，我认为这是值得提倡的。它由<code>module</code>、<code>super</code>和<code>extend</code>组成。</p>
+<p>为了保持一致性，让我们继续回到“coffee with milk and sugar”这个例子，它被实现成这样：<br>    Ruby Code:<br>    class Coffee<br>      def cost<br>        2<br>      end<br>    end</p>
+<pre><code>module Milk
+  def cost
+    super + 0.4
+  end
+end
+
+module Sugar
+  def cost
+    super + 0.2
+  end
+end
+
+coffee = Coffee.new
+coffee.extend(Milk)
+coffee.extend(Sugar)
+coffee.cost   # 2.6
+</code></pre><p>此种实现的好处是：</p>
+<ul>
+<li>它通过所有的装饰器代理。</li>
+<li>它具有所有的原始接口，因为它是原始的对象。</li>
+</ul>
+<p>此种实现的缺点是：</p>
+<ul>
+<li>不能对同一个对象多次使用同样的装饰器。</li>
+<li>很难分辨出是哪一个装饰器增加的功能。</li>
+</ul>
+<h3 id="PORO装饰器"><a href="#PORO装饰器" class="headerlink" title="PORO装饰器"></a>PORO装饰器</h3><p>我建议在Ruby程序中从此种形式的装饰器开始，包括Rails应用，直到这种形式失败了才寻求其他的方式。<br>    Ruby Code:<br>    class Coffee<br>      def cost<br>        2<br>      end</p>
+<pre><code>  def origin
+    &quot;Colombia&quot;
+  end
+end
+
+class Milk
+  def initialize(component)
+    @component = component
+  end
+
+  def cost
+    @component.cost + 0.4
+  end
+end
+
+coffee = Coffee.new
+Sugar.new(Milk.new(coffee)).cost  # 2.6
+Sugar.new(Sugar.new(coffee)).cost # 2.4
+Sugar.new(Milk.new(coffee)).class # Sugar
+Milk.new(coffee).origin           # NoMethodError
+</code></pre><p>该实现的优点如下：</p>
+<ul>
+<li>可以通过Ruby的实例化无限的包装。</li>
+<li>通过所有的装饰器代理。</li>
+<li>可以多次对一个组件使用同样的装饰器。</li>
+</ul>
+<p>该实现的缺点如下：</p>
+<ul>
+<li>不能以透明的方式使用组件的原始接口，这个缺点也意味着按照Gang of<br>Four的定义，它并不是一个真的装饰器。我主张仍然称它为装饰器，因为它看起来并且它的行为绝对像是一个装饰器。</li>
+</ul>
+<p>这是一个相当有粘性的观点，然而，还是让我们详细的讨论Gang of Four的“透明接口”吧。</p>
+<h3 id="我们在乎“透明接口”的需求吗"><a href="#我们在乎“透明接口”的需求吗" class="headerlink" title="我们在乎“透明接口”的需求吗"></a>我们在乎“透明接口”的需求吗</h3><p>假定我们关心装饰器的透明接口是因为成本，如果是这样，我们不需要同时只支持原始方法。因此，PORO装饰器满足我们的实际需求。通过将接口的范围重新定义为该对象的整个接口的一个子集，我们就符合Gang of Four的定义，这算是一种作弊手段么？我说不，请考虑在Ruby 1.9.3中有多少方法是在<code>Obeject</code>上：<br>    Ruby Code:<br>    &gt; Object.new.methods.size<br>    =&gt; 56<br>Rails中的<code>Object</code>中的方法是Ruby种方法的两倍：<br>    Ruby Code:<br>    &gt; Object.new.methods.size<br>    =&gt; 118<br>一个<code>ActiveRecord</code>对象上甚至有更多的方法：<br>    Ruby Code:<br>    &gt; User.new.methods.size<br>    =&gt; 366<br>我们并不在每一个对象上使用上百种中方法，尤其是在Rails View的典型应用中。</p>
+<p>然而，如果我们在Rails应用中使用PORO装饰器来装饰<code>ActiveRecord</code>对象，我们可能通过接近300个方法减少了接口。这可能是，也可能不是一个问题，取决于我们在该应用中如何使用该对象。在实际应用中，当使用TDD开发一个新功能，我并没有发现这是一个问题，这就是我为什么要说从这个装饰器开始。如果这不是一个问题，那么很好，你的测试套件将会告诉你。你可能会决定增加一个或者两个方法来做非常清晰的代理。<br>    Ruby Code:<br>    def comments<br>      @component.comments<br>    end</p>
+<pre><code>def any?
+  @component.any?
+end
+</code></pre><p>然而，你可能会觉得这很冗长或者重复，所以让我们在晚些时候来假设我们很关心透明接口。</p>
+<p>这经常通过Ruby的<code>method_missing</code>来完成，或者通过Ruby的<code>delegate</code>库，如 <code>Delegator</code>、 <code>SimpleDelegator</code>、 <code>DelegateClass</code>、<code>Forwardable</code>。</p>
+<h3 id="“Method-Missing”装饰器"><a href="#“Method-Missing”装饰器" class="headerlink" title="“Method Missing”装饰器"></a>“Method Missing”装饰器</h3><p>下面的例子通过<code>method_missing</code>来实现一个Ruby装饰器：<br>    Ruby Code:<br>    module Decorator<br>      def initialize(component)<br>        @component = component<br>      end</p>
+<pre><code>  def method_missing(meth, *args)
+    if @component.respond_to?(meth)
+      @component.send(meth, *args)
+    else
+      super
+    end
+  end
+
+  def respond_to?(meth)
+    @component.respond_to?(meth)
+  end
+end
+
+class Coffee
+  def cost
+    2
+  end
+
+  def origin
+    &quot;Colombia&quot;
+  end
+end
+
+class Milk
+  include Decorator
+
+  def cost
+    @component.cost + 0.4
+  end
+end
+
+coffee = Coffee.new
+Sugar.new(Milk.new(coffee)).cost   # 2.6
+Sugar.new(Sugar.new(coffee)).cost  # 2.4
+Sugar.new(Milk.new(coffee)).origin # Colombia
+Sugar.new(Milk.new(coffee)).class  # Sugar
+</code></pre><p>此种实现的优点如下：</p>
+<ul>
+<li>可以通过Ruby实例化无限的包装。</li>
+<li>通过所有的装饰器代理。</li>
+<li>可以对同一个组件多次使用同一个装饰器。</li>
+<li>透明的利用组件的原始接口。</li>
+</ul>
+<p>此种实现的缺点如下：</p>
+<ul>
+<li>使用了<code>method_missing</code>。</li>
+<li>被装饰的对象的类是该装饰器。</li>
+</ul>
+<h3 id="我们关心类是装饰器吗"><a href="#我们关心类是装饰器吗" class="headerlink" title="我们关心类是装饰器吗"></a>我们关心类是装饰器吗</h3><p>我们不应该，这是Ruby，鸭子类型的大陆。</p>
+<p>然而，Ruby在多态关系，form_for以及其他的地方的反射机制(<code>object.class.name</code>)，当我尝试将Rails view帮助方法转换为装饰器的时候，测试执行时，这在ActiveRecord的错误形式中确实是一个问题。</p>
+<blockquote>
+<p>我刚刚发现了一个问题，Rails在检查一个对象的<code>to_patial_path</code>的属性之前，会调用<code>to_model</code>方法，所以当你准备使用装饰器来设置<code>to_partial_path</code>,你必须覆写<code>to_model</code>方法来阻止它返回没有被装饰的对象。—— Andrew Meyer</p>
+</blockquote>
+<p>在一些情境中，这暴露了一个更深的问题。通过对model代码进行重构，我能够使用PORO装饰器并且使整个代码库变得更加干净。在另外的情况下，我仅仅认为使类表现为组件的类是一项耗时少的工作，所以我继续下去。</p>
+<h3 id="“SimpleDelegator-Super-Getobj”-装饰器"><a href="#“SimpleDelegator-Super-Getobj”-装饰器" class="headerlink" title="“SimpleDelegator + Super + Getobj” 装饰器"></a>“SimpleDelegator + Super + Getobj” 装饰器</h3><p>所以，在Rails中的一个让步是使用这种实现，我把它作为最后的解决方案。<br>    Ruby Code:<br>    class Coffee<br>      def cost<br>        2<br>      end</p>
+<pre><code>  def origin
+    &quot;Colombia&quot;
+  end
+end
+
+require &apos;delegate&apos;
+
+class Decorator &lt; SimpleDelegator
+  def class
+    __getobj__.class
+  end
+end
+
+class Milk &lt; Decorator
+  def cost
+    super + 0.4
+  end
+end
+
+coffee = Coffee.new
+Sugar.new(Milk.new(coffee)).cost   # 2.6
+Sugar.new(Sugar.new(coffee)).cost  # 2.4
+Milk.new(coffee).origin            # Colombia
+Sugar.new(Milk.new(coffee)).class  # Coffee
+</code></pre><p>此种实现的优点如下：</p>
+<ul>
+<li>可以通过Ruby实例化无限的包装。</li>
+<li>通过所有的装饰器代理。</li>
+<li>可以对同一个组件多次使用同一个装饰器。</li>
+<li>透明的利用组件的原始接口。</li>
+<li>类既是组件。</li>
+</ul>
+<p>此种实现的缺点如下：</p>
+<p>-它重新定义了类。</p>
+<p>我真的不不是很清楚什么样的问题会导致使用<code>method_missing</code>或者重新定义一个类，但我想他们会在一个耗时的调试过程中得到清晰地展现。</p>
+<h3 id="行动计划"><a href="#行动计划" class="headerlink" title="行动计划"></a>行动计划</h3><p>我认为我现在理解不同的Ruby实现的好处和坏处，并且有一个如何使用它们的计划：</p>
+<ul>
+<li>以PORO开始。</li>
+<li>假如我需要透明接口或者被装饰的对象的类会在Rails中引发问题，使用<code>SimpleDelegator</code></li>
+</ul>
+<p>原文：</p>
+<ul>
+<li><a href="https://robots.thoughtbot.com/evaluating-alternative-decorator-implementations-in" title="Evaluating Alternative Decorator Implementations In Ruby" target="_blank" rel="noopener">https://robots.thoughtbot.com/evaluating-alternative-decorator-implementations-in</a></li>
+</ul>
+<p>深入阅读：</p>
+<ul>
+<li><a href="http://codebrahma.com/design/patterns/2014/04/28/ruby-decorators.html" title="ruby-decorators" target="_blank" rel="noopener">http://codebrahma.com/design/patterns/2014/04/28/ruby-decorators.html</a></li>
+<li><a href="https://sourcemaking.com/design_patterns/decorator" title="decorator" target="_blank" rel="noopener">https://sourcemaking.com/design_patterns/decorator</a></li>
+<li><a href="https://robots.thoughtbot.com/tidy-views-and-beyond-with-decorators" title="tidy-views-and-beyond-with-decorators" target="_blank" rel="noopener">https://robots.thoughtbot.com/tidy-views-and-beyond-with-decorators</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/04/28/2015-04-28-decorater-pattern/" data-id="cjo9s9u6w000kbw6xxm1sixji" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/设计模式/">设计模式</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2015-04-28-unobtrusive-ruby" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/04/28/2015-04-28-unobtrusive-ruby/" class="article-date">
+  <time datetime="2015-04-27T16:00:00.000Z" itemprop="datePublished">2015-04-28</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Ruby/">Ruby</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/04/28/2015-04-28-unobtrusive-ruby/">【翻译】不唐突的Ruby</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>不唐突的Ruby是任何保持你自己方式的Ruby代码，它不会让你写很多的样板、桩方法、打开类。它是解耦合的，测试运行的很快，一个类可以在一屏内展示，它的方法是很短小的，并且可以快速的重构。</p>
+<p>不唐突的Ruby是一种精神状态，是你希望你的朋友们所书写的代码。既然你爱你的朋友，这里有一些指引，当你设计下一个Gem或者框架的时候会用到。</p>
+<h3 id="使用对象，而不是类"><a href="#使用对象，而不是类" class="headerlink" title="使用对象，而不是类"></a>使用对象，而不是类</h3><p>你的所有的参数应该是实例化的对象，调用者自身已经调用了<code>.new</code>方法，将构造器留给类的作者，永远不要强制调用构造函数的约定，或者永远不要以任何方式强迫别人去寻找怎样实例化自己的类。</p>
+<h3 id="永远不需要继承"><a href="#永远不需要继承" class="headerlink" title="永远不需要继承"></a>永远不需要继承</h3><p>对象继承是强迫用户利用构造函数做奇怪的事情的一种方式。什么时候调用<code>super</code>，参数是什么，等等。这对混入也适用，他们增加了类的命名空间的复杂性，增加理解的难度。所有的继承都会导致脆弱的系统。</p>
+<h3 id="依赖注入"><a href="#依赖注入" class="headerlink" title="依赖注入"></a>依赖注入</h3><p>在一个类中不应该使用其它类的名字。传入所有必须用到的对象。你不仅会为将来的灵活性感谢你自己，还会在一开始就发现测试变得更好了。</p>
+<h3 id="快速的单元测试"><a href="#快速的单元测试" class="headerlink" title="快速的单元测试"></a>快速的单元测试</h3><p>对一个较小的类进行单元测试应该很快，类应该很小。Mock对象缺乏继承，并且引入依赖注入。针对你朋友代码的测试不应该依赖于你自己代码的测试。理想的依赖应该在被测试的类和测试框架的范围内。</p>
+<h3 id="不要require接口"><a href="#不要require接口" class="headerlink" title="不要require接口"></a>不要require接口</h3><p>类应该考虑组成而不是被组成，最好的类应该考虑消费而不是被消费，它创建自己的规则。或许你达不到这个目标——在某些情况下一些东西需要被消费——但是这是一个有用的目标。如果这个目标没法实现，那么被<code>require</code>的接口必须简单，这个接口应该只包含一个或者两个方法。</p>
+<h3 id="数据而不是行为"><a href="#数据而不是行为" class="headerlink" title="数据而不是行为"></a>数据而不是行为</h3><p>数据是很好测试的，给一个方法传入一些数据，收到来自该方法的返回值，然后验证它是正确的值。永远不要强迫的你朋友做比这更多的事情，永远不要强迫他们做数据库查询、系统调用、产生随机数字等等，你要为他们做好这些事情。</p>
+<h3 id="永远编写代码"><a href="#永远编写代码" class="headerlink" title="永远编写代码"></a>永远编写代码</h3><p>这篇文章的总体思路是，你的朋友总是能够只写代码。你永远不希望站在他的位置上，不要强制编写文档，不要改变他的类或者创造一些离奇的漏洞。你，作为一个Gem的作者和床架的设计者，应该是的碰朋友在构建他们自己的系统的时候不需要知道你构建的系统。</p>
+<p>原文：</p>
+<ul>
+<li><a href="https://robots.thoughtbot.com/unobtrusive-ruby" title="Unobtrusive Ruby" target="_blank" rel="noopener">https://robots.thoughtbot.com/unobtrusive-ruby</a></li>
+</ul>
+<p>深入阅读：</p>
+<ul>
+<li><a href="https://practicingruby.com/articles/unobtrusive-ruby-in-practice" title="&quot;Unobtrusive Ruby&quot; in Practice" target="_blank" rel="noopener">https://practicingruby.com/articles/unobtrusive-ruby-in-practice</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/04/28/2015-04-28-unobtrusive-ruby/" data-id="cjo9s9u74000lbw6x8s91dwtk" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Ruby/">Ruby</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+
+
+  <nav id="page-nav">
+    
+    <a class="extend prev" rel="prev" href="/page/4/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/6/">Next &raquo;</a>
+  </nav>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/CSS/">CSS</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/DDD/">DDD</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Git/">Git</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Go/">Go</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/HTTP/">HTTP</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/JavaScript/">JavaScript</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Learning-C/">Learning C</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Rails/">Rails</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Ruby/">Ruby</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Server/">Server</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/TCP-IP/">TCP/IP</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Test/">Test</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/best-practices/">best-practices</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/design-pattern/">design-pattern</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/postgresql/">postgresql</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/weixin/">weixin</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/分布式/">分布式</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/">C</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSS/">CSS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DDD/">DDD</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Go/">Go</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP/">HTTP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/">JavaScript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Rails/">Rails</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Rspec/">Rspec</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Ruby/">Ruby</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Server/">Server</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCP-IP/">TCP/IP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/postgresql/">postgresql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/weixin/">weixin</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式/">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/测试/">测试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/C/" style="font-size: 12.86px;">C</a> <a href="/tags/CSS/" style="font-size: 10px;">CSS</a> <a href="/tags/DDD/" style="font-size: 10px;">DDD</a> <a href="/tags/Git/" style="font-size: 11.43px;">Git</a> <a href="/tags/Go/" style="font-size: 18.57px;">Go</a> <a href="/tags/HTTP/" style="font-size: 10px;">HTTP</a> <a href="/tags/JavaScript/" style="font-size: 17.14px;">JavaScript</a> <a href="/tags/Rails/" style="font-size: 14.29px;">Rails</a> <a href="/tags/Rspec/" style="font-size: 10px;">Rspec</a> <a href="/tags/Ruby/" style="font-size: 20px;">Ruby</a> <a href="/tags/Server/" style="font-size: 10px;">Server</a> <a href="/tags/TCP-IP/" style="font-size: 10px;">TCP/IP</a> <a href="/tags/postgresql/" style="font-size: 12.86px;">postgresql</a> <a href="/tags/react/" style="font-size: 10px;">react</a> <a href="/tags/weixin/" style="font-size: 11.43px;">weixin</a> <a href="/tags/分布式/" style="font-size: 10px;">分布式</a> <a href="/tags/测试/" style="font-size: 10px;">测试</a> <a href="/tags/设计模式/" style="font-size: 15.71px;">设计模式</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/04/14/2018-04-14-gokit-learning-one/">go-kit学习笔记(一)</a>
+          </li>
+        
+          <li>
+            <a href="/2018/04/14/2018-04-14-gokit-introduction/">go-kit简介</a>
+          </li>
+        
+          <li>
+            <a href="/2018/04/14/2018-04-14-golang-context/">golang中context包详解</a>
+          </li>
+        
+          <li>
+            <a href="/2018/03/31/2018-03-31-golang-handle-and-handlefunc/">Golang中的Handle和HandleFunc</a>
+          </li>
+        
+          <li>
+            <a href="/2018/03/30/2018-03-30-golang-http-router/">Golang中的router</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>
